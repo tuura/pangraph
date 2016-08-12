@@ -21,26 +21,45 @@ data Graph = Graph  {   attributes::    [String]
                     ,   arcs::          [Arc]
                     }   deriving (Show)
 
+
 -- This function links together finding of the graph then parsing its nodes and arcs
 findGraph:: Parsec.Parsec String () Graph
 findGraph=do
-  graph <- Parsec.try (Parsec.many graphTag) <?> "no graph found"
+  graph <- Parsec.many graphTag <?> "no graph found"
   tags <- Parsec.many $ Parsec.choice [edgeTag, nodeTag]
   endTag <?> "closing graph tag: \"</graph>\""
   (arcs, nodes) <- partitionEithers tags
   let g = Graph graph nodes arcs
   return g
 
-endTag:: Parsec.Parsec String () ()
-endTag = Parsec.spaces >> Parsec.string "</graph>"
+--------Tag Parsers---------
 
 graphTag:: Parsec.Parsec String () Tag
 graphTag=do
   Parsec.spaces
-  Parsec.string "<graph id=\""
+  Parsec.string "<graph"
   xs <- multiAttribute
   Parsec.string "/>"
   return xs
+
+nodeTag:: Parsec.Parsec String () Tag --[(String, String)]
+nodeTag=do
+  Parsec.spaces >> Parsec.string "<node"
+  xs <- multiAttribute
+  Parsec.string "\">"
+  return $ Right xs
+
+edgeTag:: Parsec.Parsec String () Tag --[(String, String)]
+edgeTag=do
+  Parsec.spaces >> Parsec.string "<edge"
+  xs <- multiAttribute
+  Parsec.string "\">"
+  return $ Left xs
+
+endTag:: Parsec.Parsec String () ()
+endTag = Parsec.spaces >> Parsec.string "</graph>"
+
+--Auxillary functions
 
 --returns a tupled list of a tags attirubtes.
 multiAttribute:: Parsec.Parsec String () [(String, String)]
@@ -59,17 +78,3 @@ alphaNum::Parsec.Parsec String () String
 alphaNum=Parsec.many $ do
   xs <- (Parsec.letter <|> Parsec.digit)
   return xs
-
-nodeTag:: Parsec.Parsec String () Tag --[(String, String)]
-nodeTag=do
-  Parsec.spaces >> Parsec.string "<node"
-  xs <- multiAttribute
-  Parsec.string "\">"
-  return $ Right xs
-
-edgeTag:: Parsec.Parsec String () Tag --[(String, String)]
-edgeTag=do
-  Parsec.spaces >> Parsec.string "<edge"
-  xs <- multiAttribute
-  Parsec.string "\">"
-  return $ Left xs
