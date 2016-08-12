@@ -3,10 +3,6 @@ import Text.Parsec ((<?>))
 import Text.Parsec ((<|>))
 import Data.Typeable
 import Data.Either
--- import qualified System.Environment as Env
--- -- import System.Directory
--- import System.IO
--- import Data.List
 
 main :: IO ()
 main = do
@@ -16,7 +12,7 @@ main = do
 data Arc = Arc [(String, String)] deriving (Show)
 data Node = Node [(String, String)] deriving (Show)
 type Tag = Either Arc Node
-data Graph = Graph  {   attributes::    [String]
+data Graph = Graph  {   attributes::    [(String,String)]
                     ,   nodes::         [Node]
                     ,   arcs::          [Arc]
                     }   deriving (Show)
@@ -28,38 +24,43 @@ findGraph=do
   graph <- Parsec.many graphTag <?> "no graph found"
   tags <- Parsec.many $ Parsec.choice [edgeTag, nodeTag]
   endTag <?> "closing graph tag: \"</graph>\""
-  (arcs, nodes) <- partitionEithers tags
-  let g = Graph graph nodes arcs
-  return g
+  let (arcs, nodes) = partitionEithers tags
+  return $ Graph graph nodes arcs
+
 
 --------Tag Parsers---------
 
-graphTag:: Parsec.Parsec String () Tag
+graphTag:: Parsec.Parsec String () [(String,String)]
 graphTag=do
   Parsec.spaces
-  Parsec.string "<graph"
+  _ <- Parsec.string "<graph"
   xs <- multiAttribute
-  Parsec.string "/>"
+  _ <- Parsec.string "/>"
   return xs
 
 nodeTag:: Parsec.Parsec String () Tag --[(String, String)]
 nodeTag=do
-  Parsec.spaces >> Parsec.string "<node"
+  Parsec.spaces
+  _ <- Parsec.string "<node"
   xs <- multiAttribute
-  Parsec.string "\">"
-  return $ Right xs
+  _ <- Parsec.string "\">"
+  return $ Right $ Node xs
 
 edgeTag:: Parsec.Parsec String () Tag --[(String, String)]
 edgeTag=do
-  Parsec.spaces >> Parsec.string "<edge"
+  Parsec.spaces
+  _ <- Parsec.string "<edge"
   xs <- multiAttribute
-  Parsec.string "\">"
-  return $ Left xs
+  _ <- Parsec.string "\">"
+  return $ Left $ Arc xs
 
-endTag:: Parsec.Parsec String () ()
-endTag = Parsec.spaces >> Parsec.string "</graph>"
+endTag :: Parsec.Parsec String () ()
+endTag = do
+  Parsec.spaces
+  _ <- Parsec.string "</graph>"
+  return ()
 
---Auxillary functions
+----------Auxillary functions----------
 
 --returns a tupled list of a tags attirubtes.
 multiAttribute:: Parsec.Parsec String () [(String, String)]
@@ -69,7 +70,7 @@ multiAttribute=Parsec.sepBy attribute Parsec.spaces
 attribute::Parsec.Parsec String () (String, String)
 attribute=do
   x <- alphaNum
-  Parsec.string "=\""
+  _ <- Parsec.string "=\""
   y <- alphaNum
   Parsec.char '\"'
   return (x, y)
