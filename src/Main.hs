@@ -6,7 +6,9 @@ import Data.Either
 
 main :: IO ()
 main = do
-  putStrLn "hello world"
+  x <- getLine
+  let y  = Parsec.parse findGraph "source" x
+  putStrLn $ show y
 
 --Graphs take the form graph attributes, list of nodes, list of (tupled) arcs.
 data Arc = Arc [(String, String)] deriving (Show)
@@ -21,19 +23,19 @@ data Graph = Graph  {   attributes::    [(String,String)]
 -- This function links together finding of the graph then parsing its nodes and arcs
 findGraph:: Parsec.Parsec String () Graph
 findGraph=do
-  graph <- Parsec.many graphTag <?> "no graph found"
+  _ <- Parsec.manyTill Parsec.anyChar (Parsec.try (Parsec.string "<graph "))
+  graph <- graphTag <?> "graph tag"
   tags <- Parsec.many $ Parsec.choice [edgeTag, nodeTag]
   endTag <?> "closing graph tag: \"</graph>\""
   let (arcs, nodes) = partitionEithers tags
   return $ Graph graph nodes arcs
 
-
 --------Tag Parsers---------
 
 graphTag:: Parsec.Parsec String () [(String,String)]
 graphTag=do
-  Parsec.spaces
-  _ <- Parsec.string "<graph"
+  -- Parsec.spaces
+  -- _ <- Parsec.string "<graph"
   xs <- multiAttribute
   _ <- Parsec.string "/>"
   return xs
@@ -69,9 +71,9 @@ multiAttribute=Parsec.sepBy attribute Parsec.spaces
 --parses an attribute from a tag
 attribute::Parsec.Parsec String () (String, String)
 attribute=do
-  x <- alphaNum
+  x <- Parsec.many1 Parsec.alphaNum
   _ <- Parsec.string "=\""
-  y <- alphaNum
+  y <- Parsec.many1 Parsec.alphaNum
   Parsec.char '\"'
   return (x, y)
 
