@@ -1,99 +1,75 @@
-module Main () where
-
-import Text.Parsec
-import Text.Parsec.String (Parser)
+import qualified Text.Parsec as Parsec
+import Text.Parsec ((<?>))
+import Text.Parsec ((<|>))
 import Data.Typeable
 import Data.Either
-import qualified System.Environment as Env
--- import System.Directory  
-import System.IO  
-import Data.List  
+-- import qualified System.Environment as Env
+-- -- import System.Directory
+-- import System.IO
+-- import Data.List
 
 main :: IO ()
 main = do
-  [cmd,path]<- words getArgs
-  
   putStrLn "hello world"
 
 --Graphs take the form graph attributes, list of nodes, list of (tupled) arcs.
-data Arc = Arc (String, String) deriving (Show)
-data Node = Node String deriving (Show)
+data Arc = Arc [(String, String)] deriving (Show)
+data Node = Node [(String, String)] deriving (Show)
 type Tag = Either Arc Node
 data Graph = Graph  {   attributes::    [String]
                     ,   nodes::         [Node]
                     ,   arcs::          [Arc]
                     }   deriving (Show)
 
---This function should handle IO
--- readGraphML:: String -> Graph
--- readGraphML xs = findGraph xs
+-- This function links together finding of the graph then parsing its nodes and arcs
+findGraph:: Parsec.Parsec String () Graph
+findGraph=do
+  graph <- Parsec.try (Parsec.many graphTag) <?> "no graph found"
+  tags <- Parsec.many $ Parsec.choice [edgeTag, nodeTag]
+  endTag <?> "closing graph tag: \"</graph>\""
+  (arcs, nodes) <- partitionEithers tags
+  let g = Graph graph nodes arcs
+  return g
 
---This function links together finding of the graph then parsing its nodes and arcs
-findGraph:: String -> Graph
-findGraph=do{
-            ;   graph <- try (many graphTag) <?> "no graph found"
-            ;   tags <- many $ choice [nodeTag, edgeTag]
-            ;   (arcs, nodes) <- partitionEithers tags
-            ;   let g = Graph graph nodes arcs
-            ;   return g
-            }
+endTag:: Parsec.Parsec String () ()
+endTag = Parsec.spaces >> Parsec.string "</graph>"
 
-graphTag:: Parser String
-graphTag=do {
-            ;   spaces
-            ;   string "<graph id=\""
-            ;   name <- many letter <?> "valid id"
-            ;   many (oneOf "\"") <?> "attribute open"
-            ;   spaces
-            ;   string "edgedefault=\""
-            ;   name ++ many letter
-            ;   string "\">" <?> "attribute open"
-            ;   return name
-            }
+graphTag:: Parsec.Parsec String () Tag
+graphTag=do
+  Parsec.spaces
+  Parsec.string "<graph id=\""
+  xs <- multiAttribute
+  Parsec.string "/>"
+  return xs
 
-nodeTag:: Parser Tag
-nodeTag=do  {
-            ;   spaces
-            ;   string "<node id=\""
-            ;   name <- many letter <?> "valid id"
-            ;   string "\"/>" <?> "closing bracket \"/>\""
-            ;   let x = Node name
-            ;   return $ Right x
-            }
+--returns a tupled list of a tags attirubtes.
+multiAttribute:: Parsec.Parsec String () [(String, String)]
+multiAttribute=Parsec.sepBy attribute Parsec.spaces
 
-edgeTag:: Parser Tag
-edgeTag=do  {
-            ;   spaces
-            ;   string "<edge source=\""
-            ;   srcName <- many (letter) <?> "source name"
-            ;   string "\" target=\"" <?> "target name"
-            ;   tarName <- many (letter) <?> "source name"
-            ;   string "\"/>" <?> "closing bracket \"/>\""
-            ;   let y = Arc (srcName, tarName)
-            ;   return $ Left y
-            }
+--parses an attribute from a tag
+attribute::Parsec.Parsec String () (String, String)
+attribute=do
+  x <- alphaNum
+  Parsec.string "=\""
+  y <- alphaNum
+  Parsec.char '\"'
+  return (x, y)
 
--- endGraph:: Parser Tag
--- endGraph=do  {
-            -- ;    x <- string "<\/graph>"
-            -- ;    return x
-            -- }
+alphaNum::Parsec.Parsec String () String
+alphaNum=Parsec.many $ do
+  xs <- (Parsec.letter <|> Parsec.digit)
+  return xs
 
--- tagSort::[Tag]->([Arc],[Node])
--- tagSort [ts]=do{
-  -- ;a <- ArcSort ts
-  -- ;n <- NodeSort ts
-  -- ;return (a,n)
-  -- }
+nodeTag:: Parsec.Parsec String () Tag --[(String, String)]
+nodeTag=do
+  Parsec.spaces >> Parsec.string "<node"
+  xs <- multiAttribute
+  Parsec.string "\">"
+  return $ Right xs
 
--- ArcSort::[Tag] -> [Arc]
--- ArcSort [] = []
--- ArcSort [a:aa]=do
-  -- if(typeOf a == typeOf Arc)then xs <- a
-  -- return xs ++ ArcSort aa
-
--- NodeSort::[Tag] -> [Node]
--- NodeSort [] = []
--- NodeSort [a:aa]=do
-  -- if(typeOf a == typeOf Node)then xs <- a
-  -- return xs ++ NodeSort aa
+edgeTag:: Parsec.Parsec String () Tag --[(String, String)]
+edgeTag=do
+  Parsec.spaces >> Parsec.string "<edge"
+  xs <- multiAttribute
+  Parsec.string "\">"
+  return $ Left xs
