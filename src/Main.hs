@@ -1,76 +1,85 @@
+import Debug.Trace
 import Text.Parsec
+import Text.Parsec (many)
 import Text.Parsec ((<?>))
 import Text.Parsec ((<|>))
 import Data.Typeable
-import Data.Either
 import System.IO
-import Control.Applicative
+import Control.Applicative hiding (many)
 
 main :: IO ()
 main = do
-  let path = "C:\\Users\\testuserignore\\github\\has\\gmlp\\small.graphml.xml"
+  putStrLn "File name:"
+  file <- getLine
+  let path ="graphs/" ++ file ++ ".graphml.xml"
   x <- readFile path
-  let y  = parse findGraph path x
+  let y = parse parseFile path x
   putStrLn $ show y
+  putStrLn "complete"
 
 data Attribute = Attribute (String, String) deriving (Show)
-data Data = Data (String, String) deriving (Show)
-data Tag = Tag [Attribute] [Data] deriving (Show)
-data Key = Key [Attribute] String deriving (Show)
-data Edge = Edge Tag deriving (Show)
-data Node = Node Tag deriving (Show)
-data Graph = Graph  {   attributes::    [Attribute]
-                    ,   nodes::         [Node]
-                    ,   arcs::          [Edge]
-                    ,   subGraph::         [Graph]
-                    }   deriving (Show)
+data Tag = Tag String [Attribute] (Maybe [Tag]) deriving (Show)
+data File= File String [Attribute] [Tag] deriving (Show)
 
-data File = File  {  xml:: [Attribute]
-                  ,  meta:: [Attribute]
-                  ,  keys:: [Key]
-                  ,  graphs:: [Graph]
-                  }  deriving (Show)
+-- data ShortGraph = ShortGraph [Node] [Arc] deriving (Show)
+-- data Node = Node Attribute deriving (Show)
+-- data Arc = Arc (Attribute, Attribute) deriving (Show)
+-- shortenGraph:: File -> ShortGraph
+-- shortenGraph (File _ _ t:_) = shortenHelper t
+--
+-- shortenHelper:: Tag -> ShortGraph
+-- shortenHelper (Tag name _ ts) =
+--   if name "graph" then shortSorter name ts
+--       let ns = foldl ts
 
 attributeParse:: Parsec String () Attribute
-attributeParse=try $ do
-  spaces
-  x <- Main.anyTill "=\""
-  y <- manyTill anyChar (char '"')
+attributeParse=do
+  many1 $ try (oneOf " \n")
+  x <- manyTill anyChar $ try (string "=\"")
+  y <- manyTill anyChar $ try (char '"')
   return $ Attribute (x, y)
 
-dataParse::Parsec String () Data
-dataParse=do
-  many $ oneOf " \n"
-  _ <- string "<data"
-  _ <- Main.anyTill "\""
-  xs <- Main.anyTill "\">"
-  ys <- Main.anyTill "<"
-  _ <- string "/data>"
-  return $ Data (xs,ys)
+tagParse::Parsec String () Tag
+tagParse=try $ do
+  _ <- manyTill anyChar $ try (char '<')
+  ns <- many1 $ try letter
+  if ns == "default"
+  then do
+    char '>'
+    ts <- manyTill anyChar $ try (string "</default>")
+    let bs= [(Attribute ("defVal", ts))]
+    return $ Tag ns bs Nothing
+  else if ns == "data"
+  then do
+    as <- attributeParse
+    char '>'
+    ts <- manyTill anyChar $ (string "</data>")
+    let bs= [as, (Attribute ("val", ts))]
+    return $ Tag ns bs Nothing
+  else do
+    as <- many $ try attributeParse
+    nxt <- anyChar
+    ts <- parseChildren nxt ns
+    return $ Tag ns as ts
 
-tagParse::String -> Parsec String () Tag
-tagParse xs =do
-  _ <-  Main.manyTill $ "<" ++ xs
-  as <- Main.manyTill attributeParse
-  _ <- try $ string "/>" <|> ds <- dataParse
-  manyTill $ "</" ++ xs ++ ">"
-  return $ Tag as ds
+parseChildren::Char -> String -> Parsec String () (Maybe [Tag])
+parseChildren x ns=do
+  if x == '/'
+  then do
+    _ <- char '>'
+    return Nothing
+  else do
+    bs <- try (many tagParse)
+    _ <- many $ try (oneOf " \n")
+    _ <- string $ "</" ++ ns ++ ">"
+    return $ Just bs
+  -- else err "expecting '>' or '/>'"
 
-orData:: Parsec String () Maybe Data
-orData=
-
-keyParse::Parsec String () Key
-keyParse=do
-  _ <- Main.manyTill "<key"
-  as <- attributeParse
-  _ <- try $ string "/>"
-  <|> ds <- (string "<default>" *> many alphaNum <* string "</default>")
-  return $ Key as ds
-
-graphParse:: Parsec String () Graph
-graphParse=do
-  _ <- Main.manyTill "<graph "
-  as <- attributePArse
-
-anyTill::String -> Parsec String () String
-anyTill xs = manyTill anyChar (try $ string xs)
+parseFile:: Parsec String () File
+parseFile=do
+  _ <- manyTill anyChar $ try (string "<?")
+  ns <- string "xml"
+  as <- many $ try attributeParse
+  _ <- string "?>"
+  ts <- many $ try tagParse
+  return $ File ns as ts
