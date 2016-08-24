@@ -1,36 +1,17 @@
-import Debug.Trace
-import Text.Parsec
-import Text.Parsec (many)
-import Text.Parsec ((<?>))
-import Text.Parsec ((<|>))
-import Data.Typeable
-import System.IO
-import Control.Applicative hiding (many)
+module Gmlp
+(
+    Attribute(..)
+,   Tag (..)
+,   File(..)
+,   parseFile
+)where
 
-main :: IO ()
-main = do
-  putStrLn "File name:"
-  file <- getLine
-  let path ="graphs/" ++ file ++ ".graphml.xml"
-  x <- readFile path
-  let y = parse parseFile path x
-  putStrLn $ show y
-  putStrLn "complete"
+import Text.Parsec
+
 
 data Attribute = Attribute (String, String) deriving (Show)
 data Tag = Tag String [Attribute] (Maybe [Tag]) deriving (Show)
 data File= File String [Attribute] [Tag] deriving (Show)
-
--- data ShortGraph = ShortGraph [Node] [Arc] deriving (Show)
--- data Node = Node Attribute deriving (Show)
--- data Arc = Arc (Attribute, Attribute) deriving (Show)
--- shortenGraph:: File -> ShortGraph
--- shortenGraph (File _ _ t:_) = shortenHelper t
---
--- shortenHelper:: Tag -> ShortGraph
--- shortenHelper (Tag name _ ts) =
---   if name "graph" then shortSorter name ts
---       let ns = foldl ts
 
 attributeParse:: Parsec String () Attribute
 attributeParse=do
@@ -54,7 +35,7 @@ tagParse=try $ do
     as <- attributeParse
     char '>'
     ts <- manyTill anyChar $ (string "</data>")
-    let bs= [as, (Attribute ("val", ts))]
+    let bs = [as, (Attribute ("val", ts))]
     return $ Tag ns bs Nothing
   else do
     as <- many $ try attributeParse
@@ -73,7 +54,6 @@ parseChildren x ns=do
     _ <- many $ try (oneOf " \n")
     _ <- string $ "</" ++ ns ++ ">"
     return $ Just bs
-  -- else err "expecting '>' or '/>'"
 
 parseFile:: Parsec String () File
 parseFile=do
