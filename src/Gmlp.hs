@@ -1,17 +1,11 @@
 module Gmlp
-(
-    Attribute(..)
-,   Tag (..)
+(   Tag (..)
 ,   File(..)
 ,   parseFile
 )where
 
 import Text.Parsec
-
-
-data Attribute = Attribute (String, String) deriving (Show)
-data Tag = Tag String [Attribute] (Maybe [Tag]) deriving (Show)
-data File= File String [Attribute] [Tag] deriving (Show)
+import Types
 
 attributeParse:: Parsec String () Attribute
 attributeParse=do
@@ -29,31 +23,31 @@ tagParse=try $ do
     char '>'
     ts <- manyTill anyChar $ try (string "</default>")
     let bs= [(Attribute ("defVal", ts))]
-    return $ Tag ns bs Nothing
+    return $ Tag ns bs []
   else if ns == "data"
   then do
     as <- attributeParse
     char '>'
     ts <- manyTill anyChar $ (string "</data>")
     let bs = [as, (Attribute ("val", ts))]
-    return $ Tag ns bs Nothing
+    return $ Tag ns bs []
   else do
     as <- many $ try attributeParse
     nxt <- anyChar
     ts <- parseChildren nxt ns
     return $ Tag ns as ts
 
-parseChildren::Char -> String -> Parsec String () (Maybe [Tag])
+parseChildren::Char -> String -> Parsec String () [Tag]
 parseChildren x ns=do
   if x == '/'
   then do
     _ <- char '>'
-    return Nothing
+    return []
   else do
     bs <- try (many tagParse)
     _ <- many $ try (oneOf " \n")
     _ <- string $ "</" ++ ns ++ ">"
-    return $ Just bs
+    return bs
 
 parseFile:: Parsec String () File
 parseFile=do
