@@ -10,7 +10,7 @@ shortenFile:: File -> ShortFile
 shortenFile (File _ _ []) = ShortFile []
 shortenFile (File _ _ ts) =ShortFile $ map (shortenGraph) (map filterGraphs $ filter isGraph ts)
   where isGraph (Tag str _ _)=str `elem` ["graph", "graphml"]
-  
+
 filterGraphs:: Tag -> Tag
 filterGraphs tg@(Tag "graph" as ts) = tg
 filterGraphs (Tag "graphml" as ts) = head $ map filterGraphs ts
