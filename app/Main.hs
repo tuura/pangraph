@@ -13,12 +13,10 @@ import Shorten
 main :: IO ()
 main = do
   putStrLn "File name:"
-  file <- getLine
-  let path = file ++ ".graphml"
+  path <- getLine
   x <- readFile path
-  -- let z = [] :: (Either a File)
   let z = parse parseFile path x
-  putStrLn $ show z
+  -- putStrLn $ show z
   putStrLn $ show (shortenFile (head (rights [z])))
   putStrLn "complete"
 
