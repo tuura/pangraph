@@ -1,16 +1,17 @@
 module Types
-(   Attribute(..)
-,   Tag(..)
-,   File(..)
+(  Att(..)
+,  Tag(..)
+,  Root(..)
 ,  Node(..)
 ,  Edge(..)
 ,  ShortGraph(..)
 ,  ShortFile(..)
 )where
 
-data Attribute = Attribute (String, String) deriving (Show)
-data Tag = Tag String [Attribute] [Tag] deriving (Show)
-data File= File String [Attribute] [Tag] deriving (Show)
+data Att = Att (String, String) deriving (Show)
+data Tag = NodeTag String [Att] [Tag]
+          | NodeStr String deriving (Show)
+data Root = Root [Att] Tag deriving (Show)
 
 data Node = Node [Attribute] deriving (Show)
 data Edge = Edge [Attribute] deriving (Show)
