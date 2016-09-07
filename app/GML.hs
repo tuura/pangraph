@@ -6,7 +6,7 @@ import Text.Parsec
 import Data.Either
 
 --My modules
-import Gmlp
+import qualified GmlP as G
 import Types
 import Shorten
 
@@ -15,7 +15,7 @@ main = do
   putStrLn "File name:"
   path <- getLine
   x <- readFile path
-  let z = parse parseFile path x
+  let z = parse G.parseFile path x
   -- putStrLn $ show z
   putStrLn $ show (shortenFile (head (rights [z])))
   putStrLn "complete"

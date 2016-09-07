@@ -2,7 +2,6 @@ module Shorten
 (  shortenFile
 )where
 
-import Gmlp
 import Types
 import Data.List
 

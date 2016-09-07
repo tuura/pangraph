@@ -1,4 +1,4 @@
-module Gmlp
+module GmlP
 (   Tag (..)
 ,   File(..)
 ,   parseFile
@@ -7,7 +7,7 @@ module Gmlp
 import Text.Parsec
 import Types
 
-attributeParse:: Parsec String () Attribute
+attributeParse::Parsec String () Attribute
 attributeParse=do
   many1 $ try (oneOf " \n")
   x <- manyTill anyChar $ try (string "=\"")
