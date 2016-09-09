@@ -3,7 +3,7 @@ This is a Haskell Library for parsing graphs formats e.g. [GraphML](http://graph
 
 *Todo: get a travis build thing*
 
-#Ye be warned, here be bugs
+#Ye be warned, here be bugs and undocumented features/changes.
 
 ##Mission
 
