@@ -1,18 +1,16 @@
 module GmlP
-(   Tag (..)
-,   File(..)
-,   parseFile
+(   parseFile
 )where
 
 import Text.Parsec
 import Types
 
-attributeParse::Parsec String () Attribute
+attributeParse::Parsec String () Att
 attributeParse=do
   many1 $ try (oneOf " \n")
   x <- manyTill anyChar $ try (string "=\"")
   y <- manyTill anyChar $ try (char '"')
-  return $ Attribute (x, y)
+  return $ Att (x, y)
 
 tagParse::Parsec String () Tag
 tagParse=try $ do
@@ -22,20 +20,20 @@ tagParse=try $ do
   then do
     char '>'
     ts <- manyTill anyChar $ try (string "</default>")
-    let bs= [(Attribute ("defVal", ts))]
-    return $ Tag ns bs []
+    let as= [(Att ("defVal", ts))]
+    return $ NodeTag ns as []
   else if ns == "data"
   then do
     as <- attributeParse
     char '>'
     ts <- manyTill anyChar $ (string "</data>")
-    let bs = [as, (Attribute ("val", ts))]
-    return $ Tag ns bs []
+    let bs = [as, (Att ("val", ts))]
+    return $ NodeTag ns bs []
   else do
     as <- many $ try attributeParse
     nxt <- anyChar
     ts <- parseChildren nxt ns
-    return $ Tag ns as ts
+    return $ NodeTag ns as ts
 
 parseChildren::Char -> String -> Parsec String () [Tag]
 parseChildren x ns=do
@@ -49,11 +47,11 @@ parseChildren x ns=do
     _ <- string $ "</" ++ ns ++ ">"
     return bs
 
-parseFile:: Parsec String () File
+parseFile:: Parsec String () Root
 parseFile=do
   _ <- manyTill anyChar $ try (string "<?")
-  ns <- string "xml"
+  _ <- string "xml"
   as <- many $ try attributeParse
   _ <- string "?>"
-  ts <- many $ try tagParse
-  return $ File ns as ts
+  ts <- try tagParse
+  return $ Root as ts

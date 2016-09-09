@@ -8,9 +8,11 @@ module Types
 ,  ShortFile(..)
 )where
 
+type Attribute = Att
+
 data Att = Att (String, String) deriving (Show)
 data Tag = NodeTag String [Att] [Tag]
-          | NodeStr String deriving (Show)
+         | StrTag String deriving (Show)
 data Root = Root [Att] Tag deriving (Show)
 
 data Node = Node [Attribute] deriving (Show)

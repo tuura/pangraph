@@ -1,17 +1,15 @@
 module Main where
 
-import qualified WorkP as W
-import qualified Hxt as H
-
+import WorkP
+import MyXML
 import System.Environment
+import Text.Parsec
+import Data.Either
 
 main :: IO()
 main =do
-  argv <- getArgs
-  H.hxtTest1 argv
-
-
-  --
-  -- t@[src, dst] <- getArgs
-  -- W.parseFile t
-  -- putStrLn "complete"
+  path <- getLine
+  file <- readFile path
+  let z = head $ rights $ [parse fileParse "" file]
+  -- putStrLn $show z
+  putStrLn $show $ shortenFile z

@@ -4,10 +4,6 @@ module MyXML
 
 import Text.Parsec
 import Types
--- import Text.Parsec (<|>)
--- import Control.Applicative hiding (<|>)
-
-
 
 fileParse::Parsec String () Root
 fileParse=do
@@ -24,8 +20,7 @@ tagParse=choice [tagTagParse, strTagParse]
 strTagParse::Parsec String () Tag
 strTagParse=do
   xs <- many1 $ (try alphaNum) <|> oneOf " \n" -- anyChar $ try $ char '<' <|> eof
-  -- ns <- many $ try tagParse
-  return $ TagStr xs
+  return $ StrTag xs
 
 tagTagParse::Parsec String () Tag
 tagTagParse=do
@@ -34,7 +29,7 @@ tagTagParse=do
   as <- many $ attParse
   c <- anyChar
   ns <- tagHelper c
-  return $ TagTag name as ns
+  return $ NodeTag name as ns
 
 tagHelper::Char -> Parsec String () [Tag]
 tagHelper c
@@ -57,7 +52,7 @@ eFunc::Parsec String () [Tag]
 eFunc = do
   str <- manyTill anyChar $ try eof
   -- let ns = []
-  return $ [TagStr str]
+  return $ [StrTag str]
 
 closingTag:: Parsec String () ()
 closingTag=do
