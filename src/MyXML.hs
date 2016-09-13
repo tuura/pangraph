@@ -1,12 +1,12 @@
 module MyXML
-( fileParse
-  )where
+( parseFile
+)where
 
 import Text.Parsec
 import Types
 
-fileParse::Parsec String () Root
-fileParse=do
+parseFile::Parsec String () Root
+parseFile=do
   _ <- string "<?xml"
   as <- many $ try attParse
   _ <- string "?>"
@@ -15,15 +15,15 @@ fileParse=do
   return $ Root as n
 
 tagParse::Parsec String () Tag
-tagParse=choice [tagTagParse, strTagParse]
+tagParse=choice [nodeTagParse, strTagParse]
 
 strTagParse::Parsec String () Tag
 strTagParse=do
   xs <- many1 $ (try alphaNum) <|> oneOf " \n" -- anyChar $ try $ char '<' <|> eof
   return $ StrTag xs
 
-tagTagParse::Parsec String () Tag
-tagTagParse=do
+nodeTagParse::Parsec String () Tag
+nodeTagParse=do
   _ <- char '<'
   name <- many1 $ try alphaNum
   as <- many $ attParse

@@ -1,9 +1,20 @@
 module GmlP
 (   parseFile
+,   shortenFile
 )where
 
 import Text.Parsec
 import Types
+import qualified Shorten as S
+
+shortenFile::Root -> ShortFile
+shortenFile r=S.shortenFile r
+
+parseFile::String -> String -> ShortFile
+parseFile file path=either errFunc shortenFile xml
+  where
+    errFunc _ = ShortFile []
+    xml = parse parseRoot path file
 
 attributeParse::Parsec String () Att
 attributeParse=do
@@ -47,8 +58,8 @@ parseChildren x ns=do
     _ <- string $ "</" ++ ns ++ ">"
     return bs
 
-parseFile:: Parsec String () Root
-parseFile=do
+parseRoot:: Parsec String () Root
+parseRoot=do
   _ <- manyTill anyChar $ try (string "<?")
   _ <- string "xml"
   as <- many $ try attributeParse

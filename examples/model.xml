@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<model class="org.workcraft.plugins.graph.Graph" ref="">
+  <AbstractModel>
+    <property class="java.lang.String" name="title" value="test"/>
+  </AbstractModel>
+  <root class="org.workcraft.dom.math.MathGroup" ref="/">
+    <node class="org.workcraft.plugins.graph.Vertex" ref="v0">
+      <Vertex symbol=""/>
+    </node>
+    <node class="org.workcraft.plugins.graph.Vertex" ref="v1">
+      <Vertex symbol=""/>
+    </node>
+    <node class="org.workcraft.plugins.graph.Vertex" ref="v2">
+      <Vertex symbol=""/>
+    </node>
+    <node class="org.workcraft.dom.math.MathConnection" ref="con0">
+      <MathConnection first="v1" second="v0"/>
+    </node>
+    <node class="org.workcraft.dom.math.MathConnection" ref="con1">
+      <MathConnection first="v0" second="v2"/>
+    </node>
+  </root>
+</model>

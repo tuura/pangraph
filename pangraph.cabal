@@ -14,22 +14,36 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Shorten
-                     , GmlP
-                     , Types
+  exposed-modules:     Types
+                     , Parsers
+                    --  , GmlP
+                    --  , Types
+                    --  , WorkP
+                    --  , MyXML
+  other-modules:       MyXML
+                     , Shorten
                      , WorkP
-                     , MyXML
+                     , GmlP
+                    --  ,
   build-depends:       base >= 4.7 && < 5
                      , parsec
-                     , zip
+                    --  , zip
   default-language:    Haskell2010
 
 executable pangraph
   hs-source-dirs:      app
-  main-is:             GML.hs
+  main-is:             Main.hs
   default-language:    Haskell2010
   ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base >= 4.7 && < 5
                      , parsec
                      , pangraph
-                     , zip
+                    --  , zip
+
+test-suite pangraph-test
+   type:             exitcode-stdio-1.0
+   main-is:          Test.hs
+   build-depends:    base >= 4.8 && < 5,
+                     pangraph
+   default-language: Haskell2010
+   GHC-options:      -Wall -fwarn-tabs -O2

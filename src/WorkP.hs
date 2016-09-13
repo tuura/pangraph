@@ -3,11 +3,17 @@ module WorkP
 , shortenFile
 )where
 
+import Text.Parsec
 import Types
 import Data.List
+import Data.Either
+import qualified MyXML as M
 
-parseFile::String -> ShortFile
-parseFile=undefined
+parseFile::String -> String -> ShortFile
+parseFile file path=either errFunc shortenFile xml
+  where
+    errFunc _ = ShortFile []
+    xml = parse M.parseFile path file
 
 shortenFile::Root -> ShortFile
 shortenFile (Root _ t)=ShortFile y
