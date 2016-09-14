@@ -3,6 +3,7 @@ module PubTypes
 ,  Edge(..)
 ,  ShortGraph(..)
 ,  ShortFile(..)
+,  Att(..)
 ) where
 
 import Types
