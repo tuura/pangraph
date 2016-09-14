@@ -14,7 +14,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Types
+  exposed-modules:     PubTypes
                      , Parsers
                     --  , GmlP
                     --  , Types
@@ -24,7 +24,7 @@ library
                      , Shorten
                      , WorkP
                      , GmlP
-                    --  ,
+                     , Types
   build-depends:       base >= 4.7 && < 5
                      , parsec
                     --  , zip

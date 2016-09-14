@@ -1,7 +1,7 @@
 module Parsers
 ( parseFile
-, pathParser
-, parserMultiplexer
+-- , pathParser
+-- , parserMultiplexer
 )where
 
 import Data.List
