@@ -2,8 +2,8 @@
 
 #pangraph
 This is a Haskell Library for parsing graphs formats e.g. [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](www.workcraft.org).
-I aiming to produce a program which will parse many graph.  
-With the  aim of helping people who are building programs that use mathematical graphs, multiple formats are less of an issue.
+I aiming to produce a program which will parse any undirected graph.  
+With the aim of helping people who are building programs that use mathematical graphs, multiple formats are less of an issue.
 
 ##How do I use it?
 The pangraph library exports exactly one function from `Parsers.hs` and the types used from `PubTypes.hs`.  
