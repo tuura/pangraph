@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/thisiswhereitype/pangraph.svg?branch=master)](https://travis-ci.org/thisiswhereitype/pangraph)
+
 #pangraph
 This is a Haskell Library for parsing graphs formats e.g. [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](www.workcraft.org).
 I aiming to produce a program which will parse many graph.  
