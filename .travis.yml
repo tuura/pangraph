@@ -25,7 +25,7 @@ matrix:
 
 before_script:
     - stack setup
-    - stack exec --ghc --version
+    - stack exec -- ghc --version
     - stack build
 
 script:
