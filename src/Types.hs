@@ -10,12 +10,12 @@ module Types
 
 type Attribute = Att
 
-data Att = Att (String, String) deriving (Show)
+data Att = Att (String, String) deriving (Show, Eq)
 data Tag = NodeTag String [Att] [Tag]
          | StrTag String deriving (Show)
 data Root = Root [Att] Tag deriving (Show)
 
-data Node = Node [Attribute] deriving (Show)
-data Edge = Edge [Attribute] deriving (Show)
-data ShortGraph = ShortGraph [Node] [Edge] deriving (Show)
-data ShortFile = ShortFile [ShortGraph] deriving (Show)
+data Node = Node [Attribute] deriving (Show, Eq)
+data Edge = Edge [Attribute] deriving (Show, Eq)
+data ShortGraph = ShortGraph [Node] [Edge] deriving (Show, Eq)
+data ShortFile = ShortFile [ShortGraph] deriving (Show, Eq)

@@ -16,10 +16,6 @@ library
   hs-source-dirs:      src
   exposed-modules:     PubTypes
                      , Parsers
-                    --  , GmlP
-                    --  , Types
-                    --  , WorkP
-                    --  , MyXML
   other-modules:       MyXML
                      , Shorten
                      , WorkP
@@ -27,7 +23,7 @@ library
                      , Types
   build-depends:       base >= 4.7 && < 5
                      , parsec
-                    --  , zip
+                     , zip
   default-language:    Haskell2010
 
 executable pangraph
@@ -38,7 +34,7 @@ executable pangraph
   build-depends:       base >= 4.7 && < 5
                      , parsec
                      , pangraph
-                    --  , zip
+                     , zip
 
 test-suite pangraph-test
    type:             exitcode-stdio-1.0
