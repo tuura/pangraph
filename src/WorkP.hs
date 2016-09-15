@@ -12,7 +12,7 @@ import qualified MyXML as M
 parseFile::String -> String -> ShortFile
 parseFile file path=either errFunc shortenFile xml
   where
-    errFunc _ = ShortFile []
+    errFunc _ = error $ show xml
     xml = parse M.parseFile path file
 
 shortenFile::Root -> ShortFile

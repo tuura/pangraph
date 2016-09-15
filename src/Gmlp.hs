@@ -13,7 +13,7 @@ shortenFile r=S.shortenFile r
 parseFile::String -> String -> ShortFile
 parseFile file path=either errFunc shortenFile xml
   where
-    errFunc _ = ShortFile []
+    errFunc _ = error $ show xml
     xml = parse parseRoot path file
 
 attributeParse::Parsec String () Att
