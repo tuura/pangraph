@@ -1,7 +1,6 @@
 module Main where
 
-import qualified Parsers as P
-import PubTypes
+import Pangraph
 
 main :: IO ()
 main = do
@@ -16,10 +15,10 @@ main = do
 
 test::(String, ShortFile) -> IO()
 test(path, example) =do
-    file <- readFile path
-    let result = P.parseFile file path []
+    file <- readGraph path []
+    let result = parseGraph file
     if result /= example
       then
-        error $ "Test failed on: " ++ show path-- ++ show result $ ++ "\n does not equal\n" $ ++ $show example
+        error $ "Test failed on: " ++ show path
       else
-        putStrLn "Test Passed"
+        putStrLn $ "Test passed on: " ++ show path 

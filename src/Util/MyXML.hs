@@ -1,9 +1,9 @@
-module MyXML
+module Util.MyXML
 ( parseFile
 )where
 
 import Text.Parsec
-import Types
+import Util.Types
 
 parseFile::Parsec String () Root
 parseFile=do

@@ -1,18 +1,13 @@
 module Main where
 
 import System.IO
-import Parsers as P
-
+import Pangraph as P
 
 main::IO()
 main=do
   putStrLn "File name:"
   path <- getLine
-  putStrLn path
-  file <- readFile path
-  -- let t =P.pathParser path
-  -- putStrLn $ t
-  -- putStrLn $ show $ P.parserMultiplexer t
-  let z =  P.parseFile file path []
+  w <- P.readGraph path []
+  let z = P.parseGraph w
   putStrLn $ show z
   putStrLn "complete"

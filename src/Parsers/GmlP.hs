@@ -1,20 +1,20 @@
-module GmlP
+module Parsers.GmlP
 (   parseFile
 ,   shortenFile
 )where
 
 import Text.Parsec
-import Types
-import qualified Shorten as S
+import Util.Types
+import qualified Parsers.Shorten as S
 
 shortenFile::Root -> ShortFile
 shortenFile r=S.shortenFile r
 
-parseFile::String -> String -> ShortFile
+parseFile::String -> FilePath -> ShortFile
 parseFile file path=either errFunc shortenFile xml
   where
-    errFunc _ = error $ show xml
-    xml = parse parseRoot path file
+    errFunc _ = error $ show xml ++ show file
+    xml = parse parseRoot file path
 
 attributeParse::Parsec String () Att
 attributeParse=do

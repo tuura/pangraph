@@ -1,4 +1,4 @@
-module Types
+module Util.Types
 (  Att(..)
 ,  Tag(..)
 ,  Root(..)
@@ -8,14 +8,14 @@ module Types
 ,  ShortFile(..)
 )where
 
-type Attribute = Att
+-- type Attribute = Att
 
 data Att = Att (String, String) deriving (Show, Eq)
 data Tag = NodeTag String [Att] [Tag]
          | StrTag String deriving (Show)
 data Root = Root [Att] Tag deriving (Show)
 
-data Node = Node [Attribute] deriving (Show, Eq)
-data Edge = Edge [Attribute] deriving (Show, Eq)
+data Node = Node [Att] deriving (Show, Eq)
+data Edge = Edge [Att] deriving (Show, Eq)
 data ShortGraph = ShortGraph [Node] [Edge] deriving (Show, Eq)
 data ShortFile = ShortFile [ShortGraph] deriving (Show, Eq)

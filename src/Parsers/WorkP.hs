@@ -1,19 +1,19 @@
-module WorkP
+module Parsers.WorkP
 ( parseFile
 , shortenFile
 )where
 
 import Text.Parsec
-import Types
+import Util.Types
 import Data.List
 import Data.Either
-import qualified MyXML as M
+import qualified Util.MyXML as M
 
 parseFile::String -> String -> ShortFile
 parseFile file path=either errFunc shortenFile xml
   where
     errFunc _ = error $ show xml
-    xml = parse M.parseFile path file
+    xml = parse M.parseFile file path
 
 shortenFile::Root -> ShortFile
 shortenFile (Root _ t)=ShortFile y

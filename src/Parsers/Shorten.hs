@@ -1,8 +1,8 @@
-module Shorten
+module Parsers.Shorten
 (  shortenFile
 )where
 
-import Types
+import Util.Types
 import Data.List
 
 shortenFile:: Root -> ShortFile
