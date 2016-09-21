@@ -22,8 +22,9 @@ data ParseInstance = ParseInstance FilePath File (String -> String -> ShortFile)
 And the following functions:
 
 ```
-readGraph::FilePath -> Args ->IO (ParseInstance)
+readGraph::FilePath -> Args -> IO (ParseInstance)
 parseGraph::ParseInstance-> ShortFile
+writeGraph::FilePath -> ShortFile -> IO ()
 ```
 
 The first five types above are define a graph. A file will parse one graph, which contains and list of edges and nodes.
@@ -63,7 +64,7 @@ complete
 ##Graph support  
 
 ###[GraphML](http://graphml.graphdrawing.org/)
-Graphml files are currently fully implemented.
+Graphml files are currently parsing and can be written to from ShortFile format.
 
 ###[Workcraft](www.workcraft.org)
-Workcraft files need to be unzipped manually and given a path to the `model.xml` file that was unzipped.
+Workcraft files need to be unzipped manually and given a path to the `model.xml` file that was unzipped. Currently writing is unimplemented.

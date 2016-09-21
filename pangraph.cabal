@@ -16,17 +16,21 @@ library
   hs-source-dirs:      src
   exposed-modules:     Pangraph
   other-modules:       Parsers.GmlP
+                     , Parsers.Discrim
                      , Parsers.Shorten
                      , Parsers.WorkP
                      , Util.MyXML
                      , Util.Types
                      , Util.MyZip
+                     , Writers.Discrim
+                     , Writers.GmlW
   build-depends:       base >= 4.7 && < 5
                      , parsec
                      , zip
                      , path
                      , path-io
                      , directory
+                     , split
   default-language:    Haskell2010
 
 executable pangraph
@@ -38,9 +42,9 @@ executable pangraph
                      , pangraph
 
 test-suite pangraph-test
-   type:             exitcode-stdio-1.0
-   main-is:          Test.hs
-   build-depends:    base >= 4.8 && < 5,
-                     pangraph
-   default-language: Haskell2010
-   GHC-options:      -Wall -fwarn-tabs -O2
+   type:               exitcode-stdio-1.0
+   main-is:            Test.hs
+   build-depends:      base >= 4.8 && < 5,
+                       pangraph
+   default-language:   Haskell2010
+   GHC-options:        -Wall -fwarn-tabs -O2

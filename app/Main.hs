@@ -10,4 +10,5 @@ main=do
   w <- P.readGraph path []
   let z = P.parseGraph w
   putStrLn $ show z
+  P.writeGraph "temp\\test.graphml" z
   putStrLn "complete"
