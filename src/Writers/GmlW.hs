@@ -8,6 +8,11 @@ import System.Directory
 
 writeGraph::MyFile -> IO ()
 -- writeGraph=undefined
+writeGraph(MyFile [] fileName graph)=do
+  let f = createText graph
+  -- putStrLn $ "Writing to: " ++ fileName
+  writeFile (tail fileName) f
+
 writeGraph(MyFile dir fileName graph)=do
   dirExsist <- doesDirectoryExist dir
   if not (dirExsist)
@@ -15,6 +20,7 @@ writeGraph(MyFile dir fileName graph)=do
     else
       do
         let f = createText graph
+        -- putStrLn $ "Writing to: "++ dir ++ "@" ++ fileName
         writeFile (dir ++ fileName) f
 
 createText::ShortFile -> String

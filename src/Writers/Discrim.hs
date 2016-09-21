@@ -12,15 +12,9 @@ writeGraph path' graph=writeIt file
   where
     writeIt = disc file
     file = MyFile dir name graph
-    dir =(concat $ intersperse "\\" $ init $ S.splitOn "\\" path) ++ "\\"
-    name = reverse.takeWhile (/='\\') $ reverse path
+    dir =(concat $ intersperse "/" $ init $ S.splitOn "\\" path)
+    name = "/" ++ (reverse.takeWhile (/='\\') $ reverse path)
     path = santizeDir path'
-
--- fileParser::FilePath -> String
--- fileParser str=reverse.takeWhile (/='\\') $ reverse str
---
--- dirParser::FilePath -> String
--- dirParser str =
 
 disc::MyFile -> (MyFile -> IO())
 disc (MyFile _ name _)
@@ -29,6 +23,7 @@ disc (MyFile _ name _)
   |otherwise = error $ "Unrecognized file type: " ++ show name
   where
     fileType = reverse.takeWhile (/='.') $ reverse name
+
 santizeDir::FilePath -> FilePath
 santizeDir [] = []
 santizeDir path
