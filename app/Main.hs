@@ -5,10 +5,11 @@ import Pangraph as P
 
 main::IO()
 main=do
-  putStrLn "File name:"
-  path <- getLine
-  w <- P.readGraph path []
+  putStrLn "Source file:"
+  source <- getLine
+  w <- P.readGraph source []
   let z = P.parseGraph w
-  putStrLn $ show z
-  P.writeGraph "temp\\test.graphml" z
+  putStrLn "Destination:"
+  dest <- getLine
+  P.writeGraph dest z
   putStrLn "complete"

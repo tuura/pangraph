@@ -4,12 +4,15 @@ import Pangraph
 
 main :: IO ()
 main = do
+  putStrLn "*Parsing Test"
   parseTest $head parseTests
   parseTest $parseTests !! 1
-  putStrLn "*Parse tests passed."
+  putStrLn "*Parse tests passed\n"
+  putStrLn "*Writing Test"
   writeTest $ head writeTests
   writeTest $ writeTests !! 1
-  putStrLn "*Write tests passed."
+  putStrLn "*Write tests passed\n"
+  putStrLn "--------Tests Passed--------"
   where
     parseTests = zip parsePaths examples
     writeTests = zip writePaths examples
@@ -27,7 +30,7 @@ parseTest(path, example) =do
       then
         error $ "Test failed on: " ++ show path
       else
-        putStrLn $ "Test passed on: " ++ show path
+        putStrLn $ "Test passed on: " ++ path
 
 writeTest::(String, ShortFile) -> IO()
 writeTest (path, g)=do

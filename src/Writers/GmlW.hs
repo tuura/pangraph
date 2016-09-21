@@ -7,10 +7,9 @@ import Util.Types
 import System.Directory
 
 writeGraph::MyFile -> IO ()
--- writeGraph=undefined
 writeGraph(MyFile [] fileName graph)=do
   let f = createText graph
-  -- putStrLn $ "Writing to: " ++ fileName
+  -- putStrLn $ "Writing to: " ++ [] ++ "@" ++ fileName
   writeFile (tail fileName) f
 
 writeGraph(MyFile dir fileName graph)=do
@@ -56,4 +55,4 @@ writeAtt (Att (a,b))= " " ++ a ++ "=\"" ++ b ++ "\""
 
 --where n is the level of indentation.
 getIndent::Int -> String
-getIndent n = take (4*n) $ repeat ' '
+getIndent n = take (2*n) $ repeat ' '
