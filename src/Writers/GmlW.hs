@@ -1,18 +1,22 @@
 module Writers.GmlW
-( writeGraph
+( writeGraph'
 ) where
 
 import System.IO
 import Util.Types
 import System.Directory
 
-writeGraph::MyFile -> IO ()
-writeGraph(MyFile [] fileName graph)=do
+-- Calls other functions here to create text.
+
+--The version is for relative paths in current dir.
+writeGraph'::MyFile -> IO ()
+writeGraph'(MyFile [] fileName graph)=do
   let f = createText graph
   -- putStrLn $ "Writing to: " ++ [] ++ "@" ++ fileName
   writeFile (tail fileName) f
-
-writeGraph(MyFile dir fileName graph)=do
+-- This version is for dir either Absolute or Relative.
+-- Will error if dir does not exsit.
+writeGraph'(MyFile dir fileName graph)=do
   dirExsist <- doesDirectoryExist dir
   if not (dirExsist)
     then error $ "directory not found: \n" ++ dir
@@ -22,10 +26,11 @@ writeGraph(MyFile dir fileName graph)=do
         -- putStrLn $ "Writing to: "++ dir ++ "@" ++ fileName
         writeFile (dir ++ fileName) f
 
+-- Unwrapper for Shortfile Type
 createText::ShortFile -> String
--- createText=undefined
 createText (ShortFile gs)=createText' $ head gs
 
+-- Adds strings from lsits with and functions and adds relavant identation by partially applying functions.
 createText'::ShortGraph -> String
 createText' (ShortGraph ns es)=(concat strings) ++ closingTags
   where
@@ -35,6 +40,7 @@ createText' (ShortGraph ns es)=(concat strings) ++ closingTags
     nodes = concat $ map (writeNode 2) $ ns
     closingTags = getIndent 1 ++ "</graph>\n" ++ "</graphml>"
 
+-- All of these return strings, the are called partially applied with the indentation from createText'.
 writeHeader::Int -> String
 writeHeader n="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 

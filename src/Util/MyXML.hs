@@ -5,6 +5,11 @@ module Util.MyXML
 import Text.Parsec
 import Util.Types
 
+-- Parses a XML format into a rose tree structure, it must be called using parsec's parse.
+-- The resuting structure should be filtered to allow for a ShortGraph to be produced.
+-- Of similar vein to GmlP.hs
+-- Except the use to tagParse looking for multiple parsers.
+
 parseFile::Parsec String () Root
 parseFile=do
   _ <- string "<?xml"
@@ -14,8 +19,10 @@ parseFile=do
   n <- tagParse
   return $ Root as n
 
+
 tagParse::Parsec String () Tag
 tagParse=choice [nodeTagParse, strTagParse]
+
 
 strTagParse::Parsec String () Tag
 strTagParse=do

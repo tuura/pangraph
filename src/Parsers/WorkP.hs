@@ -9,12 +9,14 @@ import Data.List
 import Data.Either
 import qualified Util.MyXML as M
 
+-- applies the parser and handles parseErrors
 parseFile::String -> String -> ShortFile
 parseFile file path=either errFunc shortenFile xml
   where
     errFunc _ = error $ show xml
     xml = parse M.parseFile file path
 
+-- finds the graph in the tags, filters out anything not needed, casts to the correct types and returns a ShortFile.
 shortenFile::Root -> ShortFile
 shortenFile (Root _ t)=ShortFile y
   where
@@ -32,10 +34,9 @@ shortenFile (Root _ t)=ShortFile y
 
 --Filters the list of tags into edges and nodes.
 filterGraph::Tag -> Tag
--- filterGraph t@(NodeTag "node" _ _)=t
 filterGraph t@(NodeTag n as ts)=NodeTag n as tss
   where
-    tss = map filterGraph $ filter isRel ts
+    tss = map filterGraph $ filter isRelevant ts
 
 --Returns the list of children of the graph root
 findGraph::Tag -> Tag
@@ -46,6 +47,8 @@ findGraph (NodeTag _ _ ts) = head $ map findGraph ts
 sortTags::Tag -> [Tag]
 sortTags (NodeTag n as ts)=map adaptTag ts
 
+-- Renames all the attributes and Tag names to allow some code to be reused.
+-- but it must get infomation from a tag and the child so a few helper functions are called.
 adaptTag::Tag -> Tag
 adaptTag t@(NodeTag n as ts)=NodeTag nn asn []
   where
@@ -58,8 +61,8 @@ adaptTag t@(NodeTag n as ts)=NodeTag nn asn []
 renameAtt::[Att] -> [Att]
 renameAtt as=map (\(Att (a,b))-> Att (translate a, b)) as
 
+-- filters the attributes to be added to a different type.
 getChildAtt::Tag -> [Att]
-getChildAtt (StrTag str ) = [Att(str,"WWWWWWWWW")]
 getChildAtt (NodeTag _ as _)=filter'
   where
     filter' =filter myBool' as
@@ -70,16 +73,17 @@ getChildName::Tag -> String
 getChildName (NodeTag str _ _) = str
 getChildName (StrTag str )= str
 
---The following functions are intended to generalize
---the creating of this module.
+--The following functions are intended to generalize the creation of this module.
 isRoot:: Tag -> Bool
 isRoot (NodeTag str _ _)= str == "root"
 isRoot (StrTag _)=False
 
-isRel:: Tag -> Bool
-isRel (NodeTag str _ _)= str `elem` ["model", "node", "root", "MathConnection", "Vertex"]
-isRel (StrTag _)=False
+-- Whether any of its chidren will contain needed infomation
+isRelevant:: Tag -> Bool
+isRelevant (NodeTag str _ _)= str `elem` ["model", "node", "root", "MathConnection", "Vertex"]
+isRelevant (StrTag _)=False
 
+-- Changes all the names to be similar.
 translate::String -> String
 translate xs
   |xs == "MathConnection" = "edge"
