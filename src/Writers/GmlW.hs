@@ -16,15 +16,19 @@ writeGraph'(MyFile [] fileName graph)=do
   writeFile (tail fileName) f
 -- This version is for dir either Absolute or Relative.
 -- Will error if dir does not exsit.
-writeGraph'(MyFile dir fileName graph)=do
+writeGraph'(MyFile dir' fileName graph)=do
+  let dir = normalize dir'
   dirExsist <- doesDirectoryExist dir
   if not (dirExsist)
-    then error $ "directory not found: \n" ++ dir
+    then error $ "directory not found: " ++ dir
     else
       do
         let f = createText graph
         -- putStrLn $ "Writing to: "++ dir ++ "@" ++ fileName
         writeFile (dir ++ fileName) f
+  where
+    normalize x= if head x == '/' then tail x
+      else x
 
 -- Unwrapper for Shortfile Type
 createText::ShortFile -> String

@@ -45,10 +45,11 @@ pathParser str=reverse.takeWhile (/='.') $ reverse str
 
 -- This decides whether to read as plain text or maybe extract form zip.
 myReadFile::FilePath -> IO (String)
-myReadFile path
+myReadFile path'
   |fileType == "graphml" = readFile path
   |fileType == "xml" = readFile path
   -- |fileType == "work" = Z.getFile path "model.xml"
   |otherwise = error $ "unsupported extension: ." ++ fileType
   where
     fileType = pathParser path
+    path = if  head path' == '/' then tail path' else path'
