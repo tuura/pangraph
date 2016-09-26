@@ -2,12 +2,12 @@ module Util.MyZip
 ( getFile
 ) where
 
-import System.IO
-import Codec.Archive.Zip
-import System.Directory
-import Path ((</>))
-import Path
-import Path.IO
+-- import System.IO
+-- import Codec.Archive.Zip
+-- import System.Directory
+-- import Path ((</>))
+-- import Path
+-- import Path.IO
 
 -- Current issue is with getting Path types to match.
 -- The function is trying to extract a given entry from a given archive.

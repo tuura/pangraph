@@ -1,5 +1,5 @@
 name:                pangraph
-version:             0.1.1.1
+version:             0.1.1.2
 synopsis:            A set of parsers for xml like graph languages.
 description:         Please see README.md
 homepage:            https://github.com/thisiswhereitype/pangraph#readme
@@ -26,9 +26,9 @@ library
                      , Writers.GmlW
   build-depends:       base >= 4.7 && < 5
                      , parsec
-                     , zip
-                     , path
-                     , path-io
+                    --  , zip
+                    --  , path
+                    --  , path-io
                      , directory
                      , split
   default-language:    Haskell2010
