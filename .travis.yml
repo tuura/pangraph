@@ -8,10 +8,10 @@ cache:
 
 matrix:
     include:
-        - os: osx
-          before_install:
-              - brew update
-              - brew install haskell-stack
+        # - os: osx
+        #   before_install:
+        #       - brew update
+        #       - brew install haskell-stack
 
         - os: linux
           addons:
