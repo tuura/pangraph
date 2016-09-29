@@ -1,7 +1,7 @@
 module Main where
 
+import qualified Pangraph as P
 import System.IO
-import Pangraph as P
 
 main::IO()
 main=do

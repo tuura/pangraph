@@ -35,7 +35,7 @@ library
 
 executable pangraph
   hs-source-dirs:      app
-  main-is:             Main.hs
+  main-is:             ReadingOnly.hs
   default-language:    Haskell2010
   ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base >= 4.7 && < 5
