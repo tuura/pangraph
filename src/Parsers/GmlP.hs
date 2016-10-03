@@ -25,7 +25,9 @@ parseFile file path=either errFunc shortenFile xml
 -- Parses an attribute: " id=\"098\""
 attributeParse::Parsec String () Att
 attributeParse=do
-  many1 $ try (oneOf " \n")
+  many1 $ try $ choice [string " ", myEOL]
+  -- _ <- many $ choice [string " ", myEOL]
+
   x <- manyTill anyChar $ try (string "=\"")
   y <- manyTill anyChar $ try (char '"')
   return $ Att (x, y)
@@ -65,7 +67,7 @@ parseChildren x ns=do
     return []
   else do
     bs <- try (many tagParse)
-    _ <- many $ try (oneOf " \n")
+    _ <- many $ choice [string " ", myEOL]
     _ <- string $ "</" ++ ns ++ ">"
     return bs
 
@@ -78,3 +80,6 @@ parseRoot=do
   _ <- string "?>"
   ts <- try tagParse
   return $ Root as ts
+
+myEOL::Parsec String () String
+myEOL=try $ choice [string "\n", string "\r\n", string "\n"]
