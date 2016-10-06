@@ -26,8 +26,8 @@ tagParse=choice [nodeTagParse, strTagParse]
 
 strTagParse::Parsec String () Tag
 strTagParse=do
-  xs <- many1 $ (try alphaNum) <|> oneOf " \n" -- anyChar $ try $ char '<' <|> eof
-  return $ StrTag xs
+  xs <- many1 $ try $ choice [myAlphaNum, string " ", myEOL]
+  return $ StrTag $ concat xs
 
 nodeTagParse::Parsec String () Tag
 nodeTagParse=do
@@ -69,7 +69,15 @@ closingTag=do
 
 attParse::Parsec String () Att
 attParse=do
-  many1 $ try (oneOf " \n")
+  _ <- many1 $ try $ choice [string " ", myEOL]
   x <- manyTill anyChar $ try (string "=\"")
   y <- manyTill anyChar $ try (char '"')
   return $ Att (x ,y)
+
+myEOL::Parsec String () String
+myEOL=try $ choice [string "\n", string "\r\n", string "\n"]
+
+myAlphaNum::Parsec String () String
+myAlphaNum=do
+  x <- try $ many1 $ oneOf "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  return x

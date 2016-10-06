@@ -1,5 +1,5 @@
 name:                pangraph
-version:             0.1.1.3
+version:             0.1.1.4
 synopsis:            A set of parsers for xml like graph languages.
 description:         Please see README.md
 homepage:            https://github.com/thisiswhereitype/pangraph#readme
