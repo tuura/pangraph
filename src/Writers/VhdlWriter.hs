@@ -32,6 +32,7 @@ createEntity ns =   "ENTITY Graph IS\n"
                  ++ "\tPORT (\n"
                  ++ "\t\tCLK\t: IN\tstd_logic;\n"
                  ++ "\t\tRST\t: IN\tstd_logic;\n"
+                 ++ "\t\tEN\t: IN\tstd_logic;\n"
                  ++ "\t\tDIN\t: IN\tstd_logic_vector(0 to " ++ show (nNodes-1) ++ ");\n"
                  ++ "\t\tDOUT\t: OUT\tstd_logic_vector(0 to " ++ show (nNodes-1) ++ "));\n"
                  ++ "END Graph;\n\n"
@@ -47,7 +48,7 @@ openArchitecture (ShortGraph ns es) = do
     open ++ register ++ sigs ++ begin
 
 closeArchitecture :: String
-closeArchitecture = "END Graph_circuit;"
+closeArchitecture = "\nEND Graph_circuit;"
 
 bindWiresIn :: ShortGraph -> String
 bindWiresIn (ShortGraph ns es) = getStructure ns ns es
@@ -74,6 +75,7 @@ createRegister =   "\tCOMPONENT Register IS\n"
                 ++ "\t\tPORT (\n"
                 ++ "\t\t\tCLK\t: IN\tstd_logic;\n"
                 ++ "\t\t\tRST\t: IN\tstd_logic;\n"
+                ++ "\t\t\tEN\t: IN\tstd_logic;\n"
                 ++ "\t\t\tD\t: IN\tstd_logic;\n"
                 ++ "\t\t\tQ\t: OUT\tstd_logic\n"
                 ++ "\t\t);\n"
@@ -85,6 +87,7 @@ createRegisterGeneric n =   "\tCOMPONENT Register IS\n"
                          ++ "\t\tPORT (\n"
                          ++ "\t\t\tCLK\t\t: IN\tstd_logic;\n"
                          ++ "\t\t\tRST\t\t: IN\tstd_logic;\n"
+                         ++ "\t\t\tEN\t\t: IN\tstd_logic;\n"
                          ++ "\t\t\tDATA_IN\t\t: IN\tstd_logic_vector(N-1 downto 0);\n"
                          ++ "\t\t\tDATA_OUT\t: OUT\tstd_logic_vector(N-1 downto 0)\n"
                          ++ "\t\t);\n"
@@ -105,6 +108,7 @@ bindRegister :: NodeName -> Int -> String
 bindRegister name i =    "\tREG_" ++ name ++ " : Register PORT MAP (\n"
                       ++ "\t\tCLK\t=>\tCLK,\n"
                       ++ "\t\tRST\t=>\tRST,\n"
+                      ++ "\t\tEN\t=>\tEN,\n"
                       ++ "\t\tD\t=>\tdata_in(" ++ show i ++ "),\n"
                       ++ "\t\tQ\t=>\tdata_out(" ++ show i ++ "));\n"
 
