@@ -2,6 +2,7 @@ module Pangraph
 ( parseGraph
 , readGraph
 , writeGraph
+, writeVHDL
 , ParseInstance(..)
 , ShortGraph(..)
 , ShortFile(..)
@@ -12,3 +13,4 @@ module Pangraph
 
 import Parsers.Discrim
 import Writers.Discrim
+import Writers.VhdlWriter
