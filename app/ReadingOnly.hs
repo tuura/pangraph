@@ -10,3 +10,8 @@ main = do
   graph <- P.readGraph srcPath []
   putStrLn $ show $ P.parseGraph graph
   putStrLn "Complete"
+  let vhdl = P.writeVHDL $ P.parseGraph graph
+  putStrLn "VHDL output path:"
+  vhdlPath <- getLine
+  writeFile vhdlPath vhdl
+  putStrLn "Complete"

@@ -9,14 +9,15 @@ type NodeIndex = Int
 
 writeVHDL :: ShortFile -> String
 writeVHDL (ShortFile (g:gs)) = do
-    let library     = createLibrary
+    let stats       = "-- Nodes: " ++ show (nodeCount g) ++ " - Edges: " ++ show (edgeCount g) ++ "\n"
+        library     = createLibrary
         entity      = createEntity (getNodes g)
         archOpen    = openArchitecture g
         regs        = "\t-- Registers\n" ++ bindRegisters (getNodes g) 0
         wiresIn     = "\t-- Wire connections: inputs\n" ++ bindWiresIn g
         wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (getNodes g)) -1)
         archClose   = closeArchitecture
-    library ++ entity ++ archOpen ++ regs ++ wiresIn ++ wiresOut ++ archClose
+    stats ++ library ++ entity ++ archOpen ++ regs ++ wiresIn ++ wiresOut ++ archClose
 
 parseGraph :: ShortGraph -> Int
 parseGraph (ShortGraph ns _) = length ns
@@ -33,8 +34,8 @@ createEntity ns =   "ENTITY Graph IS\n"
                  ++ "\t\tCLK\t: IN\tstd_logic;\n"
                  ++ "\t\tRST\t: IN\tstd_logic;\n"
                  ++ "\t\tEN\t: IN\tstd_logic;\n"
-                 ++ "\t\tDIN\t: IN\tstd_logic_vector(0 to " ++ show (nNodes-1) ++ ");\n"
-                 ++ "\t\tDOUT\t: OUT\tstd_logic_vector(0 to " ++ show (nNodes-1) ++ "));\n"
+                 ++ "\t\tDIN\t: IN\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
+                 ++ "\t\tDOUT\t: OUT\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0));\n"
                  ++ "END Graph;\n\n"
                  where
                      nNodes = length ns
@@ -71,7 +72,7 @@ getInput []     = ";\n"
 getInput (ni:nis) = "\n\t\t\tOR data_out(" ++ show ni ++ ")" ++ getInput nis
 
 createRegister :: String
-createRegister =   "\tCOMPONENT Register IS\n"
+createRegister =   "\tCOMPONENT ffd IS\n"
                 ++ "\t\tPORT (\n"
                 ++ "\t\t\tCLK\t: IN\tstd_logic;\n"
                 ++ "\t\t\tRST\t: IN\tstd_logic;\n"
@@ -82,7 +83,7 @@ createRegister =   "\tCOMPONENT Register IS\n"
                 ++ "\tEND COMPONENT;\n\n"
 
 createRegisterGeneric :: Int -> String
-createRegisterGeneric n =   "\tCOMPONENT Register IS\n"
+createRegisterGeneric n =   "\tCOMPONENT Register_gen IS\n"
                          ++ "\t\tgeneric (N : integer := " ++ show n ++ ");\n"
                          ++ "\t\tPORT (\n"
                          ++ "\t\t\tCLK\t\t: IN\tstd_logic;\n"
@@ -96,8 +97,8 @@ createRegisterGeneric n =   "\tCOMPONENT Register IS\n"
 createSignals :: [Node] -> String
 createSignals ns = do
     let nRegs   = length ns
-        sigsIn  = "\tSIGNAL data_in  : STD_LOGIC_VECTOR(0 to " ++ show (nRegs-1) ++ ");\n"
-        sigsOut = "\tSIGNAL data_out : STD_LOGIC_VECTOR(0 to " ++ show (nRegs-1) ++ ");\n\n"
+        sigsIn  = "\tSIGNAL data_in  : STD_LOGIC_VECTOR(" ++ show (nRegs-1) ++ " downto 0);\n"
+        sigsOut = "\tSIGNAL data_out : STD_LOGIC_VECTOR(" ++ show (nRegs-1) ++ " downto 0);\n\n"
     sigsIn ++ sigsOut
 
 bindRegisters :: [Node] -> Int -> String
@@ -105,7 +106,7 @@ bindRegisters [] _     = "\n"
 bindRegisters (n:ns) i = bindRegister (getName n) i ++ bindRegisters ns (i+1)
 
 bindRegister :: NodeName -> Int -> String
-bindRegister name i =    "\tREG_" ++ name ++ " : Register PORT MAP (\n"
+bindRegister name i =    "\tREG_" ++ name ++ " : ffd PORT MAP (\n"
                       ++ "\t\tCLK\t=>\tCLK,\n"
                       ++ "\t\tRST\t=>\tRST,\n"
                       ++ "\t\tEN\t=>\tEN,\n"
@@ -118,8 +119,14 @@ getName (Node ((Att (_, name)):_)) = name
 getNodes :: ShortGraph -> [Node]
 getNodes (ShortGraph ns _) = ns
 
+nodeCount :: ShortGraph -> Int
+nodeCount (ShortGraph ns _) = length ns
+
 getEdges :: ShortGraph -> [Edge]
 getEdges (ShortGraph _ es) = es
+
+edgeCount :: ShortGraph -> Int
+edgeCount (ShortGraph _ es) = length es
 
 getIndex :: NodeName -> [Node] -> Int -> NodeIndex
 getIndex nn [] _ = error $ "Node " ++ nn ++ " is not present in the graph"
