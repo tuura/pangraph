@@ -1,4 +1,4 @@
-module Parsers.GmlP
+module Parsers.GmlParser
 (   parseFile
 ,   shortenFile
 )where

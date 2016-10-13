@@ -1,5 +1,6 @@
 module Writers.VhdlWriter
-( writeVHDL )where
+( writeVHDL
+ )where
 
 import Data.List
 import Util.Types

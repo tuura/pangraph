@@ -1,4 +1,4 @@
-module Parsers.WorkP
+module Parsers.WorkParser
 ( parseFile
 , shortenFile
 )where

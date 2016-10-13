@@ -1,4 +1,4 @@
-module Parsers.Discrim
+module Parsers.Parser
 ( parseGraph
 , readGraph
 , ParseInstance(..)
@@ -10,8 +10,8 @@ module Parsers.Discrim
 )where
 
 import Data.List
-import qualified Parsers.GmlP as G
-import qualified Parsers.WorkP as W
+import qualified Parsers.GmlParser as G
+import qualified Parsers.WorkParser as W
 import qualified Util.MyZip as Z
 import Util.Types
 

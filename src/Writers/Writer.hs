@@ -1,13 +1,15 @@
-module Writers.Discrim
+module Writers.Writer
 ( writeGraph
+, writeVHDL
 ) where
 
-import Writers.GmlW
+-- import Writers.GmlWriter
+import Writers.VhdlWriter
 
 import Util.Types
 import Data.List
 import qualified Data.List.Split as S
-import qualified Writers.GmlW as G
+import qualified Writers.GmlWriter as G
 
 -- decides which writer to use. Manipulates the path to check it exists.
 writeGraph::FilePath -> ShortFile -> IO ()

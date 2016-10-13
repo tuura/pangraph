@@ -1,4 +1,4 @@
-module Writers.GmlW
+module Writers.GmlWriter
 ( writeGraph'
 ) where
 
