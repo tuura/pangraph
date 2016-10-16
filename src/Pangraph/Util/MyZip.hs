@@ -1,4 +1,4 @@
-module Util.MyZip
+module Pangraph.Util.MyZip
 ( getFile
 ) where
 

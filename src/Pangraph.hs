@@ -11,6 +11,6 @@ module Pangraph
 , Att(..)
 )where
 
-import Parsers.Parser
-import Writers.Writer
+import Pangraph.Parser
+import Pangraph.Writer
 -- import Writers.VhdlWriter

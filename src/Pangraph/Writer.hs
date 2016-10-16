@@ -1,15 +1,13 @@
-module Writers.Writer
+module Pangraph.Writer
 ( writeGraph
 , writeVHDL
 ) where
 
--- import Writers.GmlWriter
-import Writers.VhdlWriter
-
-import Util.Types
 import Data.List
 import qualified Data.List.Split as S
-import qualified Writers.GmlWriter as G
+import Pangraph.Util.Types
+import qualified Pangraph.GraphML.Writer as G
+import Pangraph.VHDL.Writer
 
 -- decides which writer to use. Manipulates the path to check it exists.
 writeGraph::FilePath -> ShortFile -> IO ()
@@ -25,7 +23,7 @@ writeGraph path' graph=writeIt file
 disc::MyFile -> (MyFile -> IO())
 disc (MyFile _ name _)
   |fileType == "work" = error $ name ++ ", is unimplemented"
-  |fileType == "graphml" = G.writeGraph'
+  |fileType == "graphml" = G.writeGraph
   |otherwise = error $ "Unrecognized file type: " ++ show name
   where
     fileType = reverse.takeWhile (/='.') $ reverse name

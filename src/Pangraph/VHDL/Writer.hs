@@ -1,9 +1,9 @@
-module Writers.VhdlWriter
+module Pangraph.VHDL.Writer
 ( writeVHDL
  )where
 
 import Data.List
-import Util.Types
+import Pangraph.Util.Types
 
 type NodeName  = String
 type NodeIndex = Int

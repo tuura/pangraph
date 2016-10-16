@@ -1,4 +1,4 @@
-module Parsers.Parser
+module Pangraph.Parser
 ( parseGraph
 , readGraph
 , ParseInstance(..)
@@ -10,10 +10,10 @@ module Parsers.Parser
 )where
 
 import Data.List
-import qualified Parsers.GmlParser as G
-import qualified Parsers.WorkParser as W
-import qualified Util.MyZip as Z
-import Util.Types
+import qualified Pangraph.GraphML.Parser as G
+import qualified Pangraph.Workcraft.Parser as W
+import qualified Pangraph.Util.MyZip as Z
+import Pangraph.Util.Types
 
 -- A parse instance is passed so that the IO may be seperate from the processing of the graph. While allowing the library to handle non plain text graph formats.
 type File = String

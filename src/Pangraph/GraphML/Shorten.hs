@@ -1,10 +1,10 @@
-module Parsers.Shorten
+module Pangraph.GraphML.Shorten
 (  shortenFile
 )where
 
 -- This code is written filter graphml types. But it may repeat itself and not look similar to the equivlent code for other formats.
 
-import Util.Types
+import Pangraph.Util.Types
 import Data.List
 
 -- Just a wrapper to cut through nested types.

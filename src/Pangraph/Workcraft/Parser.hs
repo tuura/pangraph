@@ -1,13 +1,13 @@
-module Parsers.WorkParser
+module Pangraph.Workcraft.Parser
 ( parseFile
-, shortenFile
+-- , shortenFile
 )where
 
 import Text.Parsec
-import Util.Types
 import Data.List
 import Data.Either
-import qualified Util.MyXML as M
+import Pangraph.Util.Types
+import qualified Pangraph.Util.MyXML as M
 
 -- applies the parser and handles parseErrors
 parseFile::String -> String -> ShortFile

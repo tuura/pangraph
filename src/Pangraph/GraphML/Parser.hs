@@ -1,11 +1,11 @@
-module Parsers.GmlParser
+module Pangraph.GraphML.Parser
 (   parseFile
-,   shortenFile
+-- ,   shortenFile
 )where
 
 import Text.Parsec
-import Util.Types
-import qualified Parsers.Shorten as S
+import Pangraph.Util.Types
+import qualified Pangraph.GraphML.Shorten as S
 
 -- Bare in mind this code has been written specifically for the graphml format.
 -- Provides the same interface as other graph types but it is self contained.

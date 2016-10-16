@@ -1,6 +1,6 @@
 name:                pangraph
 version:             0.1.1.5
-synopsis:            A set of parsers for xml like graph languages.
+synopsis:            A set of parsers for like graph languages.
 description:         Please see README.md
 homepage:            https://github.com/thisiswhereitype/pangraph#readme
 license:             BSD3
@@ -18,16 +18,16 @@ tested-with:
 library
   hs-source-dirs:      src
   exposed-modules:     Pangraph
-  other-modules:       Parsers.GmlParser
-                     , Parsers.Parser
-                     , Parsers.Shorten
-                     , Parsers.WorkParser
-                     , Util.MyXML
-                     , Util.Types
-                     , Util.MyZip
-                     , Writers.Writer
-                     , Writers.GmlWriter
-                     , Writers.VhdlWriter
+                     , Pangraph.GraphML.Parser
+                     , Pangraph.GraphML.Writer
+                     , Pangraph.Workcraft.Parser
+                     , Pangraph.VHDL.Writer
+  other-modules:       Pangraph.GraphML.Shorten
+                     , Pangraph.Util.MyXML
+                     , Pangraph.Util.Types
+                     , Pangraph.Util.MyZip
+                     , Pangraph.Writer
+                     , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
                      , parsec
                     --  , parsec-extra

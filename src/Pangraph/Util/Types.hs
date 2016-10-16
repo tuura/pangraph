@@ -1,4 +1,4 @@
-module Util.Types where
+module Pangraph.Util.Types where
 -- (  Att(..)
 -- ,  Tag(..)
 -- ,  Root(..)
