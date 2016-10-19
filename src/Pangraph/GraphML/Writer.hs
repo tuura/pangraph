@@ -2,33 +2,14 @@ module Pangraph.GraphML.Writer
 ( writeGraph
 ) where
 
-import System.IO
+import qualified Pangraph.Util.FileHandler as F
 import Pangraph.Util.Types
-import System.Directory
 
 -- Calls other functions here to create text.
 
 --The version is for relative paths in current dir.
-writeGraph::MyFile -> IO ()
-writeGraph(MyFile [] fileName graph)=do
-  let f = createText graph
-  -- putStrLn $ "Writing to: " ++ [] ++ "@" ++ fileName
-  writeFile (tail fileName) f
--- This version is for dir either Absolute or Relative.
--- Will error if dir does not exsit.
-writeGraph(MyFile dir' fileName graph)=do
-  let dir = normalize dir'
-  dirExsist <- doesDirectoryExist dir
-  if not (dirExsist)
-    then error $ "directory not found: " ++ dir
-    else
-      do
-        let f = createText graph
-        -- putStrLn $ "Writing to: "++ dir ++ "@" ++ fileName
-        writeFile (dir ++ fileName) f
-  where
-    normalize x= if head x == '/' then tail x
-      else x
+writeGraph::FilePath -> ShortFile -> IO ()
+writeGraph path graph=F.writeHandler path $ createText graph
 
 -- Unwrapper for Shortfile Type
 createText::ShortFile -> String

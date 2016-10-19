@@ -1,20 +1,23 @@
 module Main where
 
 import Pangraph
+import qualified Pangraph.GraphML.Writer as GWriter
+import qualified Pangraph.GraphML.Parser as GParser
+import qualified Pangraph.Workcraft.Parser as WParser
 
 main :: IO ()
-main = do
-  putStrLn $ "*Parsing Test: " ++ show (length parseTests)
-  parseTest $head parseTests
-  parseTest $parseTests !! 1
+main =do
+  putStrLn $ "*Parsing Test: #" ++ show (length parseTests)
+  parseGraphML $ parseTests !! 0
+  parseWorkcraft $ parseTests !! 1
   putStrLn "*Parse tests passed\n"
-  putStrLn $ "*Writing Test: " ++ show (length writeTests)
-  writeTest $ head writeTests
-  writeTest $ writeTests !! 1
-  writeTest $ writeTests !! 2
+  putStrLn $ "*Writing Test: #" ++ show (length writeTests)
+  writeGraphML $ writeTests !! 0
+  writeGraphML $ writeTests !! 1
+  writeGraphML $ writeTests !! 2
   putStrLn "*Write tests passed\n"
-  putStrLn "*Big test"
-  bigTest "examples/big.graphml"
+  -- putStrLn "*Big test"
+  -- bigTest "examples/big.graphml"
   putStrLn "--------Tests Passed--------"
   where
     parseTests = zip parsePaths examples
@@ -24,27 +27,34 @@ main = do
     examples =cycle [ShortFile [ShortGraph [Node [Att ("id","n0")],Node [Att ("id","n1")],Node [Att ("id","n2")]] [Edge [Att ("source","n0"),Att ("target","n2")]]]
                ,ShortFile [ShortGraph [Node [Att ("id","v0")],Node [Att ("id","v1")],Node [Att ("id","v2")]] [Edge [Att ("id","con0"),Att ("source","v1"),Att ("target","v0")],Edge [Att ("id","con1"),Att ("source","v0"),Att ("target","v2")]]]]
 
-bigTest::String -> IO()
-bigTest path=do
+parseGraphML:: (FilePath, ShortFile) -> IO()
+parseGraphML (path, example)=do
   putStrLn $ "  Reading from: " ++ path
-  file <- readGraph path []
-  let result =seq $ parseGraph file
-  putStrLn $ "Test passed on: " ++ path
-
-parseTest::(FilePath, ShortFile) -> IO()
-parseTest(path, example) =do
-  putStrLn $ "  Reading from: " ++ path
-  file <- readGraph path []
-  let result = parseGraph file
+  file <- readFile $ normalizePath path
+  let result = GParser.parseFile path file
   if result /= example
     then
       error $ "Test failed on: " ++ show path
     else
       putStrLn $ "Test passed on: " ++ path
 
-writeTest::(String, ShortFile) -> IO()
-writeTest (path, g)=do
+parseWorkcraft::(FilePath, ShortFile) -> IO()
+parseWorkcraft (path, example)=do
+  putStrLn $ "  Reading from: " ++ path
+  file <- readFile $ normalizePath path
+  let result = WParser.parseFile  path file
+  if result /= example
+    then
+      error $ "Test failed on: " ++ show path
+    else
+      putStrLn $ "Test passed on: " ++ path
+
+writeGraphML::(String, ShortFile) -> IO()
+writeGraphML (path, g)=do
   putStrLn $ "  Writing to: " ++ path
-  writeGraph path g
+  GWriter.writeGraph path g
   -- putStrLn ""
-  parseTest (path, g)
+  parseGraphML (path, g)
+
+normalizePath::FilePath -> FilePath
+normalizePath x= if head x `elem` "/" then tail x else x

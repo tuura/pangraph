@@ -4,36 +4,19 @@ module Pangraph.Writer
 ) where
 
 import Data.List
-import qualified Data.List.Split as S
 import Pangraph.Util.Types
 import qualified Pangraph.GraphML.Writer as G
 import Pangraph.VHDL.Writer
 
 -- decides which writer to use. Manipulates the path to check it exists.
 writeGraph::FilePath -> ShortFile -> IO ()
-writeGraph path' graph=writeIt file
-  where
-    writeIt = disc file
-    file = MyFile dir name graph
-    dir =(concat $ intersperse "/" $ init $ S.splitOn "\\" path)
-    name = "/" ++ (reverse.takeWhile (/='\\') $ reverse path)
-    path = santizeDir path'
+writeGraph path graph=(disc path)  path graph
 
 -- Decides the parser to use based on file type.
-disc::MyFile -> (MyFile -> IO())
-disc (MyFile _ name _)
-  |fileType == "work" = error $ name ++ ", is unimplemented"
+disc::FilePath -> (FilePath -> ShortFile -> IO())
+disc path
+  |fileType == "work" = error $ "Workcraft writing is unimplemented"
   |fileType == "graphml" = G.writeGraph
-  |otherwise = error $ "Unrecognized file type: " ++ show name
+  |otherwise = error $ "Unrecognized file type"
   where
-    fileType = reverse.takeWhile (/='.') $ reverse name
-
--- Ensures the path is normative of the form:
--- C:/a/b/c.filetype
-santizeDir::FilePath -> FilePath
-santizeDir [] = []
-santizeDir path
-  |head path == '/' = ['\\'] ++ theRest
-  |otherwise = [head path] ++ theRest
-  where
-    theRest =santizeDir $ tail path
+    fileType = reverse.takeWhile (/='.') $ reverse path

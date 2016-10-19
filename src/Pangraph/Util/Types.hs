@@ -22,6 +22,6 @@ data ShortGraph = ShortGraph [Node] [Edge] deriving (Show, Eq)
 data ShortFile = ShortFile [ShortGraph] deriving (Show, Eq)
 
 --For writing files
-type Dir = FilePath
-type FileName = FilePath
-data MyFile = MyFile Dir FileName ShortFile
+-- type Dir = FilePath
+-- type FileName = FilePath
+-- data MyFile = MyFile Dir FileName ShortFile

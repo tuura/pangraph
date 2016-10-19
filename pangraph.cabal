@@ -17,15 +17,17 @@ tested-with:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Pangraph
-                     , Pangraph.GraphML.Parser
+  exposed-modules:
+                       Pangraph.GraphML.Parser
                      , Pangraph.GraphML.Writer
                      , Pangraph.Workcraft.Parser
                      , Pangraph.VHDL.Writer
+                     , Pangraph
   other-modules:       Pangraph.GraphML.Shorten
                      , Pangraph.Util.MyXML
                      , Pangraph.Util.Types
                      , Pangraph.Util.MyZip
+                     , Pangraph.Util.FileHandler
                      , Pangraph.Writer
                      , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
