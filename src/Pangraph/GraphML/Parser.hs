@@ -1,5 +1,6 @@
 module Pangraph.GraphML.Parser
-(   parseFile
+( parseFile
+, parseString
 -- ,   shortenFile
 )where
 
@@ -14,6 +15,10 @@ import qualified Pangraph.GraphML.Shorten as S
 -- Applies the shortening to a Rose Tree
 shortenFile::Root -> ShortFile
 shortenFile r=S.shortenFile r
+
+parseString::String -> ShortFile
+parseString file= parseFile file "String Literal"
+
 
 -- Applies the parsec functions to the file, handling parse errors appropriatly.
 parseFile::String -> FilePath -> ShortFile

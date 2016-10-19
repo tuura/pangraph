@@ -1,6 +1,7 @@
 module Pangraph.Workcraft.Parser
 ( parseFile
 -- , shortenFile
+, parseString
 )where
 
 import Text.Parsec
@@ -8,6 +9,10 @@ import Data.List
 import Data.Either
 import Pangraph.Util.Types
 import qualified Pangraph.Util.MyXML as M
+
+parseString::String -> ShortFile
+parseString file= parseFile file "String Literal"
+
 
 -- applies the parser and handles parseErrors
 parseFile::String -> String -> ShortFile
