@@ -26,7 +26,6 @@ writeHandler path text=do
 actualFileWrite:: String -> MyDir -> MyFile -> IO()
 actualFileWrite text [] file= writeFile file text
 actualFileWrite text dir' file=do
-  putStrLn $ "dir var on entry : " ++ dir
   bl <- doesDirectoryExist dir
   if not bl
     then error $ "Directory not found: " ++ dir
