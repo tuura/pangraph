@@ -17,7 +17,6 @@ writeHandler path text=do
     then actualFileWrite text [] path
     else
       do
-        -- putStrLn $ dir ++ " : " ++ file
         actualFileWrite text (normalizePath $ santizeDir dir) file
   where
     file = last $ S.splitOn "\\" $ santizeDir path
@@ -37,6 +36,7 @@ actualFileWrite text dir' file=do
 normalizePath::FilePath -> FilePath
 normalizePath y= if head x `elem` "\\" then tail x else x
   where x =  santizeDir y
+
 -- Ensures the path is normative of the form:
 -- C:\a\b\c.filetype
 santizeDir::FilePath -> FilePath

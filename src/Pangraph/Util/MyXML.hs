@@ -58,7 +58,6 @@ childrenParse=do
 eFunc::Parsec String () [Tag]
 eFunc = do
   str <- manyTill anyChar $ try eof
-  -- let ns = []
   return $ [StrTag str]
 
 closingTag:: Parsec String () ()

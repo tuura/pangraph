@@ -7,7 +7,7 @@ import Pangraph.Util.Types
 
 -- Calls other functions here to create text.
 
---The version is for relative paths in current dir.
+-- This version is for relative paths in current dir.
 writeGraph::FilePath -> ShortFile -> IO ()
 writeGraph path graph=F.writeHandler path $ createText graph
 
@@ -20,7 +20,6 @@ createText'::ShortGraph -> String
 createText' (ShortGraph ns es)=(concat strings) ++ closingTags
   where
     strings = [writeHeader 0, writeGraphML 0, writeGraphTag 1, nodes, edges]
-    -- indent = [0,0,1,2,2]
     edges = concat $ map (writeEdge 2) $ es
     nodes = concat $ map (writeNode 2) $ ns
     closingTags = getIndent 1 ++ "</graph>\n" ++ "</graphml>"

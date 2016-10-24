@@ -1,7 +1,6 @@
 module Pangraph.GraphML.Parser
 ( parseFile
 , parseString
--- ,   shortenFile
 )where
 
 import Text.Parsec
@@ -31,14 +30,12 @@ parseFile file path=either errFunc shortenFile xml
 attributeParse::Parsec String () Att
 attributeParse=do
   many1 $ try $ choice [string " ", myEOL]
-  -- _ <- many $ choice [string " ", myEOL]
-
   x <- manyTill anyChar $ try (string "=\"")
   y <- manyTill anyChar $ try (char '"')
   return $ Att (x, y)
 
 -- Handles parsing of a tag, as this module is specific to graphml this function watches for keywords and has awful branching.
--- It is also mutally recursive with "parseChildren"
+-- mutally recursive with "parseChildren"
 tagParse::Parsec String () Tag
 tagParse=try $ do
   _ <- manyTill anyChar $ try (char '<')

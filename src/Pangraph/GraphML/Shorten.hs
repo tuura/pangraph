@@ -28,9 +28,9 @@ shortenGraph (NodeTag _ _ ts) = ShortGraph nsf esf
   where
     (ts2, _) = partition (\(NodeTag str _ _) -> str `elem` ["node" , "edge"]) ts
     (ns, es) = partition (\(NodeTag str _ _) -> str == "node") $ map filterAtt ts2
-    -- Casts to different types
     nsf = map (\(NodeTag _ a _) -> (Node a)) ns
     esf = map (\(NodeTag _ a _) -> (Edge a)) es
+
 -- filtering of attributes
 filterAtt:: Tag -> Tag
 filterAtt (NodeTag str as _) =

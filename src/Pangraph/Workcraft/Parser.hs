@@ -1,6 +1,5 @@
 module Pangraph.Workcraft.Parser
 ( parseFile
--- , shortenFile
 , parseString
 )where
 
@@ -25,14 +24,9 @@ parseFile file path=either errFunc shortenFile xml
 shortenFile::Root -> ShortFile
 shortenFile (Root _ t)=ShortFile y
   where
-    --Remove any branches not relevant
-    --Find the root of the graph
-    --Extracting the nodes and edges
     gs = sortTags $ findGraph $ filterGraph t
-    -- At this point 'gs' is a list of node and edge
     (ns, es) = partition part' gs
     part' = (\(NodeTag str _ _ ) -> str == "node")
-    --Cast each and return the lists.
     nsf = map (\(NodeTag _ as _)-> Node as) ns
     esf = map (\(NodeTag _ as _)-> Edge as) es
     y = [ShortGraph nsf esf]
