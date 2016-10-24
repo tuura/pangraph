@@ -40,14 +40,6 @@ library
                      , split
   default-language:    Haskell2010
 
-executable pangraph
-  hs-source-dirs:      app
-  main-is:             ReadingOnly.hs
-  build-depends:       base >= 4.7 && < 5
-                     , pangraph
-  default-language:    Haskell2010
-  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
-
 test-suite pangraph-test
    type:               exitcode-stdio-1.0
    main-is:            Test.hs
