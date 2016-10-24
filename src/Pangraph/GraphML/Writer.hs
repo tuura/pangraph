@@ -1,34 +1,15 @@
-module Writers.GmlW
-( writeGraph'
+module Pangraph.GraphML.Writer
+( writeGraph
 ) where
 
-import System.IO
-import Util.Types
-import System.Directory
+import qualified Pangraph.Util.FileHandler as F
+import Pangraph.Util.Types
 
 -- Calls other functions here to create text.
 
---The version is for relative paths in current dir.
-writeGraph'::MyFile -> IO ()
-writeGraph'(MyFile [] fileName graph)=do
-  let f = createText graph
-  -- putStrLn $ "Writing to: " ++ [] ++ "@" ++ fileName
-  writeFile (tail fileName) f
--- This version is for dir either Absolute or Relative.
--- Will error if dir does not exsit.
-writeGraph'(MyFile dir' fileName graph)=do
-  let dir = normalize dir'
-  dirExsist <- doesDirectoryExist dir
-  if not (dirExsist)
-    then error $ "directory not found: " ++ dir
-    else
-      do
-        let f = createText graph
-        -- putStrLn $ "Writing to: "++ dir ++ "@" ++ fileName
-        writeFile (dir ++ fileName) f
-  where
-    normalize x= if head x == '/' then tail x
-      else x
+-- This version is for relative paths in current dir.
+writeGraph::FilePath -> ShortFile -> IO ()
+writeGraph path graph=F.writeHandler path $ createText graph
 
 -- Unwrapper for Shortfile Type
 createText::ShortFile -> String
@@ -39,7 +20,6 @@ createText'::ShortGraph -> String
 createText' (ShortGraph ns es)=(concat strings) ++ closingTags
   where
     strings = [writeHeader 0, writeGraphML 0, writeGraphTag 1, nodes, edges]
-    -- indent = [0,0,1,2,2]
     edges = concat $ map (writeEdge 2) $ es
     nodes = concat $ map (writeNode 2) $ ns
     closingTags = getIndent 1 ++ "</graph>\n" ++ "</graphml>"

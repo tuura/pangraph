@@ -1,6 +1,6 @@
 name:                pangraph
-version:             0.1.1.4
-synopsis:            A set of parsers for xml like graph languages.
+version:             0.1.1.5
+synopsis:            A set of parsers for graph languages.
 description:         Please see README.md
 homepage:            https://github.com/thisiswhereitype/pangraph#readme
 license:             BSD3
@@ -17,17 +17,19 @@ tested-with:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Pangraph
-  other-modules:       Parsers.GmlP
-                     , Parsers.Discrim
-                     , Parsers.Shorten
-                     , Parsers.WorkP
-                     , Util.MyXML
-                     , Util.Types
-                     , Util.MyZip
-                     , Writers.Discrim
-                     , Writers.GmlW
-                     , Writers.VhdlWriter
+  exposed-modules:
+                       Pangraph.GraphML.Parser
+                     , Pangraph.GraphML.Writer
+                     , Pangraph.Workcraft.Parser
+                     , Pangraph.VHDL.Writer
+                     , Pangraph
+  other-modules:       Pangraph.GraphML.Shorten
+                     , Pangraph.Util.MyXML
+                     , Pangraph.Util.Types
+                     , Pangraph.Util.MyZip
+                     , Pangraph.Util.FileHandler
+                     , Pangraph.Writer
+                     , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
                      , parsec
                     --  , parsec-extra
@@ -37,14 +39,6 @@ library
                      , directory
                      , split
   default-language:    Haskell2010
-
-executable pangraph
-  hs-source-dirs:      app
-  main-is:             ReadingOnly.hs
-  build-depends:       base >= 4.7 && < 5
-                     , pangraph
-  default-language:    Haskell2010
-  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
 
 test-suite pangraph-test
    type:               exitcode-stdio-1.0

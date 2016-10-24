@@ -1,12 +1,4 @@
-module Util.Types where
--- (  Att(..)
--- ,  Tag(..)
--- ,  Root(..)
--- ,  Node(..)
--- ,  Edge(..)
--- ,  ShortGraph(..)
--- ,  ShortFile(..)
--- )where
+module Pangraph.Util.Types where
 
 -- Used in parsing files
 data Att = Att (String, String) deriving (Show, Eq)
@@ -20,8 +12,3 @@ data Node = Node [Att] deriving (Show, Eq)
 data Edge = Edge [Att] deriving (Show, Eq)
 data ShortGraph = ShortGraph [Node] [Edge] deriving (Show, Eq)
 data ShortFile = ShortFile [ShortGraph] deriving (Show, Eq)
-
---For writing files
-type Dir = FilePath
-type FileName = FilePath
-data MyFile = MyFile Dir FileName ShortFile

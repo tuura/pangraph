@@ -1,11 +1,11 @@
-module Parsers.GmlP
-(   parseFile
-,   shortenFile
+module Pangraph.GraphML.Parser
+( parseFile
+, parseString
 )where
 
 import Text.Parsec
-import Util.Types
-import qualified Parsers.Shorten as S
+import Pangraph.Util.Types
+import qualified Pangraph.GraphML.Shorten as S
 
 -- Bare in mind this code has been written specifically for the graphml format.
 -- Provides the same interface as other graph types but it is self contained.
@@ -14,6 +14,10 @@ import qualified Parsers.Shorten as S
 -- Applies the shortening to a Rose Tree
 shortenFile::Root -> ShortFile
 shortenFile r=S.shortenFile r
+
+parseString::String -> ShortFile
+parseString file= parseFile file "String Literal"
+
 
 -- Applies the parsec functions to the file, handling parse errors appropriatly.
 parseFile::String -> FilePath -> ShortFile
@@ -26,14 +30,12 @@ parseFile file path=either errFunc shortenFile xml
 attributeParse::Parsec String () Att
 attributeParse=do
   many1 $ try $ choice [string " ", myEOL]
-  -- _ <- many $ choice [string " ", myEOL]
-
   x <- manyTill anyChar $ try (string "=\"")
   y <- manyTill anyChar $ try (char '"')
   return $ Att (x, y)
 
 -- Handles parsing of a tag, as this module is specific to graphml this function watches for keywords and has awful branching.
--- It is also mutally recursive with "parseChildren"
+-- mutally recursive with "parseChildren"
 tagParse::Parsec String () Tag
 tagParse=try $ do
   _ <- manyTill anyChar $ try (char '<')

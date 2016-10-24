@@ -1,9 +1,9 @@
-module Util.MyXML
+module Pangraph.Util.MyXML
 ( parseFile
 )where
 
 import Text.Parsec
-import Util.Types
+import Pangraph.Util.Types
 
 -- Parses a XML format into a rose tree structure, it must be called using parsec's parse.
 -- The resuting structure should be filtered to allow for a ShortGraph to be produced.
@@ -58,7 +58,6 @@ childrenParse=do
 eFunc::Parsec String () [Tag]
 eFunc = do
   str <- manyTill anyChar $ try eof
-  -- let ns = []
   return $ [StrTag str]
 
 closingTag:: Parsec String () ()

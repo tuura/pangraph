@@ -1,10 +1,10 @@
-module Parsers.Shorten
+module Pangraph.GraphML.Shorten
 (  shortenFile
 )where
 
 -- This code is written filter graphml types. But it may repeat itself and not look similar to the equivlent code for other formats.
 
-import Util.Types
+import Pangraph.Util.Types
 import Data.List
 
 -- Just a wrapper to cut through nested types.
@@ -28,9 +28,9 @@ shortenGraph (NodeTag _ _ ts) = ShortGraph nsf esf
   where
     (ts2, _) = partition (\(NodeTag str _ _) -> str `elem` ["node" , "edge"]) ts
     (ns, es) = partition (\(NodeTag str _ _) -> str == "node") $ map filterAtt ts2
-    -- Casts to different types
     nsf = map (\(NodeTag _ a _) -> (Node a)) ns
     esf = map (\(NodeTag _ a _) -> (Edge a)) es
+
 -- filtering of attributes
 filterAtt:: Tag -> Tag
 filterAtt (NodeTag str as _) =
