@@ -1,6 +1,6 @@
 name:                pangraph
 version:             0.1.1.5
-synopsis:            A set of parsers for like graph languages.
+synopsis:            A set of parsers for graph languages.
 description:         Please see README.md
 homepage:            https://github.com/thisiswhereitype/pangraph#readme
 license:             BSD3
