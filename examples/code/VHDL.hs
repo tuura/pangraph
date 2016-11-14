@@ -1,13 +1,10 @@
 module VHDL where
 
-import System.IO
 import Pangraph
--- import qualified Pangraph.GraphML.Writer as G
 import qualified Pangraph.VHDL.Writer as V
 
 main::IO()
 main=do
-  -- filePath <- getLine
   let vhdlString = V.writeVHDL graph
   putStrLn vhdlString
   where
