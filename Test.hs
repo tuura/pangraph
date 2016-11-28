@@ -23,9 +23,25 @@ main =do
     parseTests = zip parsePaths examples
     writeTests = zip writePaths examples
     parsePaths = map ("examples/graphs/"++) ["small.graphml", "model.xml"]
-    writePaths =["temp1.graphml", "examples/temp2.graphml", "/examples/temp3.graphml"]
-    examples =cycle [ShortFile [ShortGraph [Node [Att ("id","n0")],Node [Att ("id","n1")],Node [Att ("id","n2")]] [Edge [Att ("source","n0"),Att ("target","n2")]]]
-               ,ShortFile [ShortGraph [Node [Att ("id","v0")],Node [Att ("id","v1")],Node [Att ("id","v2")]] [Edge [Att ("id","con0"),Att ("source","v1"),Att ("target","v0")],Edge [Att ("id","con1"),Att ("source","v0"),Att ("target","v2")]]]]
+    writePaths =["temp1.graphml"
+                , "examples/temp2.graphml"
+                , "/examples/temp3.graphml"]
+    examples =cycle [ShortFile [ShortGraph
+                      [Node [Att ("id","n0")]
+                      ,Node [Att ("id","n1")]
+                      ,Node [Att ("id","n2")]]
+                      [Edge [Att ("source","n0")
+                      ,Att ("target","n2")]]]
+                    ,ShortFile [ShortGraph
+                      [Node [Att ("id","v0")]
+                      ,Node [Att ("id","v1")]
+                      ,Node [Att ("id","v2")]]
+                      [Edge [Att ("id","con0")
+                      ,Att ("source","v1")
+                      ,Att ("target","v0")]
+                      ,Edge [Att ("id","con1")
+                      ,Att ("source","v0")
+                      ,Att ("target","v2")]]]]
 
 parseGraphML:: (FilePath, ShortFile) -> IO()
 parseGraphML (path, example)=do
