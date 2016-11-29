@@ -1,6 +1,6 @@
 #pangraph
 
-[![Build Status](https://travis-ci.org/thisiswhereitype/pangraph.svg?branch=master)](https://travis-ci.org/thisiswhereitype/pangraph)  
+[![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
 This is a Haskell Library for parsing graph formats such as [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](www.workcraft.org).
 The library currently implements parsing only the nodes and edges of undirected graphs.  
