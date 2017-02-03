@@ -1,9 +1,8 @@
 module Pangraph
-( ShortGraph(..)
-, ShortFile(..)
-, Node(..)
-, Edge(..)
-, Att(..)
-)where
+(
 
-import Pangraph.Util.Types
+) where
+
+data Graph = Graph [Node ::Node] [Arc ::Arc]
+data Attribute = Node [ByteString]
+                | Arc [ByteString]

@@ -2,7 +2,7 @@ name:                 pangraph
 version:              0.1.1.5
 synopsis:             A set of parsers for graph languages.
 description:          Please see README.md
-homepage:             https://github.com/thisiswhereitype/pangraph#readme
+homepage:             https://github.com/tuura/pangraph#readme
 license:              BSD3
 license-file:         LICENSE
 author:               Joe Scott
@@ -19,26 +19,22 @@ library
   hs-source-dirs:      src
   exposed-modules:
                        Pangraph.GraphML.Parser
-                     , Pangraph.GraphML.Writer
-                     , Pangraph.Workcraft.Parser
-                     , Pangraph.VHDL.Writer
-                     , Pangraph
-  other-modules:       Pangraph.GraphML.Shorten
-                     , Pangraph.Util.MyXML
-                     , Pangraph.Util.Types
-                     , Pangraph.Util.MyZip
-                     , Pangraph.Util.FileHandler
+                    --  , Pangraph.GraphML.Writer
+                    --  , Pangraph.Workcraft.Parser
+                    --  , Pangraph.VHDL.Writer
+  -- other-modules:
+                    --  , Pangraph.GraphML.Shorten
+                    --  , Pangraph.Util.Types
+                    --  , Pangraph.Util.MyZip
+                    --  , Pangraph.Util.FileHandler
                     --  , Pangraph.Writer
                     --  , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
                      , parsec
-                    --  , parsec-extra
-                    --  , zip
-                    --  , path
-                    --  , path-io
                      , directory
                      , split
                      , hexml
+                     , bytestring
   default-language:    Haskell2010
 
 test-suite pangraph-test
