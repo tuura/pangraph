@@ -1,6 +1,5 @@
 extra-deps:
-- hexml-0.3.1
-resolver: lts-7.18
+resolver: lts-8.2
 flags: {}
 extra-package-dbs: []
 packages:
