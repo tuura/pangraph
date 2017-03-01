@@ -12,26 +12,13 @@ category:             Web
 build-type:           Simple
 cabal-version:        >=1.10
 tested-with:
-                      GHC==7.10.3
-                      GHC==8.0.1
+                      GHC==8.0.2
 
 library
   hs-source-dirs:      src
-  exposed-modules:
-                       Pangraph.GraphML.Parser
-                    --  , Pangraph.GraphML.Writer
-                    --  , Pangraph.Workcraft.Parser
-                    --  , Pangraph.VHDL.Writer
+  exposed-modules:     Pangraph
   -- other-modules:
-                    --  , Pangraph.GraphML.Shorten
-                    --  , Pangraph.Util.Types
-                    --  , Pangraph.Util.MyZip
-                    --  , Pangraph.Util.FileHandler
-                    --  , Pangraph.Writer
-                    --  , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
-                     , parsec
-                     , directory
                      , split
                      , hexml
                      , bytestring
