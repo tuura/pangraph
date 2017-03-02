@@ -1,9 +1,9 @@
-module Tuura.Pangraph.Main (main) where
+module Tuura.Fantasi.Main (main) where
 
 import Control.Monad
 import System.FilePath
 
-import Tuura.Pangraph.Options
+import Tuura.Fantasi.Options
 import qualified Pangraph.Parser as P
 import qualified Pangraph.Writer as W
 

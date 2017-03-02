@@ -1,4 +1,4 @@
-module Tuura.Pangraph.Options (Options(..), getOptions) where
+module Tuura.Fantasi.Options (Options(..), getOptions) where
 
 import Data.Foldable
 import Control.Monad

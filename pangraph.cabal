@@ -49,8 +49,8 @@ test-suite pangraph-test
    default-language:   Haskell2010
    GHC-options:        -Wall -fwarn-tabs
 
-executable pangraph
-   hs-source-dirs:   pangraph
+executable fantasi
+   hs-source-dirs:   fantasi
    main-is:          Main.hs
    build-depends:    base >= 4.8 && < 5,
                      filepath,

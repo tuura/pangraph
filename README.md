@@ -47,7 +47,7 @@ module Pangraph.GraphML.Writer
 One of the two commands below should be used for the compilation and the generation of a binary file:
 
 ```
-ghc -isrc -ipangraph pangraph/Main.hs -o Pangraph
+ghc -isrc -ifantasi fantasi/Main.hs -o Fantasi
 ```
 
 ```
