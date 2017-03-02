@@ -37,7 +37,7 @@ options =
 
     , Option ['v'] ["version"]
       (NoArg (\opts -> return opts { optVersion = True }))
-      "Show version of Pangraph"
+      "Show version of Fantasi"
     ]
 
 getOptions :: IO Options
