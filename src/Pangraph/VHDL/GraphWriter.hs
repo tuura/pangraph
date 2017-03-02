@@ -1,6 +1,5 @@
-module Pangraph.VHDL.Writer
-( writeVHDL
- )where
+module Pangraph.VHDL.GraphWriter
+( writeGraphVhdl )where
 
 import Data.List
 import Pangraph.Util.Types
@@ -8,8 +7,8 @@ import Pangraph.Util.Types
 type NodeName  = String
 type NodeIndex = Int
 
-writeVHDL :: ShortFile -> String
-writeVHDL (ShortFile (g:gs)) = do
+writeGraphVhdl :: ShortFile -> String
+writeGraphVhdl (ShortFile (g:gs)) = do
     let stats       = "-- Nodes: " ++ show (nodeCount g) ++ " - Edges: " ++ show (edgeCount g) ++ "\n"
         library     = createLibrary
         entity      = createEntity (getNodes g)
@@ -19,9 +18,6 @@ writeVHDL (ShortFile (g:gs)) = do
         wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (getNodes g)) -1)
         archClose   = closeArchitecture
     stats ++ library ++ entity ++ archOpen ++ regs ++ wiresIn ++ wiresOut ++ archClose
-
-parseGraph :: ShortGraph -> Int
-parseGraph (ShortGraph ns _) = length ns
 
 createLibrary :: String
 createLibrary =     "-- File generated automatically\n"

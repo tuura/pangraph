@@ -42,6 +42,18 @@ module Pangraph.GraphML.Writer
 ...
 ```
 
+## Binary generation
+
+One of the two commands below should be used for the compilation and the generation of a binary file:
+
+```
+ghc -isrc -ifantasi fantasi/Main.hs -o Fantasi
+```
+
+```
+cabal install
+```
+
 ##Examples  
 
 ###Parsing a Graph file  

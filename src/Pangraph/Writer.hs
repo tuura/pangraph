@@ -1,12 +1,14 @@
 module Pangraph.Writer
 ( writeGraph
-, writeVHDL
+, writeGraphVhdl
+, writeEnvironmentVhdl
 ) where
 
 import Data.List
 import Pangraph.Util.Types
 import qualified Pangraph.GraphML.Writer as G
-import Pangraph.VHDL.Writer
+import Pangraph.VHDL.GraphWriter
+import Pangraph.VHDL.EnvironmentWriter
 
 -- decides which writer to use. Manipulates the path to check it exists.
 writeGraph::FilePath -> ShortFile -> IO ()

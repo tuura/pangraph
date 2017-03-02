@@ -21,15 +21,16 @@ library
                        Pangraph.GraphML.Parser
                      , Pangraph.GraphML.Writer
                      , Pangraph.Workcraft.Parser
-                     , Pangraph.VHDL.Writer
+                     , Pangraph.VHDL.GraphWriter
+                     , Pangraph.VHDL.EnvironmentWriter
+                     , Pangraph.Writer
+                     , Pangraph.Parser
                      , Pangraph
   other-modules:       Pangraph.GraphML.Shorten
                      , Pangraph.Util.MyXML
                      , Pangraph.Util.Types
                      , Pangraph.Util.MyZip
                      , Pangraph.Util.FileHandler
-                     , Pangraph.Writer
-                     , Pangraph.Parser
   build-depends:       base >= 4.7 && < 5
                      , parsec
                     --  , parsec-extra
@@ -47,3 +48,12 @@ test-suite pangraph-test
                        pangraph
    default-language:   Haskell2010
    GHC-options:        -Wall -fwarn-tabs
+
+executable fantasi
+   hs-source-dirs:   fantasi
+   main-is:          Main.hs
+   build-depends:    base >= 4.8 && < 5,
+                     filepath,
+                     pangraph
+   default-language: Haskell2010
+   GHC-options:      -Wall -fwarn-tabs
