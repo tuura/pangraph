@@ -17,17 +17,17 @@ tested-with:
 library
   hs-source-dirs:      src
   exposed-modules:     Pangraph
-  -- other-modules:
+  -- other-modules:       Pangraph.XMLTemplate,
+  --                      Pangraph.Graph
   build-depends:       base >= 4.7 && < 5
-                     , split
                      , hexml
                      , bytestring
   default-language:    Haskell2010
 
-test-suite pangraph-test
-   type:               exitcode-stdio-1.0
-   main-is:            Test.hs
-   build-depends:      base >= 4.8 && < 5
-                    ,  pangraph
-   default-language:   Haskell2010
-   GHC-options:        -Wall -fwarn-tabs
+-- test-suite pangraph-test
+--    type:               exitcode-stdio-1.0
+--    main-is:            Test.hs
+--    build-depends:      base >= 4.8 && < 5
+--                     ,  pangraph
+--    default-language:   Haskell2010
+--    GHC-options:        -Wall -fwarn-tabs
