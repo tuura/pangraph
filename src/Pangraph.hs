@@ -3,10 +3,11 @@ Pangraph,
 Node,
 Edge,
 Att,
-getAtt,
-getNodes,
-getEdges
-getBytestring
+attributes,
+nodes,
+edges,
+key,
+value
 ) where
 
 import qualified Data.ByteString as BS
@@ -17,18 +18,21 @@ data Edge = Edge [Att]
 data Att = Att (BS.ByteString, BS.ByteString)
 
 class HasAtt a where
-  getAtt:: a -> [Att]
+  attributes:: a -> [Att]
 
 instance HasAtt Node where
-  getAtt (Node a) = a
+  attributes (Node a) = a
 instance HasAtt Edge where
-  getAtt (Edge a) = a
+  attributes (Edge a) = a
 
-getNodes::Pangraph -> [Node]
-getNodes (Pangraph ns _)= ns
+nodes::Pangraph -> [Node]
+nodes (Pangraph ns _)= ns
 
-getEdges::Pangraph -> [Edge]
-getEdges (Pangraph _ es)= es
+edges::Pangraph -> [Edge]
+edges (Pangraph _ es)= es
 
-getBytestring::Att -> (BS.ByteString, BS.ByteString)
-getBS (Att a) = a
+key::Att -> BS.ByteString
+key (Att a) = fst a
+
+value::Att -> BS.ByteString
+value (Att a) = snd a
