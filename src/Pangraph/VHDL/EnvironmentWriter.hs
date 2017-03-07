@@ -228,11 +228,9 @@ adder_comparator ns =  "\tRESULT_COMPARATOR : Generic_zero_comparator\n"
                 ++ "\t\t\tEQ\t=> done1);\n\n"
 
 delayer_enable_nodes :: [Node] -> String
-delayer_enable_nodes ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (nNodes-1) ++ " generate\n"
+delayer_enable_nodes ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (length ns - 1) ++ " generate\n"
                         ++ "\t\tenable_reg_del(i) <= EN_NODES(i) AND start_del;\n"
                         ++ "\tend generate;\n\n"
-                          where
-                            nNodes = length ns
 
 network :: [Node] -> String
 network ns =  "\tNETWORK : Graph\n"
