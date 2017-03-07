@@ -169,6 +169,7 @@ createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) +
                 ++ "\tSIGNAL sum_mul2\t\t: std_logic_vector(" ++ show ((bitSum ns)-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL mul\t\t: std_logic_vector(" ++ show ((bitMul ns)-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL start_del\t\t: std_logic;\n"
+                ++ "\tSIGNAL start_counting\t: std_logic;\n"
                 ++ "\tSIGNAL enable_reg_del\t: std_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL done1, done2, done3, done_res\t\t: std_logic;\n"
                 ++ "\tSIGNAL res, res2\t\t: std_logic_vector(" ++ show (bitMul ns) ++ " downto 0);\n"
@@ -189,6 +190,7 @@ instantiateModules (ShortGraph ns _) =  delayer_enable_nodes ns
                                      ++ reg_sum_mul2 ns
                                      ++ shift_reg ns
                                      ++ start_delayer
+                                     ++ counter_delayer
                                      ++ adder_comparator ns
                                      ++ comparator_delayer ns
                                      ++ comparator_delayer_result ns
@@ -278,6 +280,16 @@ start_delayer =  "\tSTART_DELAYER : Delayer\n"
         ++ "\t\t\tDIN\t=> START,\n"
         ++ "\t\t\tDOUT\t=> start_del);\n\n"
 
+counter_delayer :: String
+counter_delayer =  "\tCOUNTER_DELAYER : Delayer\n"
+                ++ "\t\tGENERIC MAP (1)\n"
+                ++ "\t\tPORT MAP(\n"
+                ++ "\t\t\tCLK\t=> CLK,\n"
+                ++ "\t\t\tRST\t=> RST,\n"
+                ++ "\t\t\tEN\t=> EN,\n"
+                ++ "\t\t\tDIN\t=> start_del,\n"
+                ++ "\t\t\tDOUT\t=> start_counting);\n\n"
+
 comparator_delayer :: [Node] -> String
 comparator_delayer ns =  "\tCOMPARATOR_DELAYER : Delayer\n"
                   ++ "\t\tGENERIC MAP (3)\n"
@@ -304,7 +316,7 @@ genericCounter ns =  "\tCOUNTER : Generic_counter\n"
                   ++ "\t\tPORT MAP(\n"
                   ++ "\t\t\tCLK\t=> CLK,\n"
                   ++ "\t\t\tRST\t=> RST,\n"
-                  ++ "\t\t\tEN\t=> start_del,\n"
+                  ++ "\t\t\tEN\t=> start_counting,\n"
                   ++ "\t\t\tDOUT\t=> count);\n\n"
 
 reg_counter :: [Node] -> String
