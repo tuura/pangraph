@@ -30,12 +30,15 @@ createEntity (ShortGraph ns _) =
                  ++ "\t\tRST\t: IN\tstd_logic;\n"
                  ++ "\t\tRST_SHIFT\t: IN\tstd_logic;\n"
                  ++ "\t\tEN\t: IN\tstd_logic;\n"
+                 ++ "\t\tEN_NODES\t: IN\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
                  ++ "\t\tSTART\t: IN\tstd_logic;\n"
                  ++ "\t\tDIN\t: IN\tstd_logic;\n"
                  ++ "\t\tDONE\t: OUT\tstd_logic;\n"
                  ++ "\t\tCOMPLETE\t: OUT\tstd_logic;\n"
                  ++ "\t\tRESULT\t: OUT\tstd_logic_vector(" ++ show (bitMul ns) ++ " downto 0));\n"
                  ++ "END FANTASI;\n\n"
+                   where
+                       nNodes = length ns
 
 openArchitecture :: ShortGraph -> String
 openArchitecture (ShortGraph ns _) = do
@@ -81,7 +84,7 @@ graph ns = "\tCOMPONENT Graph IS\n"
         ++ "\t\tPORT (\n"
         ++ "\t\t\tCLK\t: IN\tstd_logic;\n"
         ++ "\t\t\tRST\t: IN\tstd_logic;\n"
-        ++ "\t\t\tEN\t: IN\tstd_logic;\n"
+        ++ "\t\t\tEN\t: IN\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
         ++ "\t\t\tDIN\t: IN\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
         ++ "\t\t\tDOUT\t: OUT\tstd_logic_vector(" ++ show (nNodes-1) ++ " downto 0));\n"
         ++ "\tEND COMPONENT;\n\n"
@@ -111,7 +114,7 @@ sync_register = "\tCOMPONENT Generic_sync_register IS\n"
              ++ "\tEND COMPONENT;\n\n"
 
 shifter :: String
-shifter = "\tCOMPONENT Generic_shift_register IS\n"
+shifter = "\tCOMPONENT Generic_shift_register_input IS\n"
              ++ "\t\tGENERIC (N : integer);\n"
              ++ "\t\tPORT (\n"
              ++ "\t\t\tCLK\t: IN\tstd_logic;\n"
@@ -166,6 +169,7 @@ createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) +
                 ++ "\tSIGNAL sum_mul2\t\t: std_logic_vector(" ++ show ((bitSum ns)-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL mul\t\t: std_logic_vector(" ++ show ((bitMul ns)-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL start_del\t\t: std_logic;\n"
+                ++ "\tSIGNAL enable_reg_del\t: std_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL done1, done2, done3, done_res\t\t: std_logic;\n"
                 ++ "\tSIGNAL res, res2\t\t: std_logic_vector(" ++ show (bitMul ns) ++ " downto 0);\n"
                 ++ "\tSIGNAL comparator_en\t\t: std_logic;\n\n"
@@ -173,7 +177,8 @@ createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) +
                     nNodes = length ns
 
 instantiateModules :: ShortGraph -> String
-instantiateModules (ShortGraph ns _) =  network ns
+instantiateModules (ShortGraph ns _) =  delayer_enable_nodes ns
+                                     ++ network ns
                                      ++ synchroniser ns
                                      ++ genericCounter ns
                                      ++ reg_counter ns
@@ -216,16 +221,23 @@ adder_comparator :: [Node] -> String
 adder_comparator ns =  "\tRESULT_COMPARATOR : Generic_zero_comparator\n"
                 ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                 ++ "\t\tPORT MAP(\n"
-                ++ "\t\t\tAOP\t=> sum_mul,\n"
+                ++ "\t\t\tOP\t=> sum_mul,\n"
                 ++ "\t\t\tEN\t=> comparator_en,\n"
                 ++ "\t\t\tEQ\t=> done1);\n\n"
+
+delayer_enable_nodes :: [Node] -> String
+delayer_enable_nodes ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (nNodes-1) ++ " generate\n"
+                        ++ "\t\tenable_reg_del(i) <= EN_NODES(i) AND start_del;\n"
+                        ++ "\tend generate;\n\n"
+                          where
+                            nNodes = length ns
 
 network :: [Node] -> String
 network ns =  "\tNETWORK : Graph\n"
         ++ "\t\tPORT MAP(\n"
         ++ "\t\t\tCLK\t=> CLK,\n"
         ++ "\t\t\tRST\t=> RST,\n"
-        ++ "\t\t\tEN\t=> start_del,\n"
+        ++ "\t\t\tEN\t=> enable_reg_del,\n"
         ++ "\t\t\tDIN\t=> in_network("++ show (nNodes-1) ++ " downto 0),\n"
         ++ "\t\t\tDOUT\t=> sync_in);\n\n"
           where
@@ -244,7 +256,7 @@ synchroniser ns =  "\tSYNCHRONISER : Generic_sync_register\n"
                     nNodes = length ns
 
 shift_reg :: [Node] -> String
-shift_reg ns =  "\tSHIFT_REG : Generic_shift_register\n"
+shift_reg ns =  "\tSHIFT_REG : Generic_shift_register_input\n"
                 ++ "\t\tGENERIC MAP(" ++ show (nNodes+1) ++ ")\n"
                 ++ "\t\tPORT MAP(\n"
                 ++ "\t\t\tCLK\t=> CLK,\n"
