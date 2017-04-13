@@ -17,8 +17,8 @@ tested-with:
 library
   hs-source-dirs:      src
   exposed-modules:     Pangraph
-  -- other-modules:       Pangraph.XMLTemplate,
-  --                      Pangraph.Graph
+  other-modules:       Pangraph.XMLTemplate
+                     , Pangraph.Graph
   build-depends:       base >= 4.7 && < 5
                      , hexml
                      , bytestring
