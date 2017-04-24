@@ -1,13 +1,13 @@
-#pangraph
+# pangraph
 
 [![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
-This is a Haskell Library for parsing graph formats such as [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](www.workcraft.org).
+This is a Haskell Library for parsing graph formats such as [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](https://www.workcraft.org/).
 The library currently implements parsing only the nodes and edges of undirected graphs.  
 See the User Guide for how to use this, with examples below.
 Also information on current graph support below that.
 
-##Getting Started  
+## Getting Started  
 The library `Pangraph` exports the following types:
 
 ```
@@ -54,9 +54,9 @@ ghc -isrc -ifantasi fantasi/Main.hs -o Fantasi
 cabal install
 ```
 
-##Examples  
+## Examples  
 
-###Parsing a Graph file  
+### Parsing a Graph file  
 ```
 module Reading where
 
@@ -72,7 +72,7 @@ main=do
   putStr $ show graph
 ```
 
-###Parsing a graph and then writing to a file
+### Parsing a graph and then writing to a file
 ```
 module Writing where
 
@@ -87,13 +87,13 @@ main=do
   where
     graph = ShortFile [ShortGraph [Node [Att ("id","n0")],Node [Att ("id","n1")],Node [Att ("id","n2")]] [Edge [Att ("source","n0"),Att ("target","n2")]]]
 ```
-##Graph support  
-###[GraphML](http://graphml.graphdrawing.org/)
+## Graph support  
+### [GraphML](http://graphml.graphdrawing.org/)
 GraphML files are currently:  
 - Parsing: Ok  
 - Writing: Ok
 
-###[Workcraft](www.workcraft.org)
+### [Workcraft](https://www.workcraft.org/)
 Workcraft files are currently:  
 - Parsing: need to be unzipped manually and given a path to the `model.xml` file that was unzipped.  
 - Writing: **Unimplemented**
