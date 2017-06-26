@@ -7,7 +7,7 @@ main:: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  let graph = GraphML_P.parseGraph (head GraphML_P.template) $ pack file
+  let graph = GraphML_P.parseTemplateToPangraph (head GraphML_P.template) $ pack file
   case graph of
     Left x -> putStrLn (show x)
     Right y -> putStrLn (show y)
