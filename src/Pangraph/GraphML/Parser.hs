@@ -1,4 +1,4 @@
-module Pangraph.GraphML.Parser(
+module Pangraph.GraphML.Parser (
 parseGraphToAlga,
 parseTemplateToPangraph,
 template,
