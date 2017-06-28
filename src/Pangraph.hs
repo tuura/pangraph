@@ -33,19 +33,20 @@ type Value = BS.ByteString
 -- Pangraph [Node [Attribute ("id","0")],Node [Attribute ("id","1")]] [Edge [Attribute ("source","0"),Attribute ("target","1")]]
 
 --  Instances of show
+
 instance Show (Pangraph) where
-  show (Pangraph ns es) = "Pangraph " ++  show ns ++ " " ++ show es
+  show p = "Pangraph " ++  (show $ nodes p) ++ " " ++ (show $ edges p)
 
 instance Show (Node) where
-  show (Node []) = ""
-  show (Node ns) = "Node " ++ (show $ ns) -- ++ ", " ++ (show $ tail ns)
+  -- show (Node []) = ""
+  show n = "Node " ++ (show $ attributes n) -- ++ ", " ++ (show $ tail ns)
 
 instance Show (Edge) where
-  show (Edge []) = ""
-  show (Edge ns) = "Edge " ++ (show ns) -- ++ ", " ++ (show ns) ++ "]"
+  -- show (Edge []) = ""
+  show e = "Edge " ++ (show $ attributes e) -- ++ ", " ++ (show ns) ++ "]"
 
 instance Show Attribute where
-  show (Attribute (k, v)) = "Attribute ("++ (show k) ++ "," ++ (show v) ++ ")"
+  show a = "Attribute " ++ (show $ pair a)
 
 -- | Pangraph type getters
 
@@ -58,10 +59,10 @@ instance HasAttribute Edge where
   attributes (Edge a) = a
 
 nodes :: Pangraph -> [Node]
-nodes (Pangraph ns _)= ns
+nodes (Pangraph ns _) = ns
 
 edges :: Pangraph -> [Edge]
-edges (Pangraph _ es)= es
+edges (Pangraph _ es) = es
 
 key :: Attribute -> Key
 key (Attribute a) = fst a
@@ -69,7 +70,7 @@ key (Attribute a) = fst a
 value :: Attribute -> Value
 value (Attribute a) = snd a
 
-pair :: Attribute -> (BS.ByteString, BS.ByteString)
+pair :: Attribute -> (Key, Value)
 pair (Attribute a) = a
 
 valuesByKey :: HasAttribute a => a -> Key -> [Value]

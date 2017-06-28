@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G" edgedefault="undirected">
+    <node id="v00"/>
+    <node id="v01"/>
+    <node id="v02"/>
+    <node id="v03"/>
+    <node id="v04"/>
+    <node id="v05"/>
+    <node id="v06"/>
+    <node id="v07"/>
+    <node id="v08"/>
+    <node id="v09"/>
+    <node id="v10"/>
+    <node id="v11"/>
+    <node id="v12"/>
+    <node id="v13"/>
+    <node id="v14"/>
+    <edge source="v00" target="v01"/>
+    <edge source="v00" target="v02"/>
+    <edge source="v00" target="v03"/>
+    <edge source="v01" target="v04"/>
+    <edge source="v01" target="v05"/>
+    <edge source="v02" target="v05"/>
+    <edge source="v02" target="v06"/>
+    <edge source="v03" target="v06"/>
+    <edge source="v03" target="v07"/>
+    <edge source="v04" target="v08"/>
+    <edge source="v05" target="v08"/>
+    <edge source="v05" target="v09"/>
+    <edge source="v06" target="v09"/>
+    <edge source="v06" target="v10"/>
+    <edge source="v07" target="v10"/>
+    <edge source="v08" target="v11"/>
+    <edge source="v09" target="v12"/>
+    <edge source="v10" target="v13"/>
+    <edge source="v11" target="v12"/>
+    <edge source="v12" target="v14"/>
+    <edge source="v13" target="v12"/>
+    </graph>
+</graphml>
