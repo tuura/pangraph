@@ -18,7 +18,7 @@ main = do
         simulationEnvVhdlPath = optSimName options
 
     -- parse graph
-    case P.parseTemplateToPangraph (head P.template) (pack graphMLPath) of
+    case P.graphmlToPangraph (pack graphMLPath) of
       Left l -> error $ show l
       Right graphParsed -> do
             let graphVHDL   = W2.writeGraphVhdl graphParsed

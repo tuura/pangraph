@@ -4,23 +4,36 @@ module Pangraph.VHDL.GraphWriter (
 writeGraphVhdl
 ) where
 
+import Data.List
 import qualified Pangraph         as P
 import qualified Data.ByteString as BS
-import Data.ByteString.Char8 (unpack)
+import Data.ByteString.Char8 (unpack, pack)
 
 
 type NodeName  = String
 type NodeIndex = Int
 
+-- The following two functions are written so that this file does not have to be rewritten to handle cases of Maybe
+
+vertexValuesByKey :: P.Vertex -> P.Key -> [P.Value]
+vertexValuesByKey k v = case P.lookupVertexValues k v of
+  Just a -> [a]
+  otherwise -> []
+
+edgeValuesByKey :: P.Edge -> P.Key -> [P.Value]
+edgeValuesByKey k e = case P.lookupEdgeValues k e of
+  Just a -> [a]
+  otherwise -> []
+
 writeGraphVhdl :: P.Pangraph -> String
 writeGraphVhdl g = do
-    let stats       = "-- Nodes: " ++ show (length $ P.nodes g) ++ " - Edges: " ++ show (length $ P.edges g) ++ "\n"
+    let stats       = "-- Nodes: " ++ show (length $ P.vertices g) ++ " - Edges: " ++ show (length $ P.edges g) ++ "\n"
         library     = createLibrary
-        entity      = createEntity (P.nodes g)
+        entity      = createEntity (P.vertices g)
         archOpen    = openArchitecture g
-        regs        = "\t-- Registers\n" ++ bindRegisters (P.nodes g) 0
+        regs        = "\t-- Registers\n" ++ bindRegisters (P.vertices g) 0
         wiresIn     = "\t-- Wire connections: inputs\n" ++ bindWiresIn g
-        wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (P.nodes g)) -1)
+        wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (P.vertices g)) -1)
         archClose   = closeArchitecture
     stats ++ library ++ entity ++ archOpen ++ regs ++ wiresIn ++ wiresOut ++ archClose
 
@@ -30,7 +43,7 @@ createLibrary =     "-- File generated automatically\n"
                 ++  "USE ieee.std_logic_1164.all;\n\n"
                 ++  "LIBRARY work;\n\n"
 
-createEntity :: [P.Node] -> String
+createEntity :: [P.Vertex] -> String
 createEntity ns =   "ENTITY Graph IS\n"
                  ++ "\tPORT (\n"
                  ++ "\t\tCLK\t: IN\tstd_logic;\n"
@@ -50,26 +63,26 @@ openArchitecture p = do
         begin    = "BEGIN\n\n"
     open ++ register ++ sigs ++ begin
     where
-      ns = P.nodes p
+      ns = P.vertices p
 
 closeArchitecture :: String
 closeArchitecture = "\nEND Graph_circuit;"
 
 bindWiresIn :: P.Pangraph -> String
-bindWiresIn p = getStructure (P.nodes p) (P.nodes p) (P.edges p)
+bindWiresIn p = getStructure (P.vertices p) (P.vertices p)  (P.edges p)
 
 bindWiresOut :: Int -> String
 bindWiresOut 0 =   "\tDOUT(0) <= data_out(0);\n"
 bindWiresOut n =   "\tDOUT(" ++ show n ++ ") <= data_out(" ++ show n ++ ");\n"
                 ++ bindWiresOut (n-1)
 
-getStructure :: [P.Node] -> [P.Node] -> [P.Edge] -> String
-getStructure []     _   _ =   "\n"
-getStructure (n:ns) ns2 es =   "\tdata_in(" ++ show i ++ ") <=\tDIN(" ++ show i ++ ")"
-                          ++ getInput (getConnections (unpack . head $ P.valuesByKey n "id") ns2 es)
-                          ++ getStructure ns ns2 es
+getStructure :: [P.Vertex] -> [P.Vertex] -> [P.Edge] -> String
+getStructure [] _ _ =   "\n"
+getStructure (n:ns) nodes es =   "\tdata_in(" ++ show i ++ ") <=\tDIN(" ++ show i ++ ")"
+                          ++ getInput (getConnections (unpack . head $ vertexValuesByKey n "id") nodes es)
+                          ++ getStructure ns nodes es
                           where
-                              i = getIndex (unpack . head $ P.valuesByKey n "id") ns2 0
+                              i = getIndex (unpack . head $ vertexValuesByKey n "id") nodes 0
 
 getInput :: [NodeIndex] -> String
 getInput []     = ";\n"
@@ -98,16 +111,16 @@ createRegisterGeneric n =   "\tCOMPONENT Register_gen IS\n"
                          ++ "\t\t);\n"
                          ++ "\tEND COMPONENT;\n\n"
 
-createSignals :: [P.Node] -> String
+createSignals :: [P.Vertex] -> String
 createSignals ns = do
     let nRegs   = length ns
         sigsIn  = "\tSIGNAL data_in  : STD_LOGIC_VECTOR(" ++ show (nRegs-1) ++ " downto 0);\n"
         sigsOut = "\tSIGNAL data_out : STD_LOGIC_VECTOR(" ++ show (nRegs-1) ++ " downto 0);\n\n"
     sigsIn ++ sigsOut
 
-bindRegisters :: [P.Node] -> Int -> String
+bindRegisters :: [P.Vertex] -> Int -> String
 bindRegisters [] _     = "\n"
-bindRegisters (n:ns) i = bindRegister (unpack . head $ P.valuesByKey n "id") i ++ bindRegisters ns (i+1)
+bindRegisters (n:ns) i = bindRegister (unpack . head $ vertexValuesByKey n "id") i ++ bindRegisters ns (i+1)
 
 bindRegister :: NodeName -> Int -> String
 bindRegister name i =    "\tREG_" ++ name ++ " : ffd PORT MAP (\n"
@@ -117,21 +130,33 @@ bindRegister name i =    "\tREG_" ++ name ++ " : ffd PORT MAP (\n"
                       ++ "\t\tD\t=>\tdata_in(" ++ show i ++ "),\n"
                       ++ "\t\tQ\t=>\tdata_out(" ++ show i ++ "));\n"
 
-getIndex :: NodeName -> [P.Node] -> Int -> NodeIndex
-getIndex nn [] _ = error $ "Node " ++ nn ++ " is not present in the graph"
-getIndex n1 nb i
+getIndex :: NodeName -> [P.Vertex] -> Int -> NodeIndex
+getIndex nn [] _ = error $ "Node \"" ++ nn ++ "\" is not present in the graph"
+getIndex n1 nb i -- = error $ show n1 ++ " !:! " ++ show nb
     | n1 == n2  = i
     | otherwise = getIndex n1 ns (i+1)
     where
-      n2 = unpack . head $ P.valuesByKey (head nb) "id"
+      n2 = unpack . head $ vertexValuesByKey (head nb) "id"
       ns = tail nb
 
-getConnections :: NodeName -> [P.Node] -> [P.Edge] -> [NodeIndex]
+-- getIndex :: NodeName -> [P.Vertex] -> Int -> NodeIndex
+-- getIndex name vs _ = case elemIndex nodeByName vs  of
+--   Just a -> a
+--   _ -> error $ "Vertex not found in list, should not throw without the error in \"nodeByName\""
+--   where
+--     nodeByName :: P.Vertex
+--     nodeByName = case lookup (pack name) (P.toAssocList vs) of
+--       Just a -> a
+--       _ -> error $ "Node \"" ++ name ++ "\" is not present in the graph. Full list:\n" ++ show vs
+
+
+
+getConnections :: NodeName -> [P.Vertex] -> [P.Edge] -> [NodeIndex]
 getConnections _ _ []         = []
 getConnections name ns es
     | name == source    = getIndex target ns 0 : getConnections name ns (tail es)
     | name == target    = getIndex source ns 0 : getConnections name ns (tail es)
     | otherwise         = getConnections name ns (tail es)
     where
-      source = unpack . head $ P.valuesByKey (head es) "source"
-      target = unpack . head $ P.valuesByKey (head es) "target"
+      source = unpack . head $ edgeValuesByKey (head es) "source"
+      target = unpack . head $ edgeValuesByKey (head es) "target"

@@ -39,7 +39,7 @@ createEntity p =
                  ++ "END FANTASI;\n\n"
                    where
                        nNodes = length ns
-                       ns = P.nodes p
+                       ns = P.vertices p
 
 openArchitecture :: P.Pangraph -> String
 openArchitecture p = do
@@ -49,9 +49,9 @@ openArchitecture p = do
          begin      = "BEGIN\n\n"
      open ++ components ++ sigs ++ begin
      where
-       ns = P.nodes p
+       ns = P.vertices p
 
-createComponents :: [P.Node] -> String
+createComponents :: [P.Vertex] -> String
 createComponents ns = accumulator
                    ++ sync_register
                    ++ counter
@@ -82,7 +82,7 @@ delayer = "\tCOMPONENT Delayer IS\n"
           ++ "\t\t\tDOUT\t: OUT\tstd_logic);\n"
           ++ "\tEND COMPONENT;\n\n"
 
-graph :: [P.Node] -> String
+graph :: [P.Vertex] -> String
 graph ns = "\tCOMPONENT Graph IS\n"
         ++ "\t\tPORT (\n"
         ++ "\t\t\tCLK\t: IN\tstd_logic;\n"
@@ -159,7 +159,7 @@ counter = "\tCOMPONENT Generic_counter IS\n"
        ++ "\t\t\tDOUT\t: OUT\tstd_logic_vector(N-1 downto 0));\n"
        ++ "\tEND COMPONENT;\n\n"
 
-createSignals :: [P.Node] -> String
+createSignals :: [P.Vertex] -> String
 createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) ++ " downto 0);\n"
                 ++ "\tSIGNAL sync_in\t\t: std_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
                 ++ "\tSIGNAL sync_out\t: std_logic_vector(" ++ show (nNodes-1) ++ " downto 0);\n"
@@ -181,7 +181,7 @@ createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) +
                     nNodes = length ns
 
 instantiateModules :: P.Pangraph -> String
-instantiateModules p =  delayer_enable_nodes ns
+instantiateModules p =  delayer_enable_vertices ns
                                      ++ network ns
                                      ++ synchroniser ns
                                      ++ genericCounter ns
@@ -201,9 +201,9 @@ instantiateModules p =  delayer_enable_nodes ns
                                      ++ done_circuit
                                      ++ output_wires ns
                                      where
-                                       ns = P.nodes p
+                                       ns = P.vertices p
 
-output_wires :: [P.Node] -> String
+output_wires :: [P.Vertex] -> String
 output_wires ns =  "\tRESULT <= res;\n"
                 ++ "\tCOMPLETE <= in_network("++ show nNodes ++ ");\n\n"
                   where
@@ -224,7 +224,7 @@ done_latch =  "\tDONE_LATCH : ffd\n"
 
 
 
-adder_comparator :: [P.Node] -> String
+adder_comparator :: [P.Vertex] -> String
 adder_comparator ns =  "\tRESULT_COMPARATOR : Generic_zero_comparator\n"
                 ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                 ++ "\t\tPORT MAP(\n"
@@ -232,12 +232,12 @@ adder_comparator ns =  "\tRESULT_COMPARATOR : Generic_zero_comparator\n"
                 ++ "\t\t\tEN\t=> comparator_en,\n"
                 ++ "\t\t\tEQ\t=> done1);\n\n"
 
-delayer_enable_nodes :: [P.Node] -> String
-delayer_enable_nodes ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (length ns - 1) ++ " generate\n"
+delayer_enable_vertices :: [P.Vertex] -> String
+delayer_enable_vertices ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (length ns - 1) ++ " generate\n"
                         ++ "\t\tenable_reg_del(i) <= EN_NODES(i) AND start_del;\n"
                         ++ "\tend generate;\n\n"
 
-network :: [P.Node] -> String
+network :: [P.Vertex] -> String
 network ns =  "\tNETWORK : Graph\n"
         ++ "\t\tPORT MAP(\n"
         ++ "\t\t\tCLK\t=> CLK,\n"
@@ -248,7 +248,7 @@ network ns =  "\tNETWORK : Graph\n"
           where
             nNodes = length ns
 
-synchroniser :: [P.Node] -> String
+synchroniser :: [P.Vertex] -> String
 synchroniser ns =  "\tSYNCHRONISER : Generic_sync_register\n"
                 ++ "\t\tGENERIC MAP(" ++ show nNodes ++ ")\n"
                 ++ "\t\tPORT MAP(\n"
@@ -260,7 +260,7 @@ synchroniser ns =  "\tSYNCHRONISER : Generic_sync_register\n"
                   where
                     nNodes = length ns
 
-shift_reg :: [P.Node] -> String
+shift_reg :: [P.Vertex] -> String
 shift_reg ns =  "\tSHIFT_REG : Generic_shift_register_input\n"
                 ++ "\t\tGENERIC MAP(" ++ show (nNodes+1) ++ ")\n"
                 ++ "\t\tPORT MAP(\n"
@@ -293,7 +293,7 @@ counter_delayer =  "\tCOUNTER_DELAYER : Delayer\n"
                 ++ "\t\t\tDIN\t=> start_del,\n"
                 ++ "\t\t\tDOUT\t=> start_counting);\n\n"
 
-comparator_delayer :: [P.Node] -> String
+comparator_delayer :: [P.Vertex] -> String
 comparator_delayer ns = "\tCOMPARATOR_DELAYER : Delayer\n"
                   ++ "\t\tGENERIC MAP (3)\n"
                   ++ "\t\tPORT MAP(\n"
@@ -303,7 +303,7 @@ comparator_delayer ns = "\tCOMPARATOR_DELAYER : Delayer\n"
                   ++ "\t\t\tDIN\t=> start_del,\n"
                   ++ "\t\t\tDOUT\t=> comparator_en);\n\n"
 
-comparator_delayer_result :: [P.Node] -> String
+comparator_delayer_result :: [P.Vertex] -> String
 comparator_delayer_result ns =  "\tCOMPARATOR_DELAYER_RESULT : Delayer\n"
                   ++ "\t\tGENERIC MAP (3)\n"
                   ++ "\t\tPORT MAP(\n"
@@ -313,7 +313,7 @@ comparator_delayer_result ns =  "\tCOMPARATOR_DELAYER_RESULT : Delayer\n"
                   ++ "\t\t\tDIN\t=> done1,\n"
                   ++ "\t\t\tDOUT\t=> done_res);\n\n"
 
-genericCounter :: [P.Node] -> String
+genericCounter :: [P.Vertex] -> String
 genericCounter ns =  "\tCOUNTER : Generic_counter\n"
                   ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                   ++ "\t\tPORT MAP(\n"
@@ -322,7 +322,7 @@ genericCounter ns =  "\tCOUNTER : Generic_counter\n"
                   ++ "\t\t\tEN\t=> start_counting,\n"
                   ++ "\t\t\tDOUT\t=> count);\n\n"
 
-reg_counter :: [P.Node] -> String
+reg_counter :: [P.Vertex] -> String
 reg_counter ns =  "\tREG_COUNTER : Generic_register\n"
                ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                ++ "\t\tPORT MAP(\n"
@@ -332,7 +332,7 @@ reg_counter ns =  "\tREG_COUNTER : Generic_register\n"
                ++ "\t\t\tDIN\t=> count,\n"
                ++ "\t\t\tDOUT\t=> count_sum);\n\n"
 
-reg_counter_mul :: [P.Node] -> String
+reg_counter_mul :: [P.Vertex] -> String
 reg_counter_mul ns =  "\tREG_COUNTER_MUL : Generic_register\n"
                ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                ++ "\t\tPORT MAP(\n"
@@ -342,7 +342,7 @@ reg_counter_mul ns =  "\tREG_COUNTER_MUL : Generic_register\n"
                ++ "\t\t\tDIN\t=> count_sum,\n"
                ++ "\t\t\tDOUT\t=> count_mul);\n\n"
 
-reg_counter_mul2 :: [P.Node] -> String
+reg_counter_mul2 :: [P.Vertex] -> String
 reg_counter_mul2 ns =  "\tREG_COUNTER_MUL2 : Generic_register\n"
               ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
               ++ "\t\tPORT MAP(\n"
@@ -352,7 +352,7 @@ reg_counter_mul2 ns =  "\tREG_COUNTER_MUL2 : Generic_register\n"
               ++ "\t\t\tDIN\t=> count_mul,\n"
               ++ "\t\t\tDOUT\t=> count_mul2);\n\n"
 
-reg_sum_mul :: [P.Node] -> String
+reg_sum_mul :: [P.Vertex] -> String
 reg_sum_mul ns =  "\tREG_SUM_MUL : Generic_register\n"
                ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
                ++ "\t\tPORT MAP(\n"
@@ -362,7 +362,7 @@ reg_sum_mul ns =  "\tREG_SUM_MUL : Generic_register\n"
                ++ "\t\t\tDIN\t=> sum,\n"
                ++ "\t\t\tDOUT\t=> sum_mul);\n\n"
 
-reg_sum_mul2 :: [P.Node] -> String
+reg_sum_mul2 :: [P.Vertex] -> String
 reg_sum_mul2 ns =  "\tREG_SUM_MUL2 : Generic_register\n"
               ++ "\t\tGENERIC MAP(" ++ show (bitSum ns) ++ ")\n"
               ++ "\t\tPORT MAP(\n"
@@ -372,7 +372,7 @@ reg_sum_mul2 ns =  "\tREG_SUM_MUL2 : Generic_register\n"
               ++ "\t\t\tDIN\t=> sum_mul,\n"
               ++ "\t\t\tDOUT\t=> sum_mul2);\n\n"
 
-genericAccumulator :: [P.Node] -> String
+genericAccumulator :: [P.Vertex] -> String
 genericAccumulator ns =  "\tACCUMULATOR : Generic_accumulator\n"
                       ++ "\t\tGENERIC MAP(" ++ show (bitMul ns) ++ ")\n"
                       ++ "\t\tPORT MAP(\n"
@@ -387,9 +387,9 @@ connectWires p =  "\tsum <= " ++ adders ns (nNodes-1)
                                ++ multiplier
                                   where
                                     nNodes = length ns
-                                    ns = P.nodes p
+                                    ns = P.vertices p
 
-adders :: [P.Node] -> Int -> String
+adders :: [P.Vertex] -> Int -> String
 adders ns 0 = "\t\t(\"" ++ generateZeros ((bitSum ns)-1) ++ "\" & sync_out(0));\n\n"
 adders ns n = "\t\t(\"" ++ generateZeros ((bitSum ns)-1) ++ "\" & sync_out(" ++ show (n) ++ "))\t+\n"
                         ++ adders ns (n-1)
@@ -401,12 +401,12 @@ generateZeros :: Int -> String
 generateZeros 0 = ""
 generateZeros n = "0" ++ generateZeros (n-1)
 
-bitSum :: [P.Node] -> Int
+bitSum :: [P.Vertex] -> Int
 bitSum ns = ceiling (logBase (2.0 :: Double) (fromIntegral nNodes))
   where
     nNodes = length ns
 
-bitMul :: [P.Node] -> Int
+bitMul :: [P.Vertex] -> Int
 bitMul ns = (bitSum ns) * 2
 
 -- getNodes :: ShortGraph -> [Node]

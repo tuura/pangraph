@@ -3,30 +3,41 @@
 module Pangraph.Internal.Graph (
 -- Abstract Types
 Pangraph,
-Vertex,
 Edge,
+Vertex,
 Attribute, -- A type alias for (Key, Value)
 Key,
 Value,
+Identifier,
 
 -- Constructors
 makePangraph,
-makeVertex,
 makeEdge,
-makeKey,
-makeValue,
--- Getters
-vertices,
+makeVertex,
+-- makeKey,
+-- makeValue,
+
+-- Pangraph Getters
 edges,
-vertexAttributes,
+vertices,
+mapEdges,
+mapVertices,
+
+-- Getters on Vertex and Edge
 edgeAttributes,
 edgeEndpoints,
-key,
-value,
+vertexAttributes,
+edgeID,
+vertexID,
+
+-- Getters on Attributes
+-- key,
+-- value
 ) where
 
-import Data.List (intercalate)
 import Data.Map.Strict (Map)
+import Data.List (intercalate)
+import Data.ByteString.Char8 (pack)
 import qualified Data.Map.Strict                  as Map
 import qualified Data.ByteString                  as BS
 
@@ -35,22 +46,22 @@ data Pangraph = Pangraph
   , edges' :: Map Identifier Edge
   } deriving (Eq)
 data Vertex = Vertex
-  { vertexID' :: Maybe Identifier
+  { vertexID' :: Identifier
   , vertexAttributes' :: [Attribute]
   } deriving (Eq)
 data Edge = Edge
   { edgeID' :: Maybe Identifier
   , edgeAttributes' :: [Attribute]
-  , source :: Vertex
-  , target :: Vertex
+  , endpoints' :: (Vertex, Vertex)
   } deriving (Eq)
 
-type Identifier = Word
+type Identifier = BS.ByteString
 type Attribute = (Key, Value)
+type Key = BS.ByteString
+type Value = BS.ByteString
 
-newtype Key = Key BS.ByteString deriving (Eq, Ord, Show)
-newtype Value = Value BS.ByteString deriving (Eq, Ord, Show)
-
+-- newtype Key = Key BS.ByteString deriving (Eq, Ord, Show)
+-- newtype Value = Value BS.ByteString deriving (Eq, Ord, Show)
 
 -- List based constructors
 
@@ -58,73 +69,72 @@ makePangraph :: [Vertex] -> [Edge] -> Pangraph
 makePangraph vs es = Pangraph (Map.fromList indexVertices) (Map.fromList indexEdges)
   where
     indexVertices :: [(Identifier, Vertex)]
-    indexVertices = map (\ (i, (Vertex _ as)) -> (i, (Vertex (Just i) as))) $ zip indexList vs
+    indexVertices = zip (map vertexID vs) vs
     indexEdges :: [(Identifier, Edge)]
-    indexEdges = map (\ (i, (Edge _ as a b)) -> (i, (Edge (Just i) as a b ))) $ zip indexList es
-    indexList :: [Identifier]
-    indexList = [0..] :: [Identifier]
+    indexEdges = map (\ (i, (Edge _ as a)) -> (i, (Edge (Just i) as a ))) $ zip indexList es
+    indexList = (map (pack . show) [0..]) :: [Identifier]
 
-makeVertex :: [Attribute] -> Vertex
-makeVertex = Vertex Nothing
-
-makeEdge :: [Attribute] -> Vertex -> Vertex -> Edge
+-- The nothing nothing occupies the Identifier field.
+makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
 makeEdge = Edge Nothing
+
+makeVertex :: Identifier -> [Attribute] -> Vertex
+makeVertex = Vertex
 
 -- Other Constructors
 
-makeKey :: BS.ByteString -> Key
-makeKey = Key
-
-makeValue :: BS.ByteString -> Value
-makeValue = Value
-
--- makeAttribute :: (Key, Value) -> Attribute
--- makeAttribute a = Attribute a
+-- makeKey :: BS.ByteString -> Key
+-- makeKey = Key
+--
+-- makeValue :: BS.ByteString -> Value
+-- makeValue = Value
 
 -- Getters
 
-vertices :: Pangraph -> [Vertex]
-vertices p = map snd $ Map.toList $ vertices' p
+mapEdges :: Pangraph -> Map Identifier Edge
+mapEdges p = edges' p
+
+mapVertices :: Pangraph -> Map Identifier Vertex
+mapVertices p = vertices' p
 
 edges :: Pangraph -> [Edge]
 edges p = map snd $ Map.toList $ edges' p
 
-key :: Key -> BS.ByteString
-key (Key a) = a
-
-value :: Value -> BS.ByteString
-value (Value a) = a
-
---  Accessor methods
-
-vertexAttributes :: Vertex -> [Attribute]
-vertexAttributes = vertexAttributes'
+vertices :: Pangraph -> [Vertex]
+vertices p = map snd $ Map.toList $ vertices' p
 
 edgeAttributes :: Edge -> [Attribute]
 edgeAttributes = edgeAttributes'
 
--- Primitive fields
+vertexAttributes :: Vertex -> [Attribute]
+vertexAttributes = vertexAttributes'
+edgeID :: Edge -> Identifier
 
--- vertexID :: Vertex -> Identifier
--- vertexID node =
---   case vertexID' node of
---     Just a -> a
---     Nothing -> error $ "Fatal: Vertex missing ID, " ++ show node
---
--- edgeID :: Edge -> Identifier
--- edgeID edge =
---   case edgeID' edge of
---     Just a -> a
---     Nothing -> error $ "Fatal: Edge missing ID, " ++ show edge
+vertexID :: Vertex -> Identifier
+vertexID = vertexID'
+
+edgeID edge =
+  case edgeID' edge of
+    Just a -> a
+    Nothing -> error $ "Fatal: Edge missing ID, " ++ show edge
 
 edgeEndpoints :: Edge -> (Vertex, Vertex)
-edgeEndpoints e = (source e, target e)
+edgeEndpoints = endpoints'
+
+-- key :: Key -> BS.ByteString
+-- key (Key a) = a
+--
+-- value :: Value -> BS.ByteString
+-- value (Value a) = a
 
 instance Show Pangraph where
-  show (Pangraph n e) = "Pangraph " ++ show (Map.toList n) ++ " "  ++ show (Map.toList e)
+  show p = "Pangraph " ++ show (vertices p) ++ " " ++ show (edges p)
 
 instance Show Vertex where
-  show (Vertex _ as) = "Vertex " ++ show as
+  show v@(Vertex _ as) = intercalate " " ["Vertex", show (vertexID v), show as]
 
 instance Show Edge where
-  show (Edge _ as src dst) = intercalate " " ["Edge", show as, show $ vertexID' src , show $ vertexID' dst ]
+  show e@(Edge _ as ends) = intercalate " " ["Edge", show (edgeID e) ,show as] -- show tupleID]
+    where
+      tupleID :: (Identifier, Identifier)
+      tupleID = (vertexID' $ fst ends ,vertexID' $ snd ends)
