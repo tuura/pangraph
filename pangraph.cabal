@@ -18,8 +18,8 @@ library
   exposed-modules:    Pangraph
                    ,  Pangraph.Internal.Graph
                    ,  Pangraph.GraphML.Parser
-                  --  ,  Pangraph.VHDL.GraphWriter
-                  --  ,  Pangraph.VHDL.EnvironmentWriter
+                   ,  Pangraph.VHDL.GraphWriter
+                   ,  Pangraph.VHDL.EnvironmentWriter
                    ,  Pangraph.XMLTemplate
   -- other-modules:
   build-depends:      base >= 4.8 && < 5
@@ -41,15 +41,15 @@ test-suite pangraph-test
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -fbreak-on-exception
 
--- executable fantasi
---   hs-source-dirs:   fantasi
---   main-is:          Main.hs
---   other-modules:    Tuura.Fantasi.Main,
---                     Tuura.Fantasi.Options
---
---   build-depends:    base >= 4.8 && < 5,
---                     filepath,
---                     pangraph,
---                     bytestring
---   default-language: Haskell2010
---   GHC-options:      -Wall -fwarn-tabs
+executable fantasi
+  hs-source-dirs:   fantasi
+  main-is:          Main.hs
+  other-modules:    Tuura.Fantasi.Main,
+                    Tuura.Fantasi.Options
+
+  build-depends:    base >= 4.8 && < 5,
+                    filepath,
+                    pangraph,
+                    bytestring
+  default-language: Haskell2010
+  GHC-options:      -Wall -fwarn-tabs
