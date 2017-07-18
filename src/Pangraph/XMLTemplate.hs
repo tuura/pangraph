@@ -42,7 +42,7 @@ hexmlToPangraph (XML nt et) root = P.makePangraph n e
     -- Map all the given rules over the XML tree for vertices
     n = (concatMap (extractVertices root "id") nt)
     -- Map all the given rules over the XML tree for edges
-    e = (concatMap (extractEdges (P.toAssocList n) root ) et)
+    e = (concatMap (extractEdges (P.vertexToAssocList n) root ) et)
 
 -- Applies the Node rule to the Hexml root node, returning a list of pangraph nodes found.
 extractVertices :: HexmlNode -> BS.ByteString -> NodeRule -> [P.Vertex]
@@ -51,7 +51,7 @@ extractVertices hexml idElement (NodeRule pe) = concatMap (makeVertex hexml idEl
 makeVertex :: HexmlNode -> BS.ByteString -> (Path, Element) -> [P.Vertex]
 makeVertex hexml idElement (path, element) = map (\as -> P.makeVertex (idElem as) as) attList
   where
-    idElem :: [P.Attribute] -> P.Identifier
+    idElem :: [P.Attribute] -> P.VertexID
     idElem list = case lookup idElement list of
       Just a -> a
       Nothing -> error $ "Fatal: node missing id value: " ++ show list
@@ -60,10 +60,10 @@ makeVertex hexml idElement (path, element) = map (\as -> P.makeVertex (idElem as
     attList = map (getAttributePairs element) $ resolvePath path hexml
 
 -- Applies the edge rule to the Hexml root edge, returning a list of pangraph extractEdges found.
-extractEdges:: [(P.Identifier, P.Vertex)] -> HexmlNode -> EdgeRule -> [P.Edge]
+extractEdges:: [(P.VertexID, P.Vertex)] -> HexmlNode -> EdgeRule -> [P.Edge]
 extractEdges verticesAssoc hexml (EdgeRule pe) = concatMap (makeEdge verticesAssoc hexml) pe
 
-makeEdge :: [(P.Identifier, P.Vertex)] ->  HexmlNode -> (Path, Element) -> [P.Edge]
+makeEdge :: [(P.VertexID, P.Vertex)] ->  HexmlNode -> (Path, Element) -> [P.Edge]
 makeEdge verticesAssoc hexml (path, element) = map (\as -> P.makeEdge as (getPrimitives as)) attList
   where
     getPrimitives :: [P.Attribute] -> (P.Vertex, P.Vertex)
