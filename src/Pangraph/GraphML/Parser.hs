@@ -1,5 +1,6 @@
 module Pangraph.GraphML.Parser (
 graphmlToPangraph,
+graphmlToPangraph'
 ) where
 
 import qualified Pangraph as P
@@ -12,3 +13,12 @@ graphmlToPangraph file =
   case H.parse file of
     Left x -> Left x
     Right x -> Right $ PT.hexmlToPangraph PT.graphMLTemplate x
+
+graphmlToPangraph' :: BS.ByteString -> P.Pangraph
+graphmlToPangraph' file =
+  case graphmlToPangraph file of
+    Left hexmlError -> error (show hexmlError)
+    Right makePangraphResult ->
+      case makePangraphResult of
+        Left malformedEdges -> error $ "Malformed edges in GraphML: " ++ show malformedEdges
+        Right pangraph -> pangraph
