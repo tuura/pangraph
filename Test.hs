@@ -10,7 +10,7 @@ import qualified Pangraph.VHDL.EnvironmentWriter  as VHDL_E
 import qualified Pangraph.VHDL.GraphWriter        as VHDL_G
 
 
-type Parser = BS.ByteString -> Either BS.ByteString P.Pangraph
+type Parser = BS.ByteString -> Either BS.ByteString (Either [P.MalformedEdge] P.Pangraph)
 
 main :: IO ()
 main = do
@@ -32,8 +32,14 @@ testShowInstance = case literal == show graph of
     literal = fst showInstanceTestCase
     graph = snd showInstanceTestCase
     showInstanceTestCase :: (String, P.Pangraph)
-    showInstanceTestCase = ("Pangraph [Vertex \"0\" [(\"id\",\"0\")],Vertex \"1\" [(\"id\",\"1\")]] [Edge 0 [(\"source\",\"0\"),(\"target\",\"1\")]]",
-     P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)])
+    showInstanceTestCase = ("Pangraph [Vertex \"0\" [(\"id\",\"0\")],Vertex \"1\" [(\"id\",\"1\")]] [Edge 0 [(\"source\",\"0\"),(\"target\",\"1\")]]", sampleGraph)
+    sampleGraph :: P.Pangraph
+    sampleGraph =
+      let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)]
+      in  case graph' of
+            Right pangraph -> pangraph
+            Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+
     sampleVertices :: [P.Vertex]
     sampleVertices =
       [P.makeVertex "0" [("id","0")],
@@ -45,22 +51,28 @@ testGraphML :: IO ()
 testGraphML = do
   file <- fmap pack $ readFile path
   case (parser file) of
-    Left x -> error (show x)
-    Right y -> if y == graphs
-      then putStrLn "-Parse Passed"
-      else error $ "!Test failed\n" ++ show y
+    Left hexmlError -> error (show hexmlError)
+    Right makePangraphResult ->
+      case makePangraphResult of
+        Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+        Right pangraph ->
+          if graph == pangraph
+            then putStrLn "-Parse Passed"
+            else error $ "!Test failed\n" ++ show graph ++ "\n!=\n" ++ show pangraph
   where
     path :: FilePath
     path = "examples/graphs/small.graphml"
     parser :: Parser
     parser = GraphML_P.graphmlToPangraph
-    graphs :: P.Pangraph
-    graphs =
-      P.makePangraph
-        sampleVertices
-        [P.makeEdge
-          [("source","n0"),
-           ("target","n2")] ((sampleVertices !! 0), (sampleVertices !! 2))]
+    graph :: P.Pangraph
+    graph =
+      let graph' = P.makePangraph sampleVertices
+                    [P.makeEdge [("source","n0"),("target","n2")]
+                      ((sampleVertices !! 0), (sampleVertices !! 2))]
+      in case graph' of
+            Right pangraph -> pangraph
+            Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+
     sampleVertices :: [P.Vertex]
     sampleVertices =
       [ P.makeVertex "n0" [ ("id","n0")],
@@ -80,11 +92,14 @@ testVHDL = do
   where
     -- args: A graphML file, the string which should result, the function which maps the file to result
     applyTest :: (BS.ByteString, String) -> (P.Pangraph -> String) -> String
-    applyTest (g, example) f = case (parser g) of
-        Left x -> error (show x)
-        Right p -> case example == f p of
-            True -> "-VHDL passed test\n"
-            False -> error $ "!VHDL failed test : " ++ show example ++ "\n!=\n" ++ (show $ f p)
+    applyTest (raw, example) f = case (parser raw) of
+        Left hexmlError -> error (show hexmlError)
+        Right makePangraphResult ->
+          case makePangraphResult of
+            Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+            Right pangraph -> case example == f pangraph of
+                True -> "-VHDL passed test\n"
+                False -> error $ "!VHDL failed test : " ++ show example ++ "\n!=\n" ++ (show $ f pangraph)
 
     graphPaths :: [FilePath]
     graphPaths = ["examples/graphs/n1/n1.graphml",

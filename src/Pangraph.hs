@@ -3,6 +3,7 @@
 module Pangraph (
 -- Abstract Types
 Pangraph,
+MalformedEdge,
 Edge,
 Vertex,
 Attribute, -- A type alias for (Key, Value)
@@ -21,22 +22,28 @@ edges,
 vertices,
 mapEdges,
 mapVertices,
+vertexByID,
+edgeByID,
+
+-- -- Operations on Pangraph
+-- addEdge,
+-- updateEdge,
+-- insertVertex,
+-- removeEdge,
+-- removeVertex,
 
 -- Getters on Vertex and Edge
 edgeAttributes,
-edgeEndpoints,
 vertexAttributes,
+edgeEndpoints,
 edgeID,
 vertexID,
-
--- Operators
-insertVertex,
-addEdge,
-updateEdge,
 lookupVertexValues,
 lookupEdgeValues,
-vertexByID,
-edgeByID,
+edgeContainsKey,
+vertexContainsKey,
+
+-- Utility Operations
 vertexToAssocList,
 edgeToAssocList
 ) where

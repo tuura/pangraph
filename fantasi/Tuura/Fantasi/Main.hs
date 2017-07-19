@@ -20,9 +20,11 @@ main = do
     -- parse graph
     case P.graphmlToPangraph (pack graphMLPath) of
       Left l -> error $ show l
-      Right graphParsed -> do
-            let graphVHDL   = W2.writeGraphVhdl graphParsed
-            let simEnvVHDL  = W1.writeEnvironmentVhdl graphParsed
+      Right graphParsed -> case graphParsed of
+        Left malformedEdges -> error $ show malformedEdges
+        Right pangraph -> do
+            let graphVHDL   = W2.writeGraphVhdl pangraph
+            let simEnvVHDL  = W1.writeEnvironmentVhdl pangraph
 
             -- output vhdl graph
             writeFile graphVHDLPath graphVHDL

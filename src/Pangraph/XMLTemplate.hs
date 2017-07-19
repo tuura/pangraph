@@ -36,7 +36,7 @@ graphMLTemplate = XML
 -- parseTemplateToAlga:: (A.Graph g) => Template -> HexmlNode -> g P.Vertex
 -- parseTemplateToAlga (XML nt et) root=P.makeAlga (concatMap (nodes root) nt) (concatMap (extractEdges root) et)
 
-hexmlToPangraph :: Template -> HexmlNode -> P.Pangraph
+hexmlToPangraph :: Template -> HexmlNode -> Either [P.MalformedEdge] P.Pangraph
 hexmlToPangraph (XML nt et) root = P.makePangraph n e
   where
     -- Map all the given rules over the XML tree for vertices

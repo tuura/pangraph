@@ -3,6 +3,7 @@
 module Pangraph.Internal.Graph (
 -- Abstract Types
 Pangraph,
+MalformedEdge,
 Edge,
 Vertex,
 Attribute, -- A type alias for (Key, Value)
@@ -21,22 +22,28 @@ edges,
 vertices,
 mapEdges,
 mapVertices,
+vertexByID,
+edgeByID,
+
+-- -- Operations on Pangraph
+-- addEdge,
+-- updateEdge,
+-- insertVertex,
+-- removeEdge,
+-- removeVertex,
 
 -- Getters on Vertex and Edge
 edgeAttributes,
-edgeEndpoints,
 vertexAttributes,
+edgeEndpoints,
 edgeID,
 vertexID,
-
--- Operators
-insertVertex,
-addEdge,
-updateEdge,
 lookupVertexValues,
 lookupEdgeValues,
-vertexByID,
-edgeByID,
+vertexContainsKey,
+edgeContainsKey,
+
+-- Utility Operations
 vertexToAssocList,
 edgeToAssocList
 
@@ -44,6 +51,7 @@ edgeToAssocList
 
 import Data.Map.Strict (Map)
 import Data.List (intercalate)
+import Data.Maybe (catMaybes)
 import Data.ByteString.Char8 (pack, unpack)
 import qualified Data.Map.Strict                  as Map
 import qualified Data.ByteString                  as BS
@@ -68,20 +76,32 @@ type EdgeID = Int
 type Attribute = (Key, Value)
 type Key = BS.ByteString
 type Value = BS.ByteString
+type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
 
 -- List based constructors
 
-makePangraph :: [Vertex] -> [Edge] -> Pangraph
-makePangraph vs es = Pangraph (Map.fromList indexVertices) edgeMap (1 + Map.size edgeMap)
+makePangraph :: [Vertex] -> [Edge] -> Either [MalformedEdge] Pangraph
+makePangraph vs es = case verifyGraph vertexMap es of
+  [] -> Right $ Pangraph vertexMap edgeMap (1 + Map.size edgeMap)
+  abberrations -> Left abberrations
   where
+    vertexMap :: Map VertexID Vertex
+    vertexMap = Map.fromList $ zip (map vertexID vs) vs
     edgeMap :: Map EdgeID Edge
     edgeMap = Map.fromList indexEdges
-    indexVertices :: [(VertexID, Vertex)]
-    indexVertices = zip (map vertexID vs) vs
     indexEdges :: [(EdgeID, Edge)]
     indexEdges = map (\ (i, (Edge _ as a)) -> (i, (Edge (Just i) as a ))) $ zip [0..] es
 
--- The nothing occupies the Identifier field until they are all gathered an IDed.
+verifyGraph :: Map VertexID Vertex -> [Edge] -> [MalformedEdge]
+verifyGraph vs es = catMaybes $ map (\e -> lookupEndpoints (e, edgeEndpoints e)) es
+  where
+    lookupEndpoints :: (Edge, (Vertex, Vertex)) ->  Maybe MalformedEdge
+    lookupEndpoints (e, (v1,v2)) =
+      case (Map.lookup (vertexID v1) vs, Map.lookup (vertexID v2) vs) of
+        (Just _, Just _)    -> Nothing
+        (Nothing, Just _)   -> Just (e, (Just v1, Nothing))
+        (Just _, Nothing)   -> Just (e, (Nothing, Just v2))
+        (Nothing, Nothing)  -> Just (e, (Just v1, Just v2))
 
 makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
 makeEdge = Edge Nothing
@@ -101,14 +121,48 @@ mapEdges = edges'
 mapVertices :: Pangraph -> Map VertexID Vertex
 mapVertices = vertices'
 
+edgeByID :: EdgeID -> Pangraph -> Maybe Edge
+edgeByID key p = Map.lookup key (mapEdges p)
+
+vertexByID :: VertexID -> Pangraph -> Maybe Vertex
+vertexByID key p = Map.lookup key (mapVertices p)
+
+-- -- Operations on Pangraph
+--
+-- addEdge :: Edge -> Pangraph -> Pangraph
+-- addEdge (Edge (Just _) _ _) _ = error $ "Edge already has an ID, perhaps you should use `updateEdge`"
+-- addEdge (Edge Nothing as a) p =
+--   Pangraph (mapVertices p) newMap (1 + nextEdge' p)
+--   where
+--     newMap :: Map Int Edge
+--     newMap = Map.insert (edgeID addEdgeID) (addEdgeID) (mapEdges p)
+--     addEdgeID :: Edge
+--     addEdgeID = (Edge (Just (nextEdge' p)) as a)
+--
+-- updateEdge :: Edge -> Pangraph -> Pangraph
+-- updateEdge e p =
+--   let newMap = Map.insert (edgeID e) e (mapEdges p)
+--   in  Pangraph (mapVertices p) newMap (nextEdge' p)
+--
+-- insertVertex :: Vertex -> Pangraph -> Pangraph
+-- insertVertex v p = Pangraph (newMap) (mapEdges p) (nextEdge' p)
+--   where
+--     newMap :: Map VertexID Vertex
+--     newMap = Map.insert (vertexID v) v (mapVertices p)
+--
+-- removeEdge :: Edge -> Pangraph -> Maybe Pangraph
+-- removeEdge e p = Map.
+--
+-- removeVertex :: Vertex -> Pangraph -> Maybe Pangraph
+
 edgeAttributes :: Edge -> [Attribute]
 edgeAttributes = edgeAttributes'
 
 vertexAttributes :: Vertex -> [Attribute]
 vertexAttributes = vertexAttributes'
 
-vertexID :: Vertex -> VertexID
-vertexID = vertexID'
+edgeEndpoints :: Edge -> (Vertex, Vertex)
+edgeEndpoints = endpoints'
 
 edgeID :: Edge -> EdgeID
 edgeID edge =
@@ -116,28 +170,8 @@ edgeID edge =
     Just a -> a
     Nothing -> error $ "Fatal: Edge missing ID, " ++ show edge
 
--- Operations on Pangraph
-
-insertVertex :: Vertex -> Pangraph -> Pangraph
-insertVertex v p = Pangraph (newMap) (mapEdges p) (nextEdge' p)
-  where
-    newMap :: Map VertexID Vertex
-    newMap = Map.insert (vertexID v) v (mapVertices p)
-
-updateEdge :: Edge -> Pangraph -> Pangraph
-updateEdge e p =
-  let newMap = Map.insert (edgeID e) e (mapEdges p)
-  in  Pangraph (mapVertices p) newMap (nextEdge' p)
-
-addEdge :: Edge -> Pangraph -> Pangraph
-addEdge (Edge (Just _) _ _) _ = error $ "Edge already has an ID, perhaps you should use `updateEdge`"
-addEdge (Edge Nothing as a) p =
-  Pangraph (mapVertices p) newMap (1 + nextEdge' p)
-  where
-    newMap :: Map Int Edge
-    newMap = Map.insert (edgeID addEdgeID) (addEdgeID) (mapEdges p)
-    addEdgeID :: Edge
-    addEdgeID = (Edge (Just (nextEdge' p)) as a)
+vertexID :: Vertex -> VertexID
+vertexID = vertexID'
 
 lookupVertexValues :: Vertex -> Key -> Maybe Value
 lookupVertexValues v k = lookup k (vertexAttributes v)
@@ -145,11 +179,7 @@ lookupVertexValues v k = lookup k (vertexAttributes v)
 lookupEdgeValues :: Edge -> Key -> Maybe Value
 lookupEdgeValues e k = lookup k (edgeAttributes e)
 
-vertexByID :: VertexID -> Pangraph -> Maybe Vertex
-vertexByID key p = Map.lookup key (mapVertices p)
-
-edgeByID :: EdgeID -> Pangraph -> Maybe Edge
-edgeByID key p = Map.lookup key (mapEdges p)
+-- Utility Operations
 
 vertexToAssocList :: [Vertex] -> [(VertexID, Vertex)]
 vertexToAssocList vs = map (\v -> (vertexID v, v)) vs
@@ -157,8 +187,11 @@ vertexToAssocList vs = map (\v -> (vertexID v, v)) vs
 edgeToAssocList :: [Edge] -> [(EdgeID, Edge)]
 edgeToAssocList es = map (\e -> (edgeID e, e)) es
 
-edgeEndpoints :: Edge -> (Vertex, Vertex)
-edgeEndpoints = endpoints'
+edgeContainsKey :: Key -> Edge -> Bool
+edgeContainsKey k e = elem k $ map fst $ edgeAttributes e
+
+vertexContainsKey :: Key -> Vertex -> Bool
+vertexContainsKey k v = elem k $ map fst $ vertexAttributes v
 
 instance Show Pangraph where
   show p = "Pangraph " ++ show (vertices p) ++ " " ++ show (edges p)
