@@ -51,7 +51,7 @@ edgeToAssocList
 
 import Data.Map.Strict (Map)
 import Data.List (intercalate)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, mapMaybe, fromMaybe)
 import Data.ByteString.Char8 (pack, unpack)
 import qualified Data.Map.Strict                  as Map
 import qualified Data.ByteString                  as BS
@@ -90,10 +90,10 @@ makePangraph vs es = case verifyGraph vertexMap es of
     edgeMap :: Map EdgeID Edge
     edgeMap = Map.fromList indexEdges
     indexEdges :: [(EdgeID, Edge)]
-    indexEdges = map (\ (i, (Edge _ as a)) -> (i, (Edge (Just i) as a ))) $ zip [0..] es
+    indexEdges = map (\ (i, Edge _ as a) -> (i, Edge (Just i) as a )) $ zip [0..] es
 
 verifyGraph :: Map VertexID Vertex -> [Edge] -> [MalformedEdge]
-verifyGraph vs es = catMaybes $ map (\e -> lookupEndpoints (e, edgeEndpoints e)) es
+verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
   where
     lookupEndpoints :: (Edge, (Vertex, Vertex)) ->  Maybe MalformedEdge
     lookupEndpoints (e, (v1,v2)) =
@@ -165,10 +165,10 @@ edgeEndpoints :: Edge -> (Vertex, Vertex)
 edgeEndpoints = endpoints'
 
 edgeID :: Edge -> EdgeID
-edgeID edge =
-  case edgeID' edge of
-    Just a -> a
-    Nothing -> error $ "Fatal: Edge missing ID, " ++ show edge
+edgeID edge = fromMaybe
+  (error $ "Fatal: Edge missing ID, " ++ show edge)
+  (edgeID' edge)
+
 
 vertexID :: Vertex -> VertexID
 vertexID = vertexID'
@@ -182,10 +182,10 @@ lookupEdgeValues e k = lookup k (edgeAttributes e)
 -- Utility Operations
 
 vertexToAssocList :: [Vertex] -> [(VertexID, Vertex)]
-vertexToAssocList vs = map (\v -> (vertexID v, v)) vs
+vertexToAssocList = map (\v -> (vertexID v, v))
 
 edgeToAssocList :: [Edge] -> [(EdgeID, Edge)]
-edgeToAssocList es = map (\e -> (edgeID e, e)) es
+edgeToAssocList = map (\e -> (edgeID e, e))
 
 edgeContainsKey :: Key -> Edge -> Bool
 edgeContainsKey k e = elem k $ map fst $ edgeAttributes e
@@ -197,10 +197,10 @@ instance Show Pangraph where
   show p = "Pangraph " ++ show (vertices p) ++ " " ++ show (edges p)
 
 instance Show Vertex where
-  show v@(Vertex _ as) = intercalate " " ["Vertex", show (vertexID v), show as]
+  show v@(Vertex _ as) = unwords ["Vertex", show (vertexID v), show as]
 
 instance Show Edge where
-  show e@(Edge _ as ends) = intercalate " " ["Edge", show (edgeID e) ,show as] -- show tupleID]
+  show e@(Edge _ as ends) = unwords ["Edge", show (edgeID e) ,show as] -- show tupleID]
     -- where
     --   tupleID :: (Identifier, Identifier)
     --   tupleID = (vertexID' $ fst ends ,vertexID' $ snd ends)
