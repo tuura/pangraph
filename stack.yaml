@@ -1,5 +1,5 @@
 extra-deps:
-resolver: lts-8.19
+resolver: lts-8.22
 flags: {}
 extra-package-dbs: []
 packages:
