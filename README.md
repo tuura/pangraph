@@ -9,8 +9,8 @@ Information on current graph support can be found below that.
 
 ## How to use Pangraph
 
-Pangraph offers an api in the module `Pangraph` for manipulation of graphs including construtors and getters.  
-You can construct graphs inline with these functions or use the parsers.
+Pangraph offers an api in the module `Pangraph` for accessing of graphs including constructors and getters.  
+You can construct entire graph or edit the results of parser.
 These are imported independently form their own modules:  
 ```
 import Pangraph.GraphML.Parser
@@ -18,10 +18,7 @@ import Pangraph.GraphML.Parser
 
 All parsers currently export the following:
 ```
-parseGraphToAlga,
-parseTemplateToPangraph,
-template,
-Template
+formatToPangraph :: format -> Pangraph
 ```
 
 An example of reading this code can be found in `Examples` below
@@ -41,22 +38,25 @@ cabal install
 ## Examples  
 
 ### Parsing a Graph file  
-```
+```haskell
 module Reading where
 
+import Prelude hiding (readFile)
+import Data.ByteString (readFile)
 import qualified Pangraph.GraphML.Parser as GraphML_P
-import Data.ByteString.Char8 (pack)
 
 main:: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  let graph = GraphML_P.parseTemplateToPangraph (head GraphML_P.template) $ pack file
-  case graph of
-    Left x -> putStrLn (show x)
-    Right y -> putStrLn (show y)
-```
 
+  case GraphML_P.graphmlToPangraph file of
+    Left hexmlErr-> putStrLn $ show hexmlErr
+    Right makePangraph ->
+      case makePangraph of
+        Left malformedEdges -> putStrLn $ show malformedEdges
+        Right pangraph -> putStrLn $ show pangraph
+```
 
 ## Graph support  
 ### [GraphML](http://graphml.graphdrawing.org/)

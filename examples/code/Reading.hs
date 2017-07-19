@@ -1,13 +1,17 @@
 module Reading where
 
+import Prelude hiding (readFile)
+import Data.ByteString (readFile)
 import qualified Pangraph.GraphML.Parser as GraphML_P
-import Data.ByteString.Char8 (pack)
 
 main:: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  let graph = GraphML_P.parseTemplateToPangraph (head GraphML_P.template) $ pack file
-  case graph of
-    Left x -> putStrLn (show x)
-    Right y -> putStrLn (show y)
+
+  case GraphML_P.graphmlToPangraph file of
+    Left hexmlErr-> putStrLn $ show hexmlErr
+    Right makePangraph ->
+      case makePangraph of
+        Left malformedEdges -> putStrLn $ show malformedEdges
+        Right pangraph -> putStrLn $ show pangraph
