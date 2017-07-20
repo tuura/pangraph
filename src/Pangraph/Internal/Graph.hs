@@ -110,10 +110,10 @@ makeVertex :: VertexID -> [Attribute] -> Vertex
 makeVertex = Vertex
 
 edges :: Pangraph -> [Edge]
-edges p = map snd $ Map.toList $ edges' p
+edges p = Map.elems $ edges' p
 
 vertices :: Pangraph -> [Vertex]
-vertices p = map snd $ Map.toList $ vertices' p
+vertices p = Map.elems $ vertices' p
 
 mapEdges :: Pangraph -> Map EdgeID Edge
 mapEdges = edges'
