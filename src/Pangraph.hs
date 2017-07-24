@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Pangraph (
+-- Graphs --------------------
 -- Abstract Types
 Pangraph,
-MalformedEdge,
 Edge,
 Vertex,
-Attribute, -- A type alias for (Key, Value)
+Attribute,
 Key,
 Value,
 VertexID,
@@ -20,17 +20,8 @@ makeVertex,
 -- Pangraph Getters
 edges,
 vertices,
-mapEdges,
-mapVertices,
 vertexByID,
 edgeByID,
-
--- -- Operations on Pangraph
--- addEdge,
--- updateEdge,
--- insertVertex,
--- removeEdge,
--- removeVertex,
 
 -- Getters on Vertex and Edge
 edgeAttributes,
@@ -40,15 +31,19 @@ edgeID,
 vertexID,
 lookupVertexValues,
 lookupEdgeValues,
-edgeContainsKey,
 vertexContainsKey,
+edgeContainsKey,
 
 -- Utility Operations
-vertexToAssocList,
-edgeToAssocList
+vertexAssocList,
+edgeAssocList,
+
+-- Errors --------------------
+
+PangraphError,
+MalformedEdge,
+
 ) where
 
 import Pangraph.Internal.Graph
--- import Data.List
--- import Data.Map.Strict (Map)
--- import qualified Data.Map.Strict                  as Map
+import Pangraph.Internal.Error

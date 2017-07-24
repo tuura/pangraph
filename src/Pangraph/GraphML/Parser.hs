@@ -1,24 +1,22 @@
 module Pangraph.GraphML.Parser (
-graphmlToPangraph,
-graphmlToPangraph'
+parse,
+unsafeParse
 ) where
 
-import qualified Pangraph as P
-import qualified Text.XML.Hexml as H
-import qualified Data.ByteString as BS
-import qualified Pangraph.XMLTemplate as PT
+import qualified Data.ByteString            as BS
+import qualified Pangraph                   as P
+import qualified Pangraph.Internal.Error    as E
+import qualified Pangraph.Internal.Hexml    as H
+import qualified Pangraph.XMLTemplate       as PT
 
-graphmlToPangraph :: BS.ByteString -> Either BS.ByteString (Either [P.MalformedEdge] P.Pangraph)
-graphmlToPangraph file =
-  case H.parse file of
-    Left x -> Left x
-    Right x -> Right $ PT.hexmlToPangraph PT.graphMLTemplate x
+parse :: BS.ByteString -> Either P.PangraphError P.Pangraph
+parse file =
+  case H.hexmlParse file of
+    Left err -> Left err
+    Right hexml -> PT.hexmlToPangraph PT.graphMLTemplate hexml
 
-graphmlToPangraph' :: BS.ByteString -> P.Pangraph
-graphmlToPangraph' file =
-  case graphmlToPangraph file of
-    Left hexmlError -> error (show hexmlError)
-    Right makePangraphResult ->
-      case makePangraphResult of
-        Left malformedEdges -> error $ "Malformed edges in GraphML: " ++ show malformedEdges
-        Right pangraph -> pangraph
+unsafeParse :: BS.ByteString -> P.Pangraph
+unsafeParse file =
+  case parse file of
+    Left pangraphError -> error (show pangraphError)
+    Right pangraph -> pangraph

@@ -10,18 +10,18 @@ import qualified Data.ByteString as BS
 import Data.ByteString.Char8 (unpack, pack)
 
 
-type NodeName  = String
-type NodeIndex = Int
+type VertexName  = String
+type VertexIndex = Int
 
 -- The following two functions are written so that this file does not have to be rewritten to handle cases of Maybe
 
 vertexValuesByKey :: P.Vertex -> P.Key -> [P.Value]
-vertexValuesByKey k v = case P.lookupVertexValues k v of
+vertexValuesByKey k v = case P.lookupVertexValues v k of
   Just a -> [a]
   otherwise -> []
 
 edgeValuesByKey :: P.Edge -> P.Key -> [P.Value]
-edgeValuesByKey k e = case P.lookupEdgeValues k e of
+edgeValuesByKey k e = case P.lookupEdgeValues e k of
   Just a -> [a]
   otherwise -> []
 
@@ -84,7 +84,7 @@ getStructure (n:ns) nodes es =   "\tdata_in(" ++ show i ++ ") <=\tDIN(" ++ show 
                           where
                               i = getIndex (unpack . head $ vertexValuesByKey n "id") nodes 0
 
-getInput :: [NodeIndex] -> String
+getInput :: [VertexIndex] -> String
 getInput []     = ";\n"
 getInput (ni:nis) = "\n\t\t\tOR data_out(" ++ show ni ++ ")" ++ getInput nis
 
@@ -122,7 +122,7 @@ bindRegisters :: [P.Vertex] -> Int -> String
 bindRegisters [] _     = "\n"
 bindRegisters (n:ns) i = bindRegister (unpack . head $ vertexValuesByKey n "id") i ++ bindRegisters ns (i+1)
 
-bindRegister :: NodeName -> Int -> String
+bindRegister :: VertexName -> Int -> String
 bindRegister name i =    "\tREG_" ++ name ++ " : ffd PORT MAP (\n"
                       ++ "\t\tCLK\t=>\tCLK,\n"
                       ++ "\t\tRST\t=>\tRST,\n"
@@ -130,7 +130,7 @@ bindRegister name i =    "\tREG_" ++ name ++ " : ffd PORT MAP (\n"
                       ++ "\t\tD\t=>\tdata_in(" ++ show i ++ "),\n"
                       ++ "\t\tQ\t=>\tdata_out(" ++ show i ++ "));\n"
 
-getIndex :: NodeName -> [P.Vertex] -> Int -> NodeIndex
+getIndex :: VertexName -> [P.Vertex] -> Int -> VertexIndex
 getIndex nn [] _ = error $ "Node \"" ++ nn ++ "\" is not present in the graph"
 getIndex n1 nb i -- = error $ show n1 ++ " !:! " ++ show nb
     | n1 == n2  = i
@@ -139,19 +139,7 @@ getIndex n1 nb i -- = error $ show n1 ++ " !:! " ++ show nb
       n2 = unpack . head $ vertexValuesByKey (head nb) "id"
       ns = tail nb
 
--- getIndex :: NodeName -> [P.Vertex] -> Int -> NodeIndex
--- getIndex name vs _ = case elemIndex nodeByName vs  of
---   Just a -> a
---   _ -> error $ "Vertex not found in list, should not throw without the error in \"nodeByName\""
---   where
---     nodeByName :: P.Vertex
---     nodeByName = case lookup (pack name) (P.toAssocList vs) of
---       Just a -> a
---       _ -> error $ "Node \"" ++ name ++ "\" is not present in the graph. Full list:\n" ++ show vs
-
-
-
-getConnections :: NodeName -> [P.Vertex] -> [P.Edge] -> [NodeIndex]
+getConnections :: VertexName -> [P.Vertex] -> [P.Edge] -> [VertexIndex]
 getConnections _ _ []         = []
 getConnections name ns es
     | name == source    = getIndex target ns 0 : getConnections name ns (tail es)

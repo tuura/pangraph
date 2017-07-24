@@ -18,15 +18,13 @@ main = do
         simulationEnvVhdlPath = optSimName options
 
     -- parse graph
-    case P.graphmlToPangraph (pack graphMLPath) of
-      Left l -> error $ show l
-      Right graphParsed -> case graphParsed of
-        Left malformedEdges -> error $ show malformedEdges
-        Right pangraph -> do
-            let graphVHDL   = W2.writeGraphVhdl pangraph
-            let simEnvVHDL  = W1.writeEnvironmentVhdl pangraph
+    case P.parse (pack graphMLPath) of
+      Left pangraphError -> error $ show pangraphError
+      Right pangraph -> do
+        let graphVHDL   = W2.writeGraphVhdl pangraph
+        let simEnvVHDL  = W1.writeEnvironmentVhdl pangraph
 
-            -- output vhdl graph
-            writeFile graphVHDLPath graphVHDL
-            -- output vhdl simulation environment
-            writeFile simulationEnvVhdlPath simEnvVHDL
+        -- output vhdl graph
+        writeFile graphVHDLPath graphVHDL
+        -- output vhdl simulation environment
+        writeFile simulationEnvVhdlPath simEnvVHDL

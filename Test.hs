@@ -27,12 +27,12 @@ main = do
 testShowInstance :: IO ()
 testShowInstance = case literal == show graph of
   True -> putStrLn "-Instance passed"
-  False -> error $ "!Show instance failed test: \"" ++ literal ++ "\"\n!=\n\"" ++ show graph ++ "\""
+  False -> error $ "!Show instance failed test: \"" ++ literal ++ "\"\nSample(above) != Graph(below)\n\"" ++ show graph ++ "\""
   where
-    literal = fst showInstanceTestCase
-    graph = snd showInstanceTestCase
-    showInstanceTestCase :: (String, P.Pangraph)
-    showInstanceTestCase = ("Pangraph [Vertex \"0\" [(\"id\",\"0\")],Vertex \"1\" [(\"id\",\"1\")]] [Edge 0 [(\"source\",\"0\"),(\"target\",\"1\")]]", sampleGraph)
+    literal = fst showSample
+    graph = snd showSample
+    showSample :: (String, P.Pangraph)
+    showSample = ("makePangraph [makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")]] [makeEdge [(\"source\",\"0\"),(\"target\",\"1\")]]", sampleGraph)
     sampleGraph :: P.Pangraph
     sampleGraph =
       let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)]
@@ -45,7 +45,7 @@ testShowInstance = case literal == show graph of
       [P.makeVertex "0" [("id","0")],
        P.makeVertex "1" [ ("id","1")]]
     -- Without escapes:
-    -- Pangraph [Vertex "0" [("id","0")],Vertex "1" [("id","1")]] [Edge "0" [("source","0"),("target","1")]]
+    -- makePangraph [makeVertex "0" [("id","0")],makeVertex "1" [("id","1")]] [makeEdge [("source","0"),("target","1")]]
 
 testGraphML :: IO ()
 testGraphML = do
@@ -57,7 +57,7 @@ testGraphML = do
     path :: FilePath
     path = "examples/graphs/small.graphml"
     parser :: BS.ByteString -> P.Pangraph
-    parser = GraphML_P.graphmlToPangraph'
+    parser = GraphML_P.unsafeParse
     graph :: P.Pangraph
     graph = let graph' = P.makePangraph sampleVertices
                         [P.makeEdge [("source","n0"),("target","n2")]
@@ -98,4 +98,4 @@ testVHDL = do
     networkPaths = ["examples/graphs/n1/n1-graph.vhdl",
       "examples/graphs/n2/n2-graph.vhdl"]
     parser :: BS.ByteString -> P.Pangraph
-    parser = GraphML_P.graphmlToPangraph'
+    parser = GraphML_P.unsafeParse
