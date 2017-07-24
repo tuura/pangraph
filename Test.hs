@@ -32,7 +32,7 @@ testShowInstance = case literal == show graph of
     literal = fst showSample
     graph = snd showSample
     showSample :: (String, P.Pangraph)
-    showSample = ("makePangraph [makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")]] [makeEdge [(\"source\",\"0\"),(\"target\",\"1\")]]", sampleGraph)
+    showSample = ("makePangraph [makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")]] [makeEdge [(\"source\",\"0\"),(\"target\",\"1\")] (makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")])]", sampleGraph)
     sampleGraph :: P.Pangraph
     sampleGraph =
       let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)]
@@ -45,7 +45,7 @@ testShowInstance = case literal == show graph of
       [P.makeVertex "0" [("id","0")],
        P.makeVertex "1" [ ("id","1")]]
     -- Without escapes:
-    -- makePangraph [makeVertex "0" [("id","0")],makeVertex "1" [("id","1")]] [makeEdge [("source","0"),("target","1")]]
+    -- makePangraph [makeVertex "0" [("id","0")],makeVertex "1" [("id","1")]] [makeEdge [("source","0"),("target","1")] (makeVertex "0" [("id","0")],makeVertex "1" [("id","1")])]
 
 testGraphML :: IO ()
 testGraphML = do

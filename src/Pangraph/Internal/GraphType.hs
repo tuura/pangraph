@@ -32,4 +32,4 @@ instance Show Vertex where
   show (Vertex i as) = unwords ["makeVertex", show i, show as]
 
 instance Show Edge where
-  show (Edge i as _) = unwords ["makeEdge", show as]
+  show (Edge i as e) = unwords ["makeEdge", show as, show e]
