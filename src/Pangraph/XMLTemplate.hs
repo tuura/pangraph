@@ -11,7 +11,6 @@ import Data.List
 
 import qualified Pangraph as P
 import qualified Text.XML.Hexml as H
-import qualified Algebra.Graph.HigherKinded.Class as A
 
 import Data.Word (Word8)
 import qualified Data.ByteString as BS

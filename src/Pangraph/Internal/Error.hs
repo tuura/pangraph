@@ -1,20 +1,13 @@
 module Pangraph.Internal.Error (
-  PangraphError,
-  MalformedEdge,
-  edgeError,
-  parseError
+edgeError,
+parseError
 ) where
 
-import Pangraph.Internal.GraphType
-import qualified Data.ByteString         as BS
+import Pangraph
+import qualified Data.ByteString  as BS
 
-data PangraphError
-  = EdgeError [MalformedEdge]
-  | ParseError BS.ByteString
-  deriving (Show)
 
-type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
-  
+
 edgeError :: [MalformedEdge] -> PangraphError
 edgeError = EdgeError
 
