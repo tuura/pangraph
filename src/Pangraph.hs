@@ -150,10 +150,14 @@ edgeAssocList :: Pangraph -> [(EdgeID, Edge)]
 edgeAssocList p = Map.toList $ edges' p
 
 edgeContainsKey :: Key -> Edge -> Bool
-edgeContainsKey k e = elem k $ map fst $ edgeAttributes e
+edgeContainsKey k e = case lookupEdgeValues k e of
+  Just _ -> True
+  Nothing -> False
 
 vertexContainsKey :: Key -> Vertex -> Bool
-vertexContainsKey k v = elem k $ map fst $ vertexAttributes v
+vertexContainsKey k v = case lookupVertexValues k v of
+  Just _ -> True
+  Nothing -> False
 
 data PangraphError
   = EdgeError [MalformedEdge]
