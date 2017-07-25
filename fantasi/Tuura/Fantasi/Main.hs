@@ -18,13 +18,11 @@ main = do
         simulationEnvVhdlPath = optSimName options
 
     -- parse graph
-    case P.parse (pack graphMLPath) of
-      Left pangraphError -> error $ show pangraphError
-      Right pangraph -> do
-        let graphVHDL   = W2.writeGraphVhdl pangraph
-        let simEnvVHDL  = W1.writeEnvironmentVhdl pangraph
+    let pangraph = P.unsafeParse (pack graphMLPath)
+    let graphVHDL   = W2.writeGraphVhdl pangraph
+    let simEnvVHDL  = W1.writeEnvironmentVhdl pangraph
 
-        -- output vhdl graph
-        writeFile graphVHDLPath graphVHDL
-        -- output vhdl simulation environment
-        writeFile simulationEnvVhdlPath simEnvVHDL
+    -- output vhdl graph
+    writeFile graphVHDLPath graphVHDL
+    -- output vhdl simulation environment
+    writeFile simulationEnvVhdlPath simEnvVHDL

@@ -31,7 +31,7 @@ graphMLTemplate = XML
   [VertexRule [( ["graphml", "graph", "node"], ["id"])]]
   [EdgeRule [( ["graphml", "graph", "edge"], ["source", "target"] )]]
 
-hexmlToPangraph :: Template -> HexmlVertex -> Either P.PangraphError P.Pangraph
+hexmlToPangraph :: Template -> HexmlVertex -> Maybe P.Pangraph
 hexmlToPangraph (XML nt et) root = P.makePangraph n e
   where
     -- Map all the given rules over the XML tree for vertices

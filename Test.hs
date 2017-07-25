@@ -10,7 +10,7 @@ import qualified Pangraph.VHDL.EnvironmentWriter  as VHDL_E
 import qualified Pangraph.VHDL.GraphWriter        as VHDL_G
 
 
-type Parser = BS.ByteString -> Either BS.ByteString (Either [P.MalformedEdge] P.Pangraph)
+type Parser = BS.ByteString -> (Maybe P.Pangraph)
 
 main :: IO ()
 main = do
@@ -37,8 +37,8 @@ testShowInstance = case literal == show graph of
     sampleGraph =
       let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)]
       in  case graph' of
-            Right pangraph -> pangraph
-            Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+            Just pangraph -> pangraph
+            Nothing -> error $ "Sample graph failed to build"
 
     sampleVertices :: [P.Vertex]
     sampleVertices =
@@ -62,9 +62,9 @@ testGraphML = do
     graph = let graph' = P.makePangraph sampleVertices
                         [P.makeEdge [("source","n0"),("target","n2")]
                         ((sampleVertices !! 0), (sampleVertices !! 2))]
-            in case graph' of
-                Right pangraph -> pangraph
-                Left malformedEdges -> error $ "Error in parsing Graphml sample: " ++ show malformedEdges
+            in  case graph' of
+                  Just pangraph -> pangraph
+                  Nothing -> error $ "Sample graph failed to build"
     sampleVertices :: [P.Vertex]
     sampleVertices =
       [ P.makeVertex "n0" [ ("id","n0")],

@@ -28,6 +28,8 @@ vertexAttributes,
 edgeEndpoints,
 edgeID,
 vertexID,
+
+-- Operations on Edge and Vertex
 lookupVertexValues,
 lookupEdgeValues,
 vertexContainsKey,
@@ -37,8 +39,6 @@ edgeContainsKey,
 vertexAssocList,
 edgeAssocList,
 
-PangraphError(..),
-MalformedEdge
 ) where
 
 import Data.Maybe            (catMaybes, mapMaybe, fromMaybe)
@@ -79,10 +79,10 @@ instance Show Edge where
 
 -- List based constructors
 
-makePangraph :: [Vertex] -> [Edge] -> Either PangraphError Pangraph
+makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
 makePangraph vs es = case verifyGraph vertexMap es of
-  [] -> Right $ Pangraph vertexMap edgeMap (1 + Map.size edgeMap)
-  abberrations -> Left $ edgeError abberrations
+  [] -> Just $ Pangraph vertexMap edgeMap (1 + Map.size edgeMap)
+  abberrations -> Nothing
   where
     vertexMap :: Map VertexID Vertex
     vertexMap = Map.fromList $ zip (map vertexID vs) vs
@@ -161,9 +161,3 @@ data PangraphError
   deriving (Show)
 
 type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
-
-edgeError :: [MalformedEdge] -> PangraphError
-edgeError = EdgeError
-
-parseError :: BS.ByteString -> PangraphError
-parseError = ParseError
