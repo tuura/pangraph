@@ -1,43 +1,26 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Pangraph (
--- Abstract Types
-Pangraph,
-Edge,
-Vertex,
-Attribute,
-Key,
-Value,
-VertexID,
-EdgeID,
+    -- * Abstract Types
+    Pangraph, Edge, Vertex, Attribute,
+    Key, Value, VertexID, EdgeID,
 
--- Constructors
-makePangraph,
-makeEdge,
-makeVertex,
+    -- * Constructors
+    makePangraph, makeEdge, makeVertex,
 
--- Pangraph Getters
-edges,
-vertices,
-vertexByID,
-edgeByID,
+    -- Pangraph Getters
+    edges, vertices, vertexByID, edgeByID,
 
--- Getters on Vertex and Edge
-edgeAttributes,
-vertexAttributes,
-edgeEndpoints,
-edgeID,
-vertexID,
+    -- Getters on Vertex and Edge
+    edgeAttributes, vertexAttributes,
+    edgeEndpoints, edgeID, vertexID,
 
--- Operations on Edge and Vertex
-lookupVertexValues,
-lookupEdgeValues,
-vertexContainsKey,
-edgeContainsKey,
+    -- Operations on Edge and Vertex
+    lookupVertexValues, lookupEdgeValues,
+    vertexContainsKey,  edgeContainsKey,
 
--- Utility Operations
-vertexAssocList,
-edgeAssocList,
+    -- Utility Operations
+    vertexAssocList, edgeAssocList,
 
 ) where
 
@@ -68,6 +51,8 @@ type Attribute = (Key, Value)
 type Key = BS.ByteString
 type Value = BS.ByteString
 
+type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
+
 instance Show Pangraph where
   show p = "makePangraph " ++ show (Map.elems (vertices' p)) ++ " " ++ show (Map.elems (edges' p))
 
@@ -97,10 +82,10 @@ verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
     lookupEndpoints :: (Edge, (Vertex, Vertex)) ->  Maybe MalformedEdge
     lookupEndpoints (e, (v1,v2)) =
       case (Map.lookup (vertexID v1) vs, Map.lookup (vertexID v2) vs) of
-        (Just _, Just _)    -> Nothing
-        (Nothing, Just _)   -> Just (e, (Just v1, Nothing))
-        (Just _, Nothing)   -> Just (e, (Nothing, Just v2))
-        (Nothing, Nothing)  -> Just (e, (Just v1, Just v2))
+        (Just _ , Just _)  -> Nothing
+        (Nothing, Just _)  -> Just (e, (Just v1, Nothing))
+        (Just _ , Nothing) -> Just (e, (Nothing, Just v2))
+        (Nothing, Nothing) -> Just (e, (Just v1, Just v2))
 
 makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
 makeEdge = Edge Nothing
@@ -154,10 +139,3 @@ edgeContainsKey k e = isJust $ lookupEdgeValues k e
 
 vertexContainsKey :: Key -> Vertex -> Bool
 vertexContainsKey k v = isJust $ lookupVertexValues k v
-
-data PangraphError
-  = EdgeError [MalformedEdge]
-  | ParseError BS.ByteString
-  deriving (Show)
-
-type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))

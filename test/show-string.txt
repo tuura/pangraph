@@ -1,0 +1,1 @@
+makePangraph [makeVertex "0" [("id","0")],makeVertex "1" [("id","1")]] [makeEdge [("source","0"),("target","1")] (makeVertex "0" [("id","0")],makeVertex "1" [("id","1")])]
