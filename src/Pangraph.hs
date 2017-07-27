@@ -136,7 +136,7 @@ vertexID :: Vertex -> VertexID
 vertexID = vertexID'
 
 lookupVertexValues :: Key -> Vertex -> Maybe Value
-lookupVertexValues k v= lookup k (vertexAttributes v)
+lookupVertexValues k v = lookup k (vertexAttributes v)
 
 lookupEdgeValues :: Key -> Edge -> Maybe Value
 lookupEdgeValues k e = lookup k (edgeAttributes e)

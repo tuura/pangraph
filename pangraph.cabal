@@ -20,7 +20,7 @@ library
                    ,  Pangraph.VHDL.GraphWriter
                    ,  Pangraph.VHDL.EnvironmentWriter
                    ,  Pangraph.XMLTemplate
-  -- other-modules:
+  other-modules:      Pangraph.Examples.Reading
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml

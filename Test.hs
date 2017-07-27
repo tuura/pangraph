@@ -69,7 +69,6 @@ testGraphML = do
 testVHDL :: IO ()
 testVHDL = do
   files <- mapM BS.readFile graphPaths
-  -- mapM BS.putStrLn $ files
   vhdlEnvironment <- mapM readFile enviromentPaths
   vhdlGraph <- mapM readFile networkPaths
   let test1 = zip files vhdlEnvironment
