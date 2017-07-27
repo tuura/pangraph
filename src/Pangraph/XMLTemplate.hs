@@ -18,8 +18,8 @@ import qualified Data.ByteString as BS
 -- A list of places to find vertices and extractEdges.
 data Template = XML [VertexRule] [EdgeRule]
 -- A list of the locations of tags and which elements to take from them.
-data EdgeRule = EdgeRule [(Path, Element)]
-data VertexRule = VertexRule [(Path, Element)]
+newtype EdgeRule = EdgeRule [(Path, Element)]
+newtype VertexRule = VertexRule [(Path, Element)]
 
 type Path = [BS.ByteString]
 type Element = [BS.ByteString]
@@ -35,9 +35,9 @@ hexmlToPangraph :: Template -> HexmlVertex -> Maybe P.Pangraph
 hexmlToPangraph (XML nt et) root = P.makePangraph n e
   where
     -- Map all the given rules over the XML tree for vertices
-    n = (concatMap (extractVertices root "id") nt)
+    n = concatMap (extractVertices root "id") nt
     -- Map all the given rules over the XML tree for edges
-    e = (concatMap (extractEdges (assocVertices n) root ) et)
+    e = concatMap (extractEdges (assocVertices n) root ) et
     assocVertices :: [P.Vertex] -> [(P.VertexID, P.Vertex)]
     assocVertices vs = zip (map P.vertexID vs) vs
 
@@ -49,9 +49,9 @@ makeVertex :: HexmlVertex -> BS.ByteString -> (Path, Element) -> [P.Vertex]
 makeVertex hexml idElement (path, element) = map (\as -> P.makeVertex (idElem as) as) attList
   where
     idElem :: [P.Attribute] -> P.VertexID
-    idElem list = case lookup idElement list of
-      Just a -> a
-      Nothing -> error $ "Fatal: node missing id value: " ++ show list
+    idElem list =  fromMaybe (error $ "Fatal: node missing id value: " ++ show list)
+      (lookup idElement list)
+
 
     attList :: [[P.Attribute]]
     attList = map (getAttributePairs element) $ resolvePath path hexml
@@ -83,7 +83,7 @@ resolvePath bs h = concatMap (resolvePath (tail bs)) children
     children = H.childrenBy h $ head bs
 
 getAttributePairs:: Element -> HexmlVertex -> [P.Attribute]
-getAttributePairs e h = map toAttribute $ catMaybes $ map (H.attributeBy h) e
+getAttributePairs e h = map toAttribute $  mapMaybe (H.attributeBy h) e
   where
     toAttribute :: H.Attribute -> P.Attribute
     toAttribute a = (H.attributeName a, H.attributeValue a)

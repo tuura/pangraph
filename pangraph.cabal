@@ -16,7 +16,6 @@ tested-with:          GHC==8.0.2
 library
   hs-source-dirs:     src
   exposed-modules:    Pangraph
-                   ,  Pangraph.Internal.Hexml
                    ,  Pangraph.GraphML.Parser
                    ,  Pangraph.VHDL.GraphWriter
                    ,  Pangraph.VHDL.EnvironmentWriter

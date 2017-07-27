@@ -2,15 +2,14 @@
 
 module Main where
 
+import Data.Maybe
+
 import Data.ByteString.Char8 (pack)
 import qualified Data.ByteString                  as BS
 import qualified Pangraph                         as P
 import qualified Pangraph.GraphML.Parser          as GraphML_P
 import qualified Pangraph.VHDL.EnvironmentWriter  as VHDL_E
 import qualified Pangraph.VHDL.GraphWriter        as VHDL_G
-
-
-type Parser = BS.ByteString -> (Maybe P.Pangraph)
 
 main :: IO ()
 main = do
@@ -22,24 +21,19 @@ main = do
   putStrLn "VHDL:"
   testVHDL
   putStrLn "\n------All Tests Passed------"
-  where
 
 testShowInstance :: IO ()
-testShowInstance = case literal == show graph of
-  True -> putStrLn "-Instance passed"
-  False -> error $ "!Show instance failed test: \"" ++ literal ++ "\"\nSample(above) != Graph(below)\n\"" ++ show graph ++ "\""
+testShowInstance = if literal == show graph then putStrLn "-Instance passed" else
+    error $
+      "!Show instance failed test: \"" ++
+        literal ++
+          "\"\nSample(above) != Graph(below)\n\"" ++ show graph ++ "\""
   where
-    literal = fst showSample
-    graph = snd showSample
-    showSample :: (String, P.Pangraph)
-    showSample = ("makePangraph [makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")]] [makeEdge [(\"source\",\"0\"),(\"target\",\"1\")] (makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")])]", sampleGraph)
-    sampleGraph :: P.Pangraph
-    sampleGraph =
-      let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (sampleVertices !! 0, sampleVertices !! 1)]
-      in  case graph' of
-            Just pangraph -> pangraph
-            Nothing -> error $ "Sample graph failed to build"
-
+    literal = "makePangraph [makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")]] [makeEdge [(\"source\",\"0\"),(\"target\",\"1\")] (makeVertex \"0\" [(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")])]"
+    graph :: P.Pangraph
+    graph =
+      let graph' = P.makePangraph sampleVertices [P.makeEdge [("source","0"), ("target","1")] (head sampleVertices, sampleVertices !! 1)]
+      in  fromMaybe (error "Sample graph failed to build") graph'
     sampleVertices :: [P.Vertex]
     sampleVertices =
       [P.makeVertex "0" [("id","0")],
@@ -61,10 +55,11 @@ testGraphML = do
     graph :: P.Pangraph
     graph = let graph' = P.makePangraph sampleVertices
                         [P.makeEdge [("source","n0"),("target","n2")]
-                        ((sampleVertices !! 0), (sampleVertices !! 2))]
-            in  case graph' of
-                  Just pangraph -> pangraph
-                  Nothing -> error $ "Sample graph failed to build"
+                        (head sampleVertices
+                        ,sampleVertices !! 2)]
+            in  fromMaybe (error "Sample graph failed to build") graph'
+
+
     sampleVertices :: [P.Vertex]
     sampleVertices =
       [ P.makeVertex "n0" [ ("id","n0")],
@@ -79,8 +74,8 @@ testVHDL = do
   vhdlGraph <- mapM readFile networkPaths
   let test1 = zip files vhdlEnvironment
   let test2 = zip files vhdlGraph
-  putStrLn $ concatMap (\a -> applyTest a VHDL_E.writeEnvironmentVhdl) test1
-  putStrLn $ concatMap (\a -> applyTest a VHDL_G.writeGraphVhdl) test2
+  putStrLn $ concatMap (`applyTest` VHDL_E.writeEnvironmentVhdl) test1
+  putStrLn $ concatMap (`applyTest` VHDL_G.writeGraphVhdl) test2
   where
     -- args: A graphML file, the string which should result, the function which maps the file to result
     applyTest :: (BS.ByteString, String) -> (P.Pangraph -> String) -> String

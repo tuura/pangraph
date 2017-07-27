@@ -41,7 +41,7 @@ edgeAssocList,
 
 ) where
 
-import Data.Maybe            (catMaybes, mapMaybe, fromMaybe)
+import Data.Maybe            (catMaybes, mapMaybe, fromMaybe, isJust)
 import Data.ByteString.Char8 (pack, unpack)
 import Data.Map.Strict       (Map)
 import qualified Data.Map.Strict  as Map
@@ -150,14 +150,10 @@ edgeAssocList :: Pangraph -> [(EdgeID, Edge)]
 edgeAssocList p = Map.toList $ edges' p
 
 edgeContainsKey :: Key -> Edge -> Bool
-edgeContainsKey k e = case lookupEdgeValues k e of
-  Just _ -> True
-  Nothing -> False
+edgeContainsKey k e = isJust $ lookupEdgeValues k e
 
 vertexContainsKey :: Key -> Vertex -> Bool
-vertexContainsKey k v = case lookupVertexValues k v of
-  Just _ -> True
-  Nothing -> False
+vertexContainsKey k v = isJust $ lookupVertexValues k v
 
 data PangraphError
   = EdgeError [MalformedEdge]

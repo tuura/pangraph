@@ -3,7 +3,7 @@
 module Pangraph.VHDL.GraphWriter (
 writeGraphVhdl
 ) where
-
+import Data.Maybe
 import Data.List
 import qualified Pangraph         as P
 import qualified Data.ByteString as BS
@@ -16,14 +16,10 @@ type VertexIndex = Int
 -- The following two functions are written so that this file does not have to be rewritten to handle cases of Maybe
 
 vertexValuesByKey :: P.Vertex -> P.Key -> [P.Value]
-vertexValuesByKey k v = case P.lookupVertexValues v k of
-  Just a -> [a]
-  otherwise -> []
+vertexValuesByKey k v = maybeToList $ P.lookupVertexValues v k
 
 edgeValuesByKey :: P.Edge -> P.Key -> [P.Value]
-edgeValuesByKey k e = case P.lookupEdgeValues e k of
-  Just a -> [a]
-  otherwise -> []
+edgeValuesByKey k e = maybeToList $ P.lookupEdgeValues e k
 
 writeGraphVhdl :: P.Pangraph -> String
 writeGraphVhdl g = do

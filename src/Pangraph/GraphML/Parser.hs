@@ -3,19 +3,15 @@ parse,
 unsafeParse
 ) where
 
+import Data.Maybe
+import Data.Either
 import qualified Data.ByteString            as BS
 import qualified Pangraph                   as P
-import qualified Pangraph.Internal.Hexml    as H
+import qualified Text.XML.Hexml as H
 import qualified Pangraph.XMLTemplate       as PT
 
 parse :: BS.ByteString -> Maybe P.Pangraph
-parse file =
-  case H.hexmlParse file of
-    Nothing -> Nothing
-    Just hexml -> PT.hexmlToPangraph PT.graphMLTemplate hexml
+parse file = either (const Nothing) (PT.hexmlToPangraph PT.graphMLTemplate) (H.parse file)
 
 unsafeParse :: BS.ByteString -> P.Pangraph
-unsafeParse file =
-  case parse file of
-      Just pangraph -> pangraph
-      Nothing -> error $ "Parse failed"
+unsafeParse file = fromMaybe (error "Parse failed") (parse file)
