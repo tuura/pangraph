@@ -11,4 +11,4 @@ main :: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  putStrLn $ (show . GraphML_P.parse) file
+  print (GraphML_P.parse file)
