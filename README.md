@@ -37,25 +37,23 @@ cabal install
 
 ## Examples  
 
-### Parsing a Graph file  
+### Parsing a Graph file
+Repeated here the code from `src/Pangraph/Examples`:
 ```haskell
-module Reading where
+module Pangraph.Examples.Reading where
 
 import Prelude hiding (readFile)
+
 import Data.ByteString (readFile)
+
+import Pangraph
 import qualified Pangraph.GraphML.Parser as GraphML_P
 
-main:: IO ()
+main :: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-
-  case GraphML_P.graphmlToPangraph file of
-    Left hexmlErr-> putStrLn $ show hexmlErr
-    Right makePangraph ->
-      case makePangraph of
-        Left malformedEdges -> putStrLn $ show malformedEdges
-        Right pangraph -> putStrLn $ show pangraph
+  print (GraphML_P.parse file)
 ```
 
 ## Graph support  
