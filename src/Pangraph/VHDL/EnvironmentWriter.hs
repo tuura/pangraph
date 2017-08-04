@@ -4,6 +4,8 @@ writeEnvironmentVhdl
 
 import qualified Pangraph as P
 
+-- | Writes the Pangraph to a VHDL String
+
 writeEnvironmentVhdl :: P.Pangraph -> String
 writeEnvironmentVhdl g = do
     let library     = createLibrary

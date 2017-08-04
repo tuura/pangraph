@@ -19,7 +19,7 @@ library
                    ,  Pangraph.GraphML.Parser
                    ,  Pangraph.VHDL.GraphWriter
                    ,  Pangraph.VHDL.EnvironmentWriter
-                   ,  Pangraph.XMLTemplate
+                   ,  Pangraph.Internal.XMLTemplate
   other-modules:      Pangraph.Examples.Reading
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring

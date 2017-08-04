@@ -12,20 +12,21 @@ Information on current graph support can be found below that.
 Pangraph offers an api in the module `Pangraph` for accessing of graphs including constructors and getters.  
 You can construct entire graph or edit the results of parser.
 These are imported independently form their own modules:  
-```
+```haskell
 import Pangraph.GraphML.Parser
 ```
 
 All parsers currently export the following:
-```
-formatToPangraph :: format -> Pangraph
+```haskell
+parse :: ByteString -> Maybe Pangraph
+unsafeParse :: ByteString -> Pangraph
 ```
 
-An example of reading this code can be found in `Examples` below
-
+An example of reading code can be found in `Examples` below
 ## Binary generation
 
 One of the two commands below should be used for the compilation and the generation of a binary file:
+
 
 ```
 ghc -isrc -ifantasi fantasi/Main.hs -o Fantasi
@@ -53,7 +54,7 @@ main :: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  print (GraphML_P.parse file)
+  print $ show (GraphML_P.parse file)
 ```
 
 ## Graph support  

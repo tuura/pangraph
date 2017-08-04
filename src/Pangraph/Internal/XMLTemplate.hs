@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Pangraph.XMLTemplate
+module Pangraph.Internal.XMLTemplate
 ( Template,
   graphMLTemplate,
   hexmlToPangraph

@@ -21,6 +21,8 @@ vertexValuesByKey k v = maybeToList $ P.lookupVertexValues v k
 edgeValuesByKey :: P.Edge -> P.Key -> [P.Value]
 edgeValuesByKey k e = maybeToList $ P.lookupEdgeValues e k
 
+-- | Writes a Pangraph to VHDL
+
 writeGraphVhdl :: P.Pangraph -> String
 writeGraphVhdl g = do
     let stats       = "-- Nodes: " ++ show (length $ P.vertices g) ++ " - Edges: " ++ show (length $ P.edges g) ++ "\n"
