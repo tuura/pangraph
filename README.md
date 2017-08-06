@@ -54,7 +54,7 @@ main :: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  print $ show (GraphML_P.parse file)
+  print (GraphML_P.parse file)
 ```
 
 ## Graph support  
