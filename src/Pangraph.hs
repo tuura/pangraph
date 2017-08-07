@@ -49,7 +49,7 @@ data Edge = Edge
 
 -- | A type exposed for lookup in the resulting lists.
 type EdgeID = Int
--- | A field that is Maybe internally is
+-- | A field that is Maybe internally is exposed for lookup.
 type VertexID = BS.ByteString
 -- | The type alias for storage of fields.
 type Attribute = (Key, Value)
