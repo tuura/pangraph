@@ -3,9 +3,7 @@ vhdlTests
 ) where
 
 import Test.HUnit
-import Data.ByteString
 
-import Pangraph
 import Pangraph.GraphML.Parser
 import Pangraph.VHDL.EnvironmentWriter
 import Pangraph.VHDL.GraphWriter
