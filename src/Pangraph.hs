@@ -24,8 +24,7 @@ module Pangraph (
 
 ) where
 
-import Data.Maybe            (catMaybes, mapMaybe, fromMaybe, isJust)
-import Data.ByteString.Char8 (pack, unpack)
+import Data.Maybe            (mapMaybe, isJust)
 import Data.Map.Strict       (Map)
 import qualified Data.Map.Strict  as Map
 import qualified Data.ByteString  as BS
@@ -33,7 +32,6 @@ import qualified Data.ByteString  as BS
 data Pangraph = Pangraph
   { vertices' :: Map VertexID Vertex
   , edges' :: Map EdgeID Edge
-  , nextEdge' :: EdgeID
   } deriving (Eq)
 {-| A 'Vertex' holds `Attributes` and must have a unique `VertexID` to be constructed -}
 data Vertex = Vertex
@@ -67,15 +65,15 @@ instance Show Vertex where
   show (Vertex i as) = unwords ["makeVertex", show i, show as]
 
 instance Show Edge where
-  show (Edge i as e) = unwords ["makeEdge", show as, show e]
+  show (Edge _ as e) = unwords ["makeEdge", show as, show e]
 
 -- * List based constructors
 
 -- | Takes lists of Vertices and Edges to produce "Just Pangraph" if the graph is correctly formed.
 makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
 makePangraph vs es = case verifyGraph vertexMap es of
-  [] -> Just $ Pangraph vertexMap edgeMap (1 + Map.size edgeMap)
-  abberrations -> Nothing
+  [] -> Just $ Pangraph vertexMap edgeMap
+  _ -> Nothing
   where
     vertexMap :: Map VertexID Vertex
     vertexMap = Map.fromList $ zip (map vertexID vs) vs
@@ -141,7 +139,7 @@ edgeEndpoints = endpoints'
 edgeID :: Edge -> Maybe EdgeID
 edgeID = edgeID'
 
--- | Returns a `Vertex`'s`VetexID`
+-- | Returns a `VetexID`
 vertexID :: Vertex -> VertexID
 vertexID = vertexID'
 

@@ -296,7 +296,7 @@ counter_delayer =  "\tCOUNTER_DELAYER : Delayer\n"
                 ++ "\t\t\tDOUT\t=> start_counting);\n\n"
 
 comparator_delayer :: [P.Vertex] -> String
-comparator_delayer ns = "\tCOMPARATOR_DELAYER : Delayer\n"
+comparator_delayer _ = "\tCOMPARATOR_DELAYER : Delayer\n"
                   ++ "\t\tGENERIC MAP (3)\n"
                   ++ "\t\tPORT MAP(\n"
                   ++ "\t\t\tCLK\t=> CLK,\n"
@@ -306,7 +306,7 @@ comparator_delayer ns = "\tCOMPARATOR_DELAYER : Delayer\n"
                   ++ "\t\t\tDOUT\t=> comparator_en);\n\n"
 
 comparator_delayer_result :: [P.Vertex] -> String
-comparator_delayer_result ns =  "\tCOMPARATOR_DELAYER_RESULT : Delayer\n"
+comparator_delayer_result _ =  "\tCOMPARATOR_DELAYER_RESULT : Delayer\n"
                   ++ "\t\tGENERIC MAP (3)\n"
                   ++ "\t\tPORT MAP(\n"
                   ++ "\t\t\tCLK\t=> CLK,\n"
@@ -410,10 +410,6 @@ bitSum ns = ceiling (logBase (2.0 :: Double) (fromIntegral nNodes))
 
 bitMul :: [P.Vertex] -> Int
 bitMul ns = (bitSum ns) * 2
-
--- getNodes :: ShortGraph -> [Node]
--- getNodes (ShortGraph ns _) = ns
-getNodes = undefined
 
 closeArchitecture :: String
 closeArchitecture = "\nEND test;"

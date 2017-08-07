@@ -7,12 +7,10 @@ module Pangraph.Internal.XMLTemplate
 ) where
 
 import Data.Maybe
-import Data.List
 
 import qualified Pangraph as P
-import qualified Text.XML.Hexml as H
 
-import Data.Word (Word8)
+import qualified Text.XML.Hexml as H
 import qualified Data.ByteString as BS
 
 -- A list of places to find vertices and extractEdges.

@@ -4,7 +4,6 @@ import Prelude hiding (readFile)
 
 import Data.ByteString (readFile)
 
-import Pangraph
 import qualified Pangraph.GraphML.Parser as GraphML_P
 
 main :: IO ()

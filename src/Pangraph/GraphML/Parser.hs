@@ -4,7 +4,6 @@ unsafeParse
 ) where
 
 import Data.Maybe
-import Data.Either
 import qualified Data.ByteString            as BS
 import qualified Pangraph                   as P
 import qualified Text.XML.Hexml as H

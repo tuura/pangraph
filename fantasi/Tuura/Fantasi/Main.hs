@@ -1,13 +1,10 @@
 module Tuura.Fantasi.Main (main) where
 
-import Control.Monad
-import System.FilePath
-
 import Tuura.Fantasi.Options
 import qualified Pangraph.GraphML.Parser as P
 import qualified Pangraph.VHDL.EnvironmentWriter as W1
 import qualified Pangraph.VHDL.GraphWriter as W2
-import Data.ByteString.Char8 (pack, unpack)
+import Data.ByteString.Char8 (pack)
 
 main :: IO ()
 main = do
