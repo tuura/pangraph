@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Pangraph.VHDL.GraphWriter (
-writeGraphVhdl
+module Pangraph.VHDL.Internal.GraphWriter (
+writeGraph
 ) where
+
+-- TODO: Switch to ByteString
 
 import Data.Maybe
 
@@ -24,8 +26,8 @@ edgeValuesByKey k e = maybeToList $ P.lookupEdgeValues e k
 
 -- | Writes a Pangraph to VHDL
 
-writeGraphVhdl :: P.Pangraph -> String
-writeGraphVhdl g = do
+writeGraph :: P.Pangraph -> String
+writeGraph g = do
     let stats       = "-- Nodes: " ++ show (length $ P.vertices g) ++ " - Edges: " ++ show (length $ P.edges g) ++ "\n"
         library     = createLibrary
         entity      = createEntity (P.vertices g)

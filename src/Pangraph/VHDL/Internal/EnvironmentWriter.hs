@@ -1,13 +1,15 @@
-module Pangraph.VHDL.EnvironmentWriter (
-writeEnvironmentVhdl
+module Pangraph.VHDL.Internal.EnvironmentWriter (
+writeEnvironment
 ) where
+
+-- TODO: Switch to ByteString
 
 import qualified Pangraph as P
 
 -- | Writes the Pangraph to a VHDL String
 
-writeEnvironmentVhdl :: P.Pangraph -> String
-writeEnvironmentVhdl g = do
+writeEnvironment :: P.Pangraph -> String
+writeEnvironment g = do
     let library     = createLibrary
         entity      = createEntity g
         archOpen    = openArchitecture g

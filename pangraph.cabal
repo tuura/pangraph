@@ -17,14 +17,14 @@ library
   hs-source-dirs:     src
   exposed-modules:    Pangraph
                    ,  Pangraph.GraphML.Parser
-                   ,  Pangraph.VHDL.GraphWriter
-                   ,  Pangraph.VHDL.EnvironmentWriter
+                   ,  Pangraph.VHDL
+                   ,  Pangraph.VHDL.Internal.GraphWriter
+                   ,  Pangraph.VHDL.Internal.EnvironmentWriter
                    ,  Pangraph.Internal.XMLTemplate
   other-modules:      Pangraph.Examples.Reading
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
-                   ,  algebraic-graphs
                    ,  containers
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -O2
