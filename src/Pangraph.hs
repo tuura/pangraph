@@ -1,116 +1,175 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Pangraph (
-Pangraph,
-Node,
-Edge,
-Attribute,
-attributes,
-nodes,
-edges,
-key,
-value,
-pair,
-valuesByKey,
-makeAttribute,
-makeNode,
-makeEdge,
-makePangraph,
-makeAlga
+    -- * Abstract Types
+    Pangraph, Edge, Vertex, Attribute,
+    Key, Value, VertexID, EdgeID,
+
+    -- * Constructors
+    makePangraph, makeEdge, makeVertex,
+
+    -- * Pangraph Getters
+    edges, vertices, vertexByID, edgeByID,
+
+    -- * Getters on Vertex and Edge
+    edgeAttributes, vertexAttributes,
+    edgeEndpoints, edgeID, vertexID,
+
+    -- * Operations on Edge and Vertex
+    lookupVertexValues, lookupEdgeValues,
+
+    -- * Utility Operations
+    vertexAssocList, edgeAssocList,
+    vertexContainsKey,  edgeContainsKey
+
 ) where
 
--- import Data.List
-import qualified Data.ByteString                  as BS
-import qualified Algebra.Graph.HigherKinded.Class as H
+import Data.Maybe            (mapMaybe, isJust)
+import Data.Map.Strict       (Map)
+import qualified Data.Map.Strict  as Map
+import qualified Data.ByteString  as BS
+{-| The 'Pangraph' type is abstract and intended to be the core intermediate type between abstract representations of other graph libaries and the results of parsers. -}
+data Pangraph = Pangraph
+  { vertices' :: Map VertexID Vertex
+  , edges' :: Map EdgeID Edge
+  } deriving (Eq)
+{-| A 'Vertex' holds `Attributes` and must have a unique `VertexID` to be constructed -}
+data Vertex = Vertex
+  { vertexID' :: VertexID
+  , vertexAttributes' :: [Attribute]
+  } deriving (Eq)
+{-| 'Edge's also reqiure `Attributes` and a pair of vertices passed as connections. -}
+data Edge = Edge
+  { edgeID' :: Maybe EdgeID
+  , edgeAttributes' :: [Attribute]
+  , endpoints' :: (Vertex, Vertex)
+  } deriving (Eq)
 
-data Pangraph = Pangraph [Node] [Edge] deriving (Eq)
-data Node = Node [Attribute] deriving (Eq)
-data Edge = Edge [Attribute] deriving (Eq)
-data Attribute = Attribute (BS.ByteString, BS.ByteString) deriving (Eq)
-
+-- | A type exposed for lookup in the resulting lists.
+type EdgeID = Int
+-- | A field that is Maybe internally is exposed for lookup.
+type VertexID = BS.ByteString
+-- | The type alias for storage of fields.
+type Attribute = (Key, Value)
+-- | The `Key` in tuples that make up `Attributes`.
 type Key = BS.ByteString
+-- | The `Value` in tuples that make up `Attribute`
 type Value = BS.ByteString
--- Pangraph [Node [Attribute ("id","0")],Node [Attribute ("id","1")]] [Edge [Attribute ("source","0"),Attribute ("target","1")]]
 
---  Instances of show
+type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
 
-instance Show (Pangraph) where
-  show p = "Pangraph " ++  (show $ nodes p) ++ " " ++ (show $ edges p)
+instance Show Pangraph where
+  show p = "makePangraph " ++ show (Map.elems (vertices' p)) ++ " " ++ show (Map.elems (edges' p))
 
-instance Show (Node) where
-  -- show (Node []) = ""
-  show n = "Node " ++ (show $ attributes n) -- ++ ", " ++ (show $ tail ns)
+instance Show Vertex where
+  show (Vertex i as) = unwords ["makeVertex", show i, show as]
 
-instance Show (Edge) where
-  -- show (Edge []) = ""
-  show e = "Edge " ++ (show $ attributes e) -- ++ ", " ++ (show ns) ++ "]"
+instance Show Edge where
+  show (Edge _ as e) = unwords ["makeEdge", show as, show e]
 
-instance Show Attribute where
-  show a = "Attribute " ++ (show $ pair a)
+-- * List based constructors
 
--- | Pangraph type getters
+-- | Takes lists of Vertices and Edges to produce "Just Pangraph" if the graph is correctly formed.
+makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
+makePangraph vs es = case verifyGraph vertexMap es of
+  [] -> Just $ Pangraph vertexMap edgeMap
+  _ -> Nothing
+  where
+    vertexMap :: Map VertexID Vertex
+    vertexMap = Map.fromList $ zip (map vertexID vs) vs
+    edgeMap :: Map EdgeID Edge
+    edgeMap = Map.fromList indexEdges
+    indexEdges :: [(EdgeID, Edge)]
+    indexEdges = map (\ (i, Edge _ as a) -> (i, Edge (Just i) as a )) $ zip [0..] es
 
-class HasAttribute a where
-  attributes :: a -> [Attribute]
+verifyGraph :: Map VertexID Vertex -> [Edge] -> [MalformedEdge]
+verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
+  where
+    lookupEndpoints :: (Edge, (Vertex, Vertex)) ->  Maybe MalformedEdge
+    lookupEndpoints (e, (v1,v2)) =
+      case (Map.lookup (vertexID v1) vs, Map.lookup (vertexID v2) vs) of
+        (Just _ , Just _)  -> Nothing
+        (Nothing, Just _)  -> Just (e, (Just v1, Nothing))
+        (Just _ , Nothing) -> Just (e, (Nothing, Just v2))
+        (Nothing, Nothing) -> Just (e, (Just v1, Just v2))
 
-instance HasAttribute Node where
-  attributes (Node a) = a
-instance HasAttribute Edge where
-  attributes (Edge a) = a
+-- | Edge constructor
+makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
+makeEdge = Edge Nothing
 
-nodes :: Pangraph -> [Node]
-nodes (Pangraph ns _) = ns
+-- | Vetex constuctor
+makeVertex :: VertexID -> [Attribute] -> Vertex
+makeVertex = Vertex
 
+-- * Pangraph Getters
+
+-- | Returns the Edges from a Pangraph instance
 edges :: Pangraph -> [Edge]
-edges (Pangraph _ es) = es
+edges p = Map.elems $ edges' p
 
-key :: Attribute -> Key
-key (Attribute a) = fst a
+--  | Returns the vertices from a Pangraph instance
+vertices :: Pangraph -> [Vertex]
+vertices p = Map.elems $ vertices' p
 
-value :: Attribute -> Value
-value (Attribute a) = snd a
+-- | Lookup of the EdgeID in a Pangraph.
+-- | Complexity: /O(log n)/
+edgeByID :: EdgeID -> Pangraph -> Maybe Edge
+edgeByID key p = Map.lookup key $ edges' p
 
-pair :: Attribute -> (Key, Value)
-pair (Attribute a) = a
+-- | Lookup of the VertexID in a Pangraph.
+-- | Complexity: /O(log n)/
+vertexByID :: VertexID -> Pangraph -> Maybe Vertex
+vertexByID key p = Map.lookup key $ vertices' p
 
-valuesByKey :: HasAttribute a => a -> Key -> [Value]
-valuesByKey ps k = map value (filter (\a -> key a == k) as)
-  where
-    as :: [Attribute]
-    as = attributes ps
+-- * Getters on Edge and Vertex
 
-nodesById ::  [Node] -> BS.ByteString -> [Node]
-nodesById ns str = filter (\n -> str == head (valuesByKey n "id")) ns
+-- | Returns the Attribute list of an Edge
+edgeAttributes :: Edge -> [Attribute]
+edgeAttributes = edgeAttributes'
 
--- | Pangraph type contructors
+-- | Returns the Attribute list of an Edge
+vertexAttributes :: Vertex -> [Attribute]
+vertexAttributes = vertexAttributes'
 
-makeAttribute :: (Key , Value) -> Attribute
-makeAttribute a = Attribute a
+-- | Returns the endpoint Vertices of an Edge
+edgeEndpoints :: Edge -> (Vertex, Vertex)
+edgeEndpoints = endpoints'
 
-makeNode :: [Attribute] -> Node
-makeNode as = Node as
+{-| Returns the EdgeID if it has one. `Edge`s are given a new `VetexID` when they are passed and retrived from a `Pangraph`-}
+edgeID :: Edge -> Maybe EdgeID
+edgeID = edgeID'
 
-makeEdge :: [Attribute] -> Edge
-makeEdge as = Edge as
+-- | Returns a `VetexID`
+vertexID :: Vertex -> VertexID
+vertexID = vertexID'
 
+-- * Operations on Edge and Vertex
 
-makePangraph :: [Node] -> [Edge] -> Pangraph
-makePangraph ns es = Pangraph ns es
+-- | Lookup Attributes by `Key`s
+-- | Complexity: /O(n)/
+lookupVertexValues :: Key -> Vertex -> Maybe Value
+lookupVertexValues k v = lookup k (vertexAttributes v)
 
-makeAlga :: (H.Graph g) =>  [Node] -> [Edge] -> g Node
-makeAlga ns es = H.graph (ns) (map extractSrcAndDest es)
-  where
-    extractSrcAndDest :: Edge -> (Node, Node)
-    extractSrcAndDest e = case (src e, dst e) of
-      (Just a, Just b) -> (a ,b)
-      _ -> error $ "!Malformed edge: " ++ (show e)
-    src :: Edge -> Maybe Node
-    src as = case valuesByKey as "source" of
-      [] -> Nothing
-      t -> Just $ makeNodeWithID $ head t
-    dst :: Edge -> Maybe Node
-    dst as = case valuesByKey as "target" of
-      [] -> Nothing
-      t -> Just $ makeNodeWithID $ head t
-    makeNodeWithID :: BS.ByteString -> Node
-    makeNodeWithID str = makeNode [makeAttribute ("id", str)]
+-- | Lookup Attributes by `Key`s
+-- | Complexity: /O(n)/
+lookupEdgeValues :: Key -> Edge -> Maybe Value
+lookupEdgeValues k e = lookup k (edgeAttributes e)
+
+-- * Utility Operations
+-- | Similar to `vertices` but returns an association list instead
+vertexAssocList :: Pangraph -> [(VertexID, Vertex)]
+vertexAssocList p = Map.toList $ vertices' p
+
+-- | Simlar to `edges` but returns an association list instead
+edgeAssocList :: Pangraph -> [(EdgeID, Edge)]
+edgeAssocList p = Map.toList $ edges' p
+
+-- | Returns a Bool representing whether a `Key` is present.
+-- | Complexity /O(n)/
+edgeContainsKey :: Key -> Edge -> Bool
+edgeContainsKey k e = isJust $ lookupEdgeValues k e
+
+-- | Returns a Bool representing whether a `Key` is present.
+-- | Complexity /O(n)/
+vertexContainsKey :: Key -> Vertex -> Bool
+vertexContainsKey k v = isJust $ lookupVertexValues k v

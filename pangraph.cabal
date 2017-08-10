@@ -17,24 +17,30 @@ library
   hs-source-dirs:     src
   exposed-modules:    Pangraph
                    ,  Pangraph.GraphML.Parser
-                   ,  Pangraph.VHDL.GraphWriter
-                   ,  Pangraph.VHDL.EnvironmentWriter
-  other-modules:      Pangraph.XMLTemplate
+                   ,  Pangraph.VHDL.Writer
+                   ,  Pangraph.VHDL.Internal.GraphWriter
+                   ,  Pangraph.VHDL.Internal.EnvironmentWriter
+                   ,  Pangraph.Internal.XMLTemplate
+  other-modules:      Pangraph.Examples.Reading
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
-                   ,  algebraic-graphs
+                   ,  containers
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -O2
 
 test-suite pangraph-test
   type:               exitcode-stdio-1.0
-  main-is:            Test.hs
+  hs-source-dirs:     test
+  main-is:            Main.hs
+  other-modules:      Show
+                   ,  GraphML
+                   ,  VHDL
+                   ,  VHDLLiterals
   build-depends:      base >= 4.8 && < 5
                    ,  pangraph
-                   ,  hexml
                    ,  bytestring
-                   ,  algebraic-graphs
+                   ,  HUnit
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -fbreak-on-exception
 

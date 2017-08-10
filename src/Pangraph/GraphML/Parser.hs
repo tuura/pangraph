@@ -1,28 +1,20 @@
-module Pangraph.GraphML.Parser(
-parseGraphToAlga,
-parseTemplateToPangraph,
-template,
-PT.Template
+module Pangraph.GraphML.Parser (
+parse,
+unsafeParse
 ) where
 
-import qualified Pangraph as P
+import Data.Maybe
+import qualified Data.ByteString            as BS
+import qualified Pangraph                   as P
 import qualified Text.XML.Hexml as H
-import qualified Data.ByteString as BS
-import qualified Pangraph.XMLTemplate as PT
-import qualified Algebra.Graph.HigherKinded.Class as H
+import qualified Pangraph.Internal.XMLTemplate       as PT
 
+-- * Parsing
 
-parseGraphToAlga:: (H.Graph g) => PT.Template -> BS.ByteString -> Either BS.ByteString (g P.Node)
-parseGraphToAlga t file =
-  case H.parse file of
-    Left x -> Left x
-    Right x -> Right $ PT.parseTemplateToAlga t x
+-- | Returns `Pangraph` if it can be parsed from a raw GraphML file.
+parse :: BS.ByteString -> Maybe P.Pangraph
+parse file = either (const Nothing) (PT.hexmlToPangraph PT.graphMLTemplate) (H.parse file)
 
-parseTemplateToPangraph :: PT.Template -> BS.ByteString -> Either BS.ByteString P.Pangraph
-parseTemplateToPangraph t file =
-  case H.parse file of
-    Left x -> Left x
-    Right x -> Right $ PT.parseTemplateToPangraph t x
-
-template:: [PT.Template]
-template = PT.graphMLTemplate
+-- | Like `parse` except it throws an error on Nothing.
+unsafeParse :: BS.ByteString -> P.Pangraph
+unsafeParse file = fromMaybe (error "Parse failed") (parse file)
