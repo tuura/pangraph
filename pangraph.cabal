@@ -17,7 +17,7 @@ library
   hs-source-dirs:     src
   exposed-modules:    Pangraph
                    ,  Pangraph.GraphML.Parser
-                   ,  Pangraph.VHDL
+                   ,  Pangraph.VHDL.Writer
                    ,  Pangraph.VHDL.Internal.GraphWriter
                    ,  Pangraph.VHDL.Internal.EnvironmentWriter
                    ,  Pangraph.Internal.XMLTemplate

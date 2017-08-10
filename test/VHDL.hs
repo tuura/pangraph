@@ -5,7 +5,7 @@ vhdlTests
 import Test.HUnit
 
 import Pangraph.GraphML.Parser
-import Pangraph.VHDL
+import Pangraph.VHDL.Writer
 import VHDLLiterals
 
 vhdlTests :: [Test]
