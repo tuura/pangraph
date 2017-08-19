@@ -17,11 +17,13 @@ library
   hs-source-dirs:     src
   exposed-modules:    Pangraph
                    ,  Pangraph.GraphML.Parser
+                   ,  Pangraph.GraphML.Writer
                    ,  Pangraph.VHDL.Writer
                    ,  Pangraph.VHDL.Internal.GraphWriter
                    ,  Pangraph.VHDL.Internal.EnvironmentWriter
                    ,  Pangraph.Internal.XMLTemplate
   other-modules:      Pangraph.Examples.Reading
+                   ,  Pangraph.Examples.Writing
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
