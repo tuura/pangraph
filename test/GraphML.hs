@@ -6,12 +6,14 @@ graphmlTests
 
 import Test.HUnit
 
+import Data.Maybe
+
 import Pangraph
 import Pangraph.GraphML.Parser
-
+import Pangraph.GraphML.Writer
 
 graphmlTests :: [Test]
-graphmlTests =  [case1]
+graphmlTests = [case1, case2]
 
 case1 :: Test
 case1 =
@@ -37,3 +39,17 @@ case1 =
         [("source","n0"),("target","n2")]
         (head sampleVertices, sampleVertices !! 2)]
   in TestCase $ assertEqual "GraphML Parse case 1" (graph :: Maybe Pangraph) file
+
+case2 :: Test
+case2 =
+  let
+    sampleVertices = [
+                      makeVertex "n0" [ ("id","n0")],
+                      makeVertex "n1" [ ("id","n1")],
+                      makeVertex "n2" [ ("id","n2")]]
+    graph = makePangraph sampleVertices
+      [makeEdge
+        [("source","n0"),("target","n2")]
+        (head sampleVertices, sampleVertices !! 2)]
+    justGraph = fromMaybe (error "Sample graph failed to compile") graph
+  in TestCase $ assertEqual "GraphML Write case 1" (graph :: Maybe Pangraph) (parse $ write justGraph)
