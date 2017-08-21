@@ -15,6 +15,6 @@ import qualified Pangraph.Internal.XMLTemplate       as PT
 parse :: BS.ByteString -> Maybe P.Pangraph
 parse file = either (const Nothing) (PT.hexmlToPangraph PT.graphMLTemplate) (H.parse file)
 
--- | Like 'parse' except it throws an error on Nothing, which is when parsing fails..
+-- | Like 'parse' except it throws an error on Nothing, which is when parsing fails.
 unsafeParse :: BS.ByteString -> P.Pangraph
 unsafeParse file = fromMaybe (error "Parse failed") (parse file)
