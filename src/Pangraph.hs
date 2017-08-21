@@ -33,12 +33,12 @@ data Pangraph = Pangraph
   { vertices' :: Map VertexID Vertex
   , edges' :: Map EdgeID Edge
   } deriving (Eq)
-{-| A Vertex holds `Attributes` and must have a unique `VertexID` to be constructed with `makeVertex`. -}
+{-| A Vertex holds 'Attributes' and must have a unique 'VertexID' to be constructed with 'makeVertex'. -}
 data Vertex = Vertex
   { vertexID' :: VertexID
   , vertexAttributes' :: [Attribute]
   } deriving (Eq)
-{-| Edges also reqiure `Attributes` and a pair of vertices passed as connections to be constructed with `makeEdge` -}
+{-| Edges also reqiure 'Attributes' and a pair of vertices passed as connections to be constructed with 'makeEdge' -}
 data Edge = Edge
   { edgeID' :: Maybe EdgeID
   , edgeAttributes' :: [Attribute]
@@ -51,9 +51,9 @@ type EdgeID = Int
 type VertexID = BS.ByteString
 -- | The type alias for storage of fields.
 type Attribute = (Key, Value)
--- | The `Key` in tuples that make up `Attributes`.
+-- | The 'Key' in tuples that make up 'Attributes'.
 type Key = BS.ByteString
--- | The `Value` in tuples that make up `Attribute`
+-- | The 'Value' in tuples that make up 'Attribute'
 type Value = BS.ByteString
 
 type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
@@ -133,37 +133,37 @@ vertexAttributes = vertexAttributes'
 edgeEndpoints :: Edge -> (Vertex, Vertex)
 edgeEndpoints = endpoints'
 
-{-| Returns the EdgeID if it has one. `Edge`s are given a new `VetexID` when they are passed and retrived from a `Pangraph`-}
+{-| Returns the EdgeID if it has one. 'Edge's are given a new 'EdgeID' when they are passed and retrived from a 'Pangraph'-}
 edgeID :: Edge -> Maybe EdgeID
 edgeID = edgeID'
 
--- | Returns a `VetexID`
+-- | Returns a 'VetexID'
 vertexID :: Vertex -> VertexID
 vertexID = vertexID'
 
 -- * Operations on Edge and Vertex
 
--- | Lookup Attributes by `Key`s Complexity: /O(n)/
+-- | Lookup Attributes by 'Key's Complexity: /O(n)/
 lookupVertexValues :: Key -> Vertex -> Maybe Value
 lookupVertexValues k v = lookup k (vertexAttributes v)
 
--- | Lookup Attributes by `Key`s Complexity: /O(n)/
+-- | Lookup Attributes by 'Key's Complexity: /O(n)/
 lookupEdgeValues :: Key -> Edge -> Maybe Value
 lookupEdgeValues k e = lookup k (edgeAttributes e)
 
 -- * Utility Operations
--- | Similar to `vertices` but returns an association list instead
+-- | Similar to 'vertices' but returns an association list instead
 vertexAssocList :: Pangraph -> [(VertexID, Vertex)]
 vertexAssocList p = Map.toList $ vertices' p
 
--- | Simlar to `edges` but returns an association list instead
+-- | Simlar to 'edges' but returns an association list instead
 edgeAssocList :: Pangraph -> [(EdgeID, Edge)]
 edgeAssocList p = Map.toList $ edges' p
 
--- | Returns a Bool representing whether a `Key` is present. Complexity /O(n)/
+-- | Returns a Bool representing whether a 'Key' is present. Complexity /O(n)/
 edgeContainsKey :: Key -> Edge -> Bool
 edgeContainsKey k e = isJust $ lookupEdgeValues k e
 
--- | Returns a Bool representing whether a `Key` is present. Complexity /O(n)/
+-- | Returns a Bool representing whether a 'Key` is present. Complexity /O(n)/
 vertexContainsKey :: Key -> Vertex -> Bool
 vertexContainsKey k v = isJust $ lookupVertexValues k v

@@ -10,7 +10,7 @@ import Data.ByteString(ByteString, append, concat)
 import Data.ByteString.Char8(pack)
 
 
--- | Serialise a Pangraph into a GraphML file producing a ByteString.
+-- | Serialise a 'Pangraph' into a GraphML file producing a 'ByteString'.
 write :: Pangraph -> ByteString
 write p = concat $
     writeHeader  0 :
