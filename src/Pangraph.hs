@@ -22,6 +22,8 @@ import Data.Maybe            (mapMaybe)
 import Data.Map.Strict       (Map)
 import qualified Data.Map.Strict  as Map
 import qualified Data.ByteString  as BS
+import qualified Algebra.Graph.Class as Alga
+
 -- | The 'Pangraph' type is the core intermediate type between abstract representations of graphs.
 data Pangraph = Pangraph
   { vertices' :: Map VertexID Vertex
@@ -63,7 +65,7 @@ instance Show Edge where
 
 instance Alga.ToGraph Pangraph where
     type ToVertex Pangraph = Vertex
-    toGraph p = Alga.graph (vertices p) (map edgeEndpoints $ edges p)
+    toGraph p = Alga.graph (vertexList p) (map edgeEndpoints $ edgeList p)
 
 -- * List based constructors
 
@@ -135,6 +137,6 @@ edgeEndpoints = endpoints'
 edgeID :: Edge -> Maybe EdgeID
 edgeID = edgeID'
 
--- | Returns a 'VetexID'
+-- | Returns a 'VertexID'
 vertexID :: Vertex -> VertexID
 vertexID = vertexID'
