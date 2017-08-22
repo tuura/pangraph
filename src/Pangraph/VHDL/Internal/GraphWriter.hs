@@ -19,22 +19,22 @@ type VertexIndex = Int
 -- The following two functions are written so that this file does not have to be rewritten to handle cases of Maybe
 
 vertexValuesByKey :: P.Vertex -> P.Key -> [P.Value]
-vertexValuesByKey k v = maybeToList $ P.lookupVertexValues v k
+vertexValuesByKey v k = maybeToList $ lookup k (P.vertexAttributes v)
 
 edgeValuesByKey :: P.Edge -> P.Key -> [P.Value]
-edgeValuesByKey k e = maybeToList $ P.lookupEdgeValues e k
+edgeValuesByKey e k = maybeToList $ lookup k (P.edgeAttributes e)
 
 -- | Writes a Pangraph to VHDL
 
 writeGraph :: P.Pangraph -> String
 writeGraph g = do
-    let stats       = "-- Nodes: " ++ show (length $ P.vertices g) ++ " - Edges: " ++ show (length $ P.edges g) ++ "\n"
+    let stats       = "-- Nodes: " ++ show (length $ P.vertexList g) ++ " - Edges: " ++ show (length $ P.edgeList g) ++ "\n"
         library     = createLibrary
-        entity      = createEntity (P.vertices g)
+        entity      = createEntity (P.vertexList g)
         archOpen    = openArchitecture g
-        regs        = "\t-- Registers\n" ++ bindRegisters (P.vertices g) 0
+        regs        = "\t-- Registers\n" ++ bindRegisters (P.vertexList g) 0
         wiresIn     = "\t-- Wire connections: inputs\n" ++ bindWiresIn g
-        wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (P.vertices g)) -1)
+        wiresOut    = "\t-- Wire connections: outputs\n" ++ bindWiresOut ((length (P.vertexList g)) -1)
         archClose   = closeArchitecture
     stats ++ library ++ entity ++ archOpen ++ regs ++ wiresIn ++ wiresOut ++ archClose
 
@@ -64,13 +64,13 @@ openArchitecture p = do
         begin    = "BEGIN\n\n"
     open ++ register ++ sigs ++ begin
     where
-      ns = P.vertices p
+      ns = P.vertexList p
 
 closeArchitecture :: String
 closeArchitecture = "\nEND Graph_circuit;"
 
 bindWiresIn :: P.Pangraph -> String
-bindWiresIn p = getStructure (P.vertices p) (P.vertices p)  (P.edges p)
+bindWiresIn p = getStructure (P.vertexList p) (P.vertexList p)  (P.edgeList p)
 
 bindWiresOut :: Int -> String
 bindWiresOut 0 =   "\tDOUT(0) <= data_out(0);\n"

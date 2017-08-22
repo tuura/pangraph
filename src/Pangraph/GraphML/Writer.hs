@@ -17,8 +17,8 @@ write p = concat $
     writeGraphML 0 :
     writeGraphTag 1 :
     [] ++
-    map (writeNode 2) (vertices p) ++
-    map (writeEdge 2) (edges p) ++
+    map (writeNode 2) (vertexList p) ++
+    map (writeEdge 2) (edgeList p) ++
     [closingTags]
 
 writeHeader :: Int -> ByteString

@@ -43,7 +43,7 @@ createEntity p =
                  ++ "END FANTASI;\n\n"
                    where
                        nNodes = length ns
-                       ns = P.vertices p
+                       ns = P.vertexList p
 
 openArchitecture :: P.Pangraph -> String
 openArchitecture p = do
@@ -53,7 +53,7 @@ openArchitecture p = do
          begin      = "BEGIN\n\n"
      open ++ components ++ sigs ++ begin
      where
-       ns = P.vertices p
+       ns = P.vertexList p
 
 createComponents :: [P.Vertex] -> String
 createComponents ns = accumulator
@@ -185,7 +185,7 @@ createSignals ns = "\tSIGNAL in_network\t: std_logic_vector(" ++ show (nNodes) +
                     nNodes = length ns
 
 instantiateModules :: P.Pangraph -> String
-instantiateModules p =  delayer_enable_vertices ns
+instantiateModules p =  delayer_enable_vertexList ns
                                      ++ network ns
                                      ++ synchroniser ns
                                      ++ genericCounter ns
@@ -205,7 +205,7 @@ instantiateModules p =  delayer_enable_vertices ns
                                      ++ done_circuit
                                      ++ output_wires ns
                                      where
-                                       ns = P.vertices p
+                                       ns = P.vertexList p
 
 output_wires :: [P.Vertex] -> String
 output_wires ns =  "\tRESULT <= res;\n"
@@ -236,8 +236,8 @@ adder_comparator ns =  "\tRESULT_COMPARATOR : Generic_zero_comparator\n"
                 ++ "\t\t\tEN\t=> comparator_en,\n"
                 ++ "\t\t\tEQ\t=> done1);\n\n"
 
-delayer_enable_vertices :: [P.Vertex] -> String
-delayer_enable_vertices ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (length ns - 1) ++ " generate\n"
+delayer_enable_vertexList :: [P.Vertex] -> String
+delayer_enable_vertexList ns =  "\tDELAYER_ENABLE : for i in 0 to " ++ show (length ns - 1) ++ " generate\n"
                         ++ "\t\tenable_reg_del(i) <= EN_NODES(i) AND start_del;\n"
                         ++ "\tend generate;\n\n"
 
@@ -391,7 +391,7 @@ connectWires p =  "\tsum <= " ++ adders ns (nNodes-1)
                                ++ multiplier
                                   where
                                     nNodes = length ns
-                                    ns = P.vertices p
+                                    ns = P.vertexList p
 
 adders :: [P.Vertex] -> Int -> String
 adders ns 0 = "\t\t(\"" ++ generateZeros ((bitSum ns)-1) ++ "\" & sync_out(0));\n\n"
