@@ -93,7 +93,7 @@ verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
 makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
 makeEdge = Edge Nothing
 
--- | Vetex constructor
+-- | Vertex constructor
 makeVertex :: VertexID -> [Attribute] -> Vertex
 makeVertex = Vertex
 
