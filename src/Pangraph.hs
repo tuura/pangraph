@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Pangraph (
     -- * Abstract Types
@@ -59,6 +60,10 @@ instance Show Vertex where
 
 instance Show Edge where
   show (Edge _ as e) = unwords ["makeEdge", show as, show e]
+
+instance Alga.ToGraph Pangraph where
+    type ToVertex Pangraph = Vertex
+    toGraph p = Alga.graph (vertices p) (map edgeEndpoints $ edges p)
 
 -- * List based constructors
 
