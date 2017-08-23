@@ -37,7 +37,7 @@ cabal install
 ```
 
 ## Examples  
-
+See the `Pangraph.Examples.*` directory for further examples.
 ### Parsing a Graph file
 Repeated here the code from `src/Pangraph/Examples`:
 ```haskell
@@ -61,7 +61,7 @@ main = do
 ### [GraphML](http://graphml.graphdrawing.org/)
 GraphML files are currently:  
 - Parsing: Ok  
-- Writing: **Unimplemented**
+- Writing: Ok
 
 ### [Workcraft](https://www.workcraft.org/)
 Workcraft files are currently:  
