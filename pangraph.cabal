@@ -28,6 +28,7 @@ library
                    ,  bytestring
                    ,  hexml
                    ,  containers
+                   ,  algebraic-graphs
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -O2
 
