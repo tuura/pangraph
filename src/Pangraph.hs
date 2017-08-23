@@ -15,9 +15,6 @@ module Pangraph (
     edgeAttributes, vertexAttributes,
     edgeEndpoints, edgeID, vertexID
 
-    -- -- * Utility Operations
-    -- vertexAssocList, edgeAssocList
-
 ) where
 
 import Data.Maybe            (mapMaybe)
@@ -136,12 +133,3 @@ edgeID = edgeID'
 -- | Returns a 'VetexID'
 vertexID :: Vertex -> VertexID
 vertexID = vertexID'
-
--- -- * Utility Operations
--- -- | Similar to 'vertexList' but returns an association list instead.
--- vertexAssocList :: Pangraph -> [(VertexID, Vertex)]
--- vertexAssocList p = Map.toList $ vertices' p
---
--- -- | Simlar to 'edgeList' but returns an association list instead.
--- edgeAssocList :: Pangraph -> [(EdgeID, Edge)]
--- edgeAssocList p = Map.toList $ edges' p
