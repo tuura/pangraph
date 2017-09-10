@@ -57,7 +57,7 @@ main = do
   print (GraphML_P.parse file)
 ```
 
-## Graph support  
+## Graph File support  
 ### [GraphML](http://graphml.graphdrawing.org/)
 GraphML files are currently:  
 - Parsing: Ok  
@@ -67,3 +67,9 @@ GraphML files are currently:
 Workcraft files are currently:  
 - Parsing: **Unimplemented**  
 - Writing: **Unimplemented**
+
+## Graph Library support  
+### [Containers](https://hackage.haskell.org/package/containers)
+Currently implements:  
+- FromPangraph: **Implmented**
+- ToPangraph:   **Unimplemented**

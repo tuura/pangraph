@@ -14,7 +14,7 @@ module Pangraph (
 
     -- * Getters on Vertex and Edge
     edgeAttributes, vertexAttributes,
-    edgeEndpoints, edgeID, vertexID
+    edgeEndpoints, edgeEndpointIDs, edgeID, vertexID
 
 ) where
 
@@ -132,6 +132,10 @@ vertexAttributes = vertexAttributes'
 -- | Returns the endpoint of tupled 'Vertex' of an 'Edge'
 edgeEndpoints :: Edge -> (Vertex, Vertex)
 edgeEndpoints = endpoints'
+
+-- | Like 'edgeEndpoints' but returns the 'VertexID's instead.
+edgeEndpointIDs :: Edge -> (VertexID, VertexID)
+edgeEndpointIDs = (vertexID Control.Arrow.*** vertexID) edgeEndpoints  
 
 -- | Returns the EdgeID if it has one. 'Edge's are given a new 'EdgeID' when they are passed and retrived from a 'Pangraph'
 edgeID :: Edge -> Maybe EdgeID
