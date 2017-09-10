@@ -6,6 +6,8 @@ module Pangraph.Containers
 import Pangraph
 import qualified Data.Graph as CGraph
 
+import Data.Maybe(fromMaybe)
+
 import Data.Map.Strict(Map)
 import qualified Data.Map.Strict as Map
 
@@ -20,7 +22,6 @@ toContainerGraph p = CGraph.graphFromEdges getVertices
     -- Lookup the edges for this vertex. Returning empty list on Nothing.
     vertexConnections :: Vertex -> [VertexID]
     vertexConnections v = fromMaybe [] (Map.lookup (vertexID v) edgeMap)
-
 
     -- Convert Pangraph Vertex into a form ready to collect Edges from the Pangraph
     getVertices :: [(Vertex, VertexID, [VertexID])]

@@ -20,6 +20,7 @@ module Pangraph (
 
 import Data.Maybe            (mapMaybe)
 import Data.Map.Strict       (Map)
+import Control.Arrow         ((***))
 import qualified Data.Map.Strict  as Map
 import qualified Data.ByteString  as BS
 import qualified Algebra.Graph.Class as Alga
@@ -135,7 +136,7 @@ edgeEndpoints = endpoints'
 
 -- | Like 'edgeEndpoints' but returns the 'VertexID's instead.
 edgeEndpointIDs :: Edge -> (VertexID, VertexID)
-edgeEndpointIDs = (vertexID Control.Arrow.*** vertexID) edgeEndpoints  
+edgeEndpointIDs e = (vertexID *** vertexID) $ edgeEndpoints e
 
 -- | Returns the EdgeID if it has one. 'Edge's are given a new 'EdgeID' when they are passed and retrived from a 'Pangraph'
 edgeID :: Edge -> Maybe EdgeID
