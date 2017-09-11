@@ -23,7 +23,7 @@ library
                    ,  Pangraph.VHDL.Internal.GraphWriter
                    ,  Pangraph.VHDL.Internal.EnvironmentWriter
                    ,  Pangraph.Internal.XMLTemplate
-  other-modules:      Pangraph.Examples.Reading
+                   ,  Pangraph.Examples.Reading
                    ,  Pangraph.Examples.Writing
                    ,  Pangraph.Examples.ToContainersGraph
                    ,  Pangraph.Examples.SampleGraph
@@ -43,10 +43,12 @@ test-suite pangraph-test
                    ,  GraphML
                    ,  VHDL
                    ,  VHDLLiterals
+                   ,  Containers
   build-depends:      base >= 4.8 && < 5
                    ,  pangraph
                    ,  bytestring
                    ,  HUnit
+                   ,  containers
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs -fbreak-on-exception
 
