@@ -1,18 +1,9 @@
 module Pangraph.Examples.ToContainersGraph where
 
-import Prelude hiding (readFile)
-
-import Data.ByteString (readFile)
-
-import qualified Pangraph.GraphML.Parser as GraphML
-import qualified Pangraph.Containers as CGraph
+import Pangraph.Containers(convert)
+import Pangraph.Examples.SampleGraph(smallGraph)
 
 main :: IO ()
-main = do
-  fileName <- getLine
-  -- Read the files as ByteString
-  file <- readFile fileName
-  -- Transform to Pangraph and print
-  let pangraph = GraphML.unsafeParse file
+main =
   -- Transform to Containers Data.Graph and print.
-  print $ ((\(a,_,_) -> a) . CGraph.toContainerGraph) pangraph
+  print $ ((\(a,_,_) -> a) . convert) smallGraph

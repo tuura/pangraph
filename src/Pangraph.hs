@@ -14,13 +14,12 @@ module Pangraph (
 
     -- * Getters on Vertex and Edge
     edgeAttributes, vertexAttributes,
-    edgeEndpoints, edgeEndpointIDs, edgeID, vertexID
+    edgeEndpoints, edgeID, vertexID
 
 ) where
 
 import Data.Maybe            (mapMaybe)
 import Data.Map.Strict       (Map)
-import Control.Arrow         ((***))
 import qualified Data.Map.Strict  as Map
 import qualified Data.ByteString  as BS
 import qualified Algebra.Graph.Class as Alga
@@ -133,10 +132,6 @@ vertexAttributes = vertexAttributes'
 -- | Returns the endpoint of tupled 'Vertex' of an 'Edge'
 edgeEndpoints :: Edge -> (Vertex, Vertex)
 edgeEndpoints = endpoints'
-
--- | Like 'edgeEndpoints' but returns the 'VertexID's instead.
-edgeEndpointIDs :: Edge -> (VertexID, VertexID)
-edgeEndpointIDs e = (vertexID *** vertexID) $ edgeEndpoints e
 
 -- | Returns the EdgeID if it has one. 'Edge's are given a new 'EdgeID' when they are passed and retrived from a 'Pangraph'
 edgeID :: Edge -> Maybe EdgeID

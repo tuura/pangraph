@@ -26,6 +26,7 @@ library
   other-modules:      Pangraph.Examples.Reading
                    ,  Pangraph.Examples.Writing
                    ,  Pangraph.Examples.ToContainersGraph
+                   ,  Pangraph.Examples.SampleGraph
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml

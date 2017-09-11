@@ -1,23 +1,28 @@
 module Pangraph.Containers
-    (  toContainerGraph
-    )
-    where
+    ( convert
+    ) where
 
 import Pangraph
 import qualified Data.Graph as CGraph
 
-import Data.Maybe(fromMaybe)
+import Data.Maybe       (fromMaybe)
+import Data.List        (groupBy, sort)
+import Control.Arrow    ((***))
 
-import Data.Map.Strict(Map)
+import Data.Map.Strict  (Map)
 import qualified Data.Map.Strict as Map
 
 -- | Transforms a 'Pangraph' in a 'CGraph.Graph'.
-toContainerGraph :: Pangraph -> (CGraph.Graph, CGraph.Vertex -> (Vertex, VertexID, [VertexID]), VertexID -> Maybe CGraph.Vertex)
-toContainerGraph p = CGraph.graphFromEdges getVertices
+convert :: Pangraph -> (CGraph.Graph, CGraph.Vertex -> (Vertex, VertexID, [VertexID]), VertexID -> Maybe CGraph.Vertex)
+convert p = CGraph.graphFromEdges getVertices
   where
-    -- Create the an Edge Map using VertexID grouping edge sources together.
+    -- A helper function for getting the IDs of endpoints.
+    edgeEndpointIDs :: Edge -> (VertexID, VertexID)
+    edgeEndpointIDs e = (vertexID *** vertexID) $ edgeEndpoints e
+
+    -- Create an Edge Map using VertexID grouping edge sources together.
     edgeMap :: Map VertexID [VertexID]
-    edgeMap = (Map.fromList . squashIDs) $ map edgeEndpointIDs $ edgeList p
+    edgeMap = (Map.fromList . groupIDs) $ map edgeEndpointIDs $ edgeList p
 
     -- Lookup the edges for this vertex. Returning empty list on Nothing.
     vertexConnections :: Vertex -> [VertexID]
@@ -27,10 +32,8 @@ toContainerGraph p = CGraph.graphFromEdges getVertices
     getVertices :: [(Vertex, VertexID, [VertexID])]
     getVertices = map (\v ->(v, vertexID v, vertexConnections v)) $ vertexList p
 
--- A function to group edge endpoints in buckets.
-squashIDs :: [(VertexID, VertexID)] -> [(VertexID, [VertexID])]
-squashIDs as = Map.toList $ accumMap Map.empty as
+groupIDs :: [(VertexID, VertexID)] -> [(VertexID, [VertexID])]
+groupIDs vs = map (\ts -> (fst $ head ts, map snd ts)) groupedEdges
   where
-    accumMap :: Map VertexID [VertexID] -> [(VertexID, VertexID)] -> Map VertexID [VertexID]
-    accumMap t [] = t
-    accumMap m (a:c) = accumMap (Map.insertWith (++) (fst a) [snd a] m) c
+    groupedEdges :: [[(VertexID, VertexID)]]
+    groupedEdges = groupBy (\a b -> fst a == fst b) $ sort vs
