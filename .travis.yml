@@ -27,6 +27,6 @@ before_script:
     - stack setup
     - stack exec -- ghc --version
     - stack build
-
+    - stack exec fantasi examples/graphs/n1/n1.graphml
 script:
     - stack test

@@ -1,9 +1,11 @@
 module Tuura.Fantasi.Main (main) where
 
 import Tuura.Fantasi.Options
-import qualified Pangraph.GraphML.Parser as P
-import qualified Pangraph.VHDL.Writer as VHDL
-import Data.ByteString.Char8 (pack, unpack)
+import qualified Pangraph.GraphML.Parser  as P
+import qualified Pangraph.VHDL.Writer     as VHDL
+import Data.ByteString  (readFile, writeFile)
+import Prelude hiding   (readFile, writeFile)
+import Data.Maybe       (maybe)
 
 main :: IO ()
 main = do
@@ -14,9 +16,9 @@ main = do
         simulationEnvVhdlPath = optSimName options
 
     -- parse graph
-    let pangraph = P.unsafeParse (pack graphMLPath)
-    let graphVHDL   = (unpack . VHDL.writeGraph) pangraph
-    let simEnvVHDL  = (unpack . VHDL.writeEnvironment) pangraph
+    pangraph <- ((maybe (error "file or graph is malformed") id) . P.parse) <$> readFile graphMLPath
+    let graphVHDL   = VHDL.writeGraph pangraph
+    let simEnvVHDL  = VHDL.writeEnvironment pangraph
 
     -- output vhdl graph
     writeFile graphVHDLPath graphVHDL
