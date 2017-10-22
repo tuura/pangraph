@@ -5,6 +5,8 @@ import qualified Pangraph.GraphML.Parser  as P
 import qualified Pangraph.VHDL.Writer     as VHDL
 import Data.ByteString  (readFile, writeFile)
 import Prelude hiding   (readFile, writeFile)
+import Data.Maybe       (maybe)
+
 main :: IO ()
 main = do
     -- get arguments
@@ -14,7 +16,7 @@ main = do
         simulationEnvVhdlPath = optSimName options
 
     -- parse graph
-    pangraph <- P.unsafeParse <$> readFile graphMLPath
+    pangraph <- ((maybe (error "file or graph is malformed") id) . P.parse) <$> readFile graphMLPath
     let graphVHDL   = VHDL.writeGraph pangraph
     let simEnvVHDL  = VHDL.writeEnvironment pangraph
 
