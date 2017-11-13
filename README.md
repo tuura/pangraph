@@ -3,10 +3,8 @@
 [![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
 Pangraph is a Haskell library which offers for parsing and serializations for  
-graph network files. As well as conversions to other Haskell graph formats.
-Some example formats are
-[GraphML](http://graphml.graphdrawing.org/)
-and [Workcraft](https://www.workcraft.org/).
+network files. As well as conversions to other Haskell graph formats. An  
+example format is [GraphML](http://graphml.graphdrawing.org/).
 
 ## Contents
 1. [Usage](#usage)  
@@ -14,15 +12,15 @@ and [Workcraft](https://www.workcraft.org/).
 3. [Library support](#graph-library-support)
 
 ## Usage
-Pangraph offers an api in the module `Pangraph` for construction and   
-manipulation of graph networks. The parsers in the library use this module to   
+Pangraph offers an API in the module `Pangraph` for construction and   
+manipulation of networks. The parsers in the library use this module to   
 generate pangraphs. Parsers and serializers are imported from modules  
-individually. This example shows imports for GraphML. Usage of multiple file  
-types in the same module will require qualified imports.
+individually. This example shows imports for GraphML.
 ```haskell
 import Pangraph.GraphML.Parser (parse)
 import Pangraph.GraphML.Writer (write)
 ```
+Usage of multiple file types in the same module will require qualified imports.
 ## Examples  
 See `src/Pangraph/Examples` for further examples.
 ### Sample Parsing a Graph
@@ -56,11 +54,11 @@ Workcraft files are currently:
 - Writing:  **Unimplemented**
 
 ## Graph Library support  
+### [Algebraic Graphs](https://hackage.haskell.org/package/algebraic-graphs)
+- Convert:  Via the `ToGraph` interface in `Pangraph`
+- Revert:   **Unimplemented**
+
 ### [Containers](https://hackage.haskell.org/package/containers)
 Currently implements:  
 - Convert:  `Pangraph.Containers`
-- Revert:   **Unimplemented**
-
-### [Algebraic Graphs](https://hackage.haskell.org/package/algebraic-graphs)
-- Convert:  Via the `ToGraph` interface in `Pangraph`
 - Revert:   **Unimplemented**
