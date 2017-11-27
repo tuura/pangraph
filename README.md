@@ -1,10 +1,10 @@
-# pangraph
+# pangraph [![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
-[![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
-
-Pangraph is a Haskell library which offers for parsing and serializations for  
-network files. As well as conversions to other Haskell graph formats. An  
-example format is [GraphML](http://graphml.graphdrawing.org/).
+Pangraph is a Haskell library which offers for parsing and serializations for graph files. As well as conversions to other Haskell graph formats. An example format is [GraphML](http://graphml.graphdrawing.org/). A graphml file
+could for example represent the following graph, with vertices from `A` to `E` and connections, the edges, between them.
+![a-sample-graph](examples/graphs/graph-AE.png?raw=true)
+Source:
+[Mokhov, et al. (2017)]( https://github.com/tuura/papers/tree/3460a889ebcf8e21bbde54f9cb7fc3662a6c7ff8/fdl-2017 "Newcastle University")
 
 ## Contents
 1. [Usage](#usage)  
@@ -13,7 +13,7 @@ example format is [GraphML](http://graphml.graphdrawing.org/).
 
 ## Usage
 Pangraph offers an API in the module `Pangraph` for construction and   
-manipulation of networks. The parsers in the library use this module to   
+manipulation of graphs. The parsers in the library use this module to   
 generate pangraphs. Parsers and serializers are imported from modules  
 individually. This example shows imports for GraphML.
 ```haskell
