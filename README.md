@@ -1,45 +1,30 @@
-# pangraph
+# pangraph [![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
-[![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
+Pangraph is a Haskell library which offers for parsing and serializations for graph files. As well as conversions to other Haskell graph formats. An example format is [GraphML](http://graphml.graphdrawing.org/). A graphml file
+could for example represent the following graph, with vertices from `A` to `E` and connections, the edges, between them.  
+![a-sample-graph](examples/graphs/network.svg)  
+Source:
+[Mokhov, et al. (2017)](https://github.com/tuura/papers/tree/3460a889ebcf8e21bbde54f9cb7fc3662a6c7ff8/fdl-2017 "Newcastle University")
 
-This is a Haskell Library for parsing graph formats such as [GraphML](http://graphml.graphdrawing.org/) and the XML files produced by [Workcraft](https://www.workcraft.org/).
-The library currently implements parsing only the nodes and edges of undirected graphs.  
-See the User Guide for how to use this, with examples below.
-Information on current graph support can be found below that.
+## Contents
+1. [Usage](#usage)  
+2. [Graph File Support](#graph-file-support)
+3. [Library support](#graph-library-support)
 
-## How to use Pangraph
-
-Pangraph offers an api in the module `Pangraph` for accessing of graphs including constructors and getters.  
-You can construct entire graph or edit the results of parser.
-These are imported independently form their own modules:  
+## Usage
+Pangraph offers an API in the module `Pangraph` for construction and   
+manipulation of graphs. The parsers in the library use this module to   
+generate pangraphs. Parsers and serializers are imported from modules  
+individually. This example shows imports for GraphML.
 ```haskell
-import Pangraph.GraphML.Parser
+import Pangraph.GraphML.Parser (parse)
+import Pangraph.GraphML.Writer (write)
 ```
-
-All parsers currently export the following:
-```haskell
-parse :: ByteString -> Maybe Pangraph
-unsafeParse :: ByteString -> Pangraph
-```
-
-An example of reading code can be found in `Examples` below
-## Binary generation
-
-One of the two commands below should be used for the compilation and the generation of a binary file:
-
-
-```
-ghc -isrc -ifantasi fantasi/Main.hs -o Fantasi
-```
-
-```
-cabal install
-```
-
+Usage of multiple file types in the same module will require qualified imports.
 ## Examples  
-See the `Pangraph.Examples.*` directory for further examples.
-### Parsing a Graph file
-Repeated here the code from `src/Pangraph/Examples`:
+See `src/Pangraph/Examples` for further examples.
+### Sample Parsing a Graph
+Repeated here is code from `src/Pangraph/Examples/Reading.hs`
 ```haskell
 module Pangraph.Examples.Reading where
 
@@ -57,7 +42,7 @@ main = do
   print (GraphML_P.parse file)
 ```
 
-## Graph File support  
+## Graph File Support  
 ### [GraphML](http://graphml.graphdrawing.org/)
 GraphML files are currently:  
 - Parsing: Ok  
@@ -65,11 +50,15 @@ GraphML files are currently:
 
 ### [Workcraft](https://www.workcraft.org/)
 Workcraft files are currently:  
-- Parsing: **Unimplemented**  
-- Writing: **Unimplemented**
+- Parsing:  **Unimplemented**  
+- Writing:  **Unimplemented**
 
 ## Graph Library support  
+### [Algebraic Graphs](https://hackage.haskell.org/package/algebraic-graphs)
+- Convert:  Via the `ToGraph` interface in `Pangraph`
+- Revert:   **Unimplemented**
+
 ### [Containers](https://hackage.haskell.org/package/containers)
 Currently implements:  
-- FromPangraph: **Implmented**
-- ToPangraph:   **Unimplemented**
+- Convert:  `Pangraph.Containers`
+- Revert:   **Unimplemented**
