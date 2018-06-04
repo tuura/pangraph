@@ -65,7 +65,7 @@ instance Show Edge where
 
 instance Alga.ToGraph Pangraph where
     type ToVertex Pangraph = Vertex
-    toGraph p = Alga.graph (vertexList p) (map edgeEndpoints $ edgeList p)
+    toGraph p = Alga.vertices (vertexList p) `Alga.overlay` Alga.edges (map edgeEndpoints $ edgeList p)
 
 -- * List based constructors
 
