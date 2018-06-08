@@ -1,17 +1,22 @@
 name:                 pangraph
-version:              0.1.1.5
-synopsis:             A set of parsers for graph languages.
-description:          Please see README.md
+version:              0.1.2
+synopsis:             A set of parsers for graph languages and conversions to 
+                      graph libaries.
+description:          A package allowing parsing of graph files into graph 
+                      library datatypes. With aim the cope with large networks 
+                      and provide translations between graph libraries. Like a 
+                      pandoc but for graphs. This is my first library so any 
+                      feedback and help is appreicated. For example use please 
+                      see the homepage.
 homepage:             https://github.com/tuura/pangraph#readme
 license:              BSD3
 license-file:         LICENSE
 author:               Joe Scott
-maintainer:           notwhereitype@gmail.com
-copyright:            2016 Joe Scott
-category:             Web
+maintainer:           joseph-scott@hotmail.co.uk
+copyright:            2016-2018 Joesph Scott
+category:             Data Structures, Graphs, Parser
 build-type:           Simple
 cabal-version:        >=1.10
-tested-with:          GHC==8.0.2
 
 library
   hs-source-dirs:     src
