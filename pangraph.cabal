@@ -43,8 +43,9 @@ test-suite pangraph-test
   type:               exitcode-stdio-1.0
   hs-source-dirs:     test
   main-is:            Main.hs
-  other-modules:      GraphML
-                   ,  Containers
+  other-modules:      Containers
+                   ,  FGL
+                   ,  GraphML
                    ,  Show
                    ,  TestPangraph
   build-depends:      base >= 4.8 && < 5
