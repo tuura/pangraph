@@ -1,11 +1,9 @@
 module Pangraph.GML.Ast where
 
-import Data.Map as Map
 import Data.Text (Text)
 
-data GML = Boolean Bool
-    | Integer Integer
+data GML k = Integer Integer
     | Float Double
     | String Text
-    | List [GML]
-    | Object (Map.Map Text GML) deriving (Show, Eq, Ord)
+    | List [GML k]
+    | Object [(k, GML k)] deriving (Show, Eq, Ord)

@@ -5,25 +5,24 @@ import Data.Attoparsec.Text
 import Data.Text (Text, cons, pack)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Applicative ((<|>), (<*))
-import Data.Map (fromList)
 import Data.ByteString (ByteString)
 import Prelude hiding (takeWhile)
 
 import Pangraph.GML.Ast
 
-parse :: ByteString -> Either String GML
+parse :: ByteString -> Either String (GML Text)
 parse = parseText . decodeUtf8
 
-parseText :: Text -> Either String GML
+parseText :: Text -> Either String (GML Text)
 parseText = parseOnly (gmlParser <* endOfInput)
 
-parseString :: String -> Either String GML
+parseString :: String -> Either String (GML Text)
 parseString str = parseText (pack str)
 
-gmlParser :: Parser GML
+gmlParser :: Parser (GML Text)
 gmlParser = innerListParser
 
-listParser :: Parser GML
+listParser :: Parser (GML Text)
 listParser = do
     skipSpace
     skip (inClass "[")
@@ -33,13 +32,12 @@ listParser = do
     skipSpace
     return obj
 
-innerListParser :: Parser GML
+innerListParser :: Parser (GML Text)
 innerListParser = do
     entries <- many' listEntryParser
-    let keyValues = fromList entries
-    return (Object keyValues)
+    return (Object entries)
 
-listEntryParser :: Parser (Text, GML)
+listEntryParser :: Parser (Text, GML Text)
 listEntryParser = do
     skipSpace
     name <- key
@@ -53,20 +51,20 @@ key = do
     rest <- takeWhile (inClass "a-zA-Z0-9")
     return (start `cons` rest)
 
-valueParser :: Parser GML
+valueParser :: Parser (GML Text)
 valueParser = stringParser <|> integerParser <|> floatParser <|> listParser
 
-integerParser :: Parser GML
+integerParser :: Parser (GML Text)
 integerParser = do
     i <- signed decimal
     return (Integer i)
 
-floatParser :: Parser GML
+floatParser :: Parser (GML Text)
 floatParser = do
     d <- double
     return (Float d)
 
-stringParser :: Parser GML
+stringParser :: Parser (GML Text)
 stringParser = do 
     let del = inClass "\""
     skip del

@@ -53,6 +53,7 @@ test-suite pangraph-test
                    ,  GraphML
                    ,  Show
                    ,  TestPangraph
+                   ,  GML
   build-depends:      base >= 4.8 && < 5
                    ,  containers
                    ,  bytestring
