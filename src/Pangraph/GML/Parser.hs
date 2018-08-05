@@ -3,12 +3,16 @@ module Pangraph.GML.Parser where
 
 import Data.Attoparsec.Text
 import Data.Text (Text, cons, pack)
+import Data.Text.Encoding (decodeUtf8)
 import Control.Applicative ((<|>), (<*))
 import Data.Map (fromList)
-
-import Prelude (return, Either, String)
+import Data.ByteString (ByteString)
+import Prelude hiding (takeWhile)
 
 import Pangraph.GML.Ast
+
+parse :: ByteString -> Either String GML
+parse = parseText . decodeUtf8
 
 parseText :: Text -> Either String GML
 parseText = parseOnly (gmlParser <* endOfInput)
@@ -32,8 +36,8 @@ listParser = do
 innerListParser :: Parser GML
 innerListParser = do
     entries <- many' listEntryParser
-    let map = fromList entries
-    return (Object map)
+    let keyValues = fromList entries
+    return (Object keyValues)
 
 listEntryParser :: Parser (Text, GML)
 listEntryParser = do
