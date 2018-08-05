@@ -1,23 +1,66 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Pangraph.GML.Parser where
+module Pangraph.GML.Parser (parse, parseGml) where
 
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text hiding (parse)
 import Data.Text (Text, cons, pack)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Control.Applicative ((<|>), (<*))
-import Data.ByteString (ByteString)
-import Prelude hiding (takeWhile)
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BC
+import Data.Maybe
+import Prelude hiding (takeWhile, id)
 
+import Pangraph
 import Pangraph.GML.Ast
 
-parse :: ByteString -> Either String (GML Text)
-parse = parseText . decodeUtf8
+parse :: B.ByteString -> Maybe Pangraph
+parse contents = parseGml contents >>= gmlToPangraph
+
+parseGml :: B.ByteString -> Maybe (GML Text)
+parseGml contents = either (const Nothing) Just 
+    (parseText (decodeUtf8 contents))
 
 parseText :: Text -> Either String (GML Text)
 parseText = parseOnly (gmlParser <* endOfInput)
 
-parseString :: String -> Either String (GML Text)
-parseString str = parseText (pack str)
+gmlToPangraph :: GML Text -> Maybe Pangraph
+gmlToPangraph gml = do
+    graphObj <- lookupValue gml "graph"
+    values <- objectValues graphObj
+    let vertices = map snd (filter (\(k, _) -> k == "node") values)
+    let edges = map snd (filter (\(k, _) -> k == "edge") values)
+    let pVertices = mapMaybe gmlToVertex vertices
+    verticeGraph <- makePangraph pVertices []
+    let pEdges = mapMaybe (gmlToEdge verticeGraph) edges
+    makePangraph pVertices pEdges
+
+gmlToEdge :: Pangraph -> GML Text -> Maybe Edge
+gmlToEdge graph gml = do
+    sourceV <- lookupValue gml "source"
+    targetV <- lookupValue gml "target"
+    source <- integerValue sourceV
+    target <- integerValue targetV
+    atts <- attrs gml
+    let sourceB = encodeUtf8 (pack (show source))
+    let targetB = encodeUtf8 (pack (show target))
+    sourceVertex <- lookupVertex sourceB graph
+    targetVertex <- lookupVertex targetB graph
+    return (makeEdge atts (sourceVertex, targetVertex))
+
+gmlToVertex :: GML Text -> Maybe Vertex
+gmlToVertex gml = do
+    idV <- lookupValue gml "id"
+    id <- integerValue idV
+    atts <- attrs gml
+    let bid = BC.pack (show id)
+    return (makeVertex bid atts)
+
+attrs :: GML Text -> Maybe [(B.ByteString, B.ByteString)]
+attrs gml = mapMaybe convertValue <$> objectValues gml
+    
+convertValue :: (Text, GML Text) -> Maybe (B.ByteString, B.ByteString)
+convertValue (k, Integer i) = Just (encodeUtf8 k, BC.pack (show i))
+convertValue _ = Nothing
 
 gmlParser :: Parser (GML Text)
 gmlParser = innerListParser
@@ -33,15 +76,13 @@ listParser = do
     return obj
 
 innerListParser :: Parser (GML Text)
-innerListParser = do
-    entries <- many' listEntryParser
-    return (Object entries)
+innerListParser = Object <$> many' listEntryParser
 
 listEntryParser :: Parser (Text, GML Text)
 listEntryParser = do
     skipSpace
     name <- key
-    skipMany1 (whitespace)
+    skipMany1 whitespace
     value <- valueParser
     return (name, value)
     
@@ -55,14 +96,10 @@ valueParser :: Parser (GML Text)
 valueParser = stringParser <|> integerParser <|> floatParser <|> listParser
 
 integerParser :: Parser (GML Text)
-integerParser = do
-    i <- signed decimal
-    return (Integer i)
+integerParser = Integer <$> signed decimal
 
 floatParser :: Parser (GML Text)
-floatParser = do
-    d <- double
-    return (Float d)
+floatParser = Float <$> double
 
 stringParser :: Parser (GML Text)
 stringParser = do 
