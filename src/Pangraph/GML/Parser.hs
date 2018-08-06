@@ -2,13 +2,13 @@
 module Pangraph.GML.Parser (parse, parseGml) where
 
 import Data.Attoparsec.Text hiding (parse)
-import Data.Text (Text, cons, pack)
+import Data.Text (Text, cons, pack, lines, unlines, isPrefixOf)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Control.Applicative ((<|>), (<*))
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import Data.Maybe
-import Prelude hiding (takeWhile, id)
+import Prelude hiding (takeWhile, id, lines, unlines)
 
 import Pangraph
 import Pangraph.GML.Ast
@@ -21,7 +21,10 @@ parseGml contents = either (const Nothing) Just
     (parseText (decodeUtf8 contents))
 
 parseText :: Text -> Either String (GML Text)
-parseText = parseOnly (gmlParser <* endOfInput)
+parseText = parseOnly (gmlParser <* endOfInput) . removeComments
+
+removeComments :: Text -> Text
+removeComments text = unlines (filter (not . isPrefixOf "#") (lines text))
 
 gmlToPangraph :: GML Text -> Maybe Pangraph
 gmlToPangraph gml = do
