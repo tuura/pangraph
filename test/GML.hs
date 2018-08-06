@@ -6,12 +6,13 @@ import Test.HUnit
 import Pangraph
 import Pangraph.GML.Ast
 import Pangraph.GML.Parser
+import Pangraph.GML.Writer
 
 gmlTests :: [Test]
-gmlTests = [parseTest1, pangraphConversion, testComments]
+gmlTests = [testGmlParse, pangraphConversion, testComments, testGmlWrite, testPangraphWrite]
 
-parseTest1 :: Test
-parseTest1 = let
+testGmlParse :: Test
+testGmlParse = let
     file = "graph [node [id 1] node [id 2] edge [source 1 target 2]]"
     graph = Just (Object [("graph", Object [("node", Object [("id", Integer 1)]), 
                 ("node", Object [("id", Integer 2)]),
@@ -32,3 +33,21 @@ testComments = let
     file = "#test"
     graph = Just (Object [])
     in TestCase $ assertEqual "GML testComments" graph (parseGml file)
+
+testGmlWrite :: Test
+testGmlWrite = let
+    graph = (Object [("graph", Object [("node", Object [("id", Integer 1)]), 
+                ("node", Object [("id", Integer 2)]),
+                ("edge", Object [("source", Integer 1),
+                    ("target", Integer 2)])])])
+    file = Just "graph [ node [ id 1] node [ id 2] edge [ source 1 target 2]]"
+    in TestCase $ assertEqual "GML writeGML" file (writeGml graph)
+
+testPangraphWrite :: Test
+testPangraphWrite = let
+    file = "graph [ node [ id 1] node [ id 2] edge [ source 1 target 2]]"
+    vertices = [makeVertex "1" [("id", "1")], makeVertex "2" [("id", "2")]]
+    edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
+    Just pangraph = makePangraph vertices edges
+    in TestCase $ assertEqual "GML parseTest2" file (write pangraph)
+     

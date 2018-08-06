@@ -31,8 +31,9 @@ library
                    ,  Pangraph.Examples.ToContainersGraph
                    ,  Pangraph.Examples.SampleGraph
                    ,  Pangraph.Examples.GML
-                   ,  Pangraph.GML.Parser
                    ,  Pangraph.GML.Ast
+                   ,  Pangraph.GML.Parser
+                   ,  Pangraph.GML.Writer
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
