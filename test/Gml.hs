@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-module GML where
+module Gml where
 
 import Test.HUnit
 
 import Pangraph
-import Pangraph.GML.Ast
-import Pangraph.GML.Parser
-import Pangraph.GML.Writer
+import Pangraph.Gml.Ast
+import Pangraph.Gml.Parser
+import Pangraph.Gml.Writer
 
 gmlTests :: [Test]
 gmlTests = [testGmlParse, pangraphConversion, testComments, testGmlWrite,
@@ -67,5 +67,4 @@ testHtmlEntitiesEncoding = let
     vertices = [makeVertex "1" [("id", "1"), ("label", "\"Hello\"")], makeVertex "2" [("id", "2")]]
     edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
     Just pangraph = makePangraph vertices edges
-    in TestCase $ assertEqual "GML testHtmlEntitiesEncoding" file (write pangraph)
-                  
+    in TestCase $ assertEqual "GML testHtmlEntitiesEncoding" file (write pangraph) 

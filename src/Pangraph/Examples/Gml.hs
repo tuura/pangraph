@@ -1,13 +1,13 @@
-module Pangraph.Examples.GML where
+module Pangraph.Examples.Gml where
 
 import Prelude hiding (readFile)
 
 import Data.ByteString (readFile)
 
-import qualified Pangraph.GML.Parser as GML
+import qualified Pangraph.Gml.Parser as Gml
 
 main :: IO ()
 main = do
   fileName <- getLine
   file <- readFile fileName
-  print (GML.parse file)
+  print (Gml.parse file)

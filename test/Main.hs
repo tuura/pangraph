@@ -5,7 +5,7 @@ import Show
 import Containers
 import TestPangraph
 import FGL
-import GML
+import Gml
 
 import Test.HUnit
 

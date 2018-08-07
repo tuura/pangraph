@@ -30,10 +30,10 @@ library
                    ,  Pangraph.Examples.Writing
                    ,  Pangraph.Examples.ToContainersGraph
                    ,  Pangraph.Examples.SampleGraph
-                   ,  Pangraph.Examples.GML
-                   ,  Pangraph.GML.Ast
-                   ,  Pangraph.GML.Parser
-                   ,  Pangraph.GML.Writer
+                   ,  Pangraph.Examples.Gml
+                   ,  Pangraph.Gml.Ast
+                   ,  Pangraph.Gml.Parser
+                   ,  Pangraph.Gml.Writer
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
@@ -55,7 +55,7 @@ test-suite pangraph-test
                    ,  GraphML
                    ,  Show
                    ,  TestPangraph
-                   ,  GML
+                   ,  Gml
   build-depends:      base >= 4.8 && < 5
                    ,  containers
                    ,  bytestring

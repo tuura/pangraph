@@ -1,5 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Pangraph.GML.Parser (parse, parseGml) where
+{-|
+Module          : Pangraph.Gml.Parser
+Description     : Parse gml files
+
+Functions for parseing gml (Graphical Modelling Language) files.
+A gml specification can be found at:
+<http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf>.
+
+This follows the specification except for two cases:
+
+    1. All files are assumed to be encoded in UTF8
+    
+    2. The line length limit is ignored
+-}
+module Pangraph.Gml.Parser (parse, parseGml, decode, gmlToPangraph) where
 
 import Data.Attoparsec.Text hiding (parse)
 import Data.Text (Text, cons, pack, lines, unlines, isPrefixOf)
@@ -11,29 +25,36 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import Data.Maybe
 import HTMLEntities.Decoder (htmlEncodedText)
-import Data.Bifunctor (second)
 import Prelude hiding (takeWhile, id, lines, unlines)
 
 import Pangraph
-import Pangraph.GML.Ast
+import Pangraph.Gml.Ast
 
+-- | Parses the 'ByteString' into a 'Pangraph'
 parse :: B.ByteString -> Maybe Pangraph
-parse contents = parseGml contents >>= gmlToPangraph
+parse contents = fmap decode (parseGml contents) >>= gmlToPangraph
 
-parseGml :: B.ByteString -> Maybe (GML Text)
+-- | Parses the 'ByteString' into a 'Gml' ast. The function doesn't decode
+-- special characters inside strings. To decode special characters inside strings 
+-- use the 'decode' function.
+parseGml :: B.ByteString -> Maybe (Gml Text)
 parseGml contents = either (const Nothing) Just 
-    (second decodeHtmlEntities (parseText (decodeUtf8 contents)))
+    (parseText (decodeUtf8 contents))
 
-parseText :: Text -> Either String (GML Text)
+parseText :: Text -> Either String (Gml Text)
 parseText = parseOnly (gmlParser <* endOfInput) . removeComments
 
-decodeHtmlEntities :: GML Text -> GML Text
-decodeHtmlEntities = mapStrings (toStrict . toLazyText . htmlEncodedText)
+-- | Decodes special characters inside gml strings
+decode :: Gml Text -> Gml Text
+decode = mapStrings (toStrict . toLazyText . htmlEncodedText)
 
 removeComments :: Text -> Text
 removeComments text = unlines (filter (not . isPrefixOf "#") (lines text))
 
-gmlToPangraph :: GML Text -> Maybe Pangraph
+-- | Converts a gml ast into a pangraph. If a node/edge contains a gml object
+-- these object are not contained in the resulting pangraph. Are other values
+-- are.
+gmlToPangraph :: Gml Text -> Maybe Pangraph
 gmlToPangraph gml = do
     graphObj <- lookupValue gml "graph"
     values <- objectValues graphObj
@@ -44,7 +65,7 @@ gmlToPangraph gml = do
     let pEdges = mapMaybe (gmlToEdge verticeGraph) edges
     makePangraph pVertices pEdges
 
-gmlToEdge :: Pangraph -> GML Text -> Maybe Edge
+gmlToEdge :: Pangraph -> Gml Text -> Maybe Edge
 gmlToEdge graph gml = do
     sourceV <- lookupValue gml "source"
     targetV <- lookupValue gml "target"
@@ -57,7 +78,7 @@ gmlToEdge graph gml = do
     targetVertex <- lookupVertex targetB graph
     return (makeEdge atts (sourceVertex, targetVertex))
 
-gmlToVertex :: GML Text -> Maybe Vertex
+gmlToVertex :: Gml Text -> Maybe Vertex
 gmlToVertex gml = do
     idV <- lookupValue gml "id"
     id <- integerValue idV
@@ -65,19 +86,19 @@ gmlToVertex gml = do
     let bid = BC.pack (show id)
     return (makeVertex bid atts)
 
-attrs :: GML Text -> Maybe [(B.ByteString, B.ByteString)]
+attrs :: Gml Text -> Maybe [(B.ByteString, B.ByteString)]
 attrs gml = mapMaybe convertValue <$> objectValues gml
     
-convertValue :: (Text, GML Text) -> Maybe (B.ByteString, B.ByteString)
+convertValue :: (Text, Gml Text) -> Maybe (B.ByteString, B.ByteString)
 convertValue (k, Integer i) = Just (encodeUtf8 k, BC.pack (show i))
 convertValue (k, Float d) = Just (encodeUtf8 k, BC.pack (show d))
 convertValue (k, String s) = Just (encodeUtf8 k, encodeUtf8 s)
 convertValue _ = Nothing
 
-gmlParser :: Parser (GML Text)
+gmlParser :: Parser (Gml Text)
 gmlParser = innerListParser
 
-listParser :: Parser (GML Text)
+listParser :: Parser (Gml Text)
 listParser = do
     skipSpace
     skip (inClass "[")
@@ -87,10 +108,10 @@ listParser = do
     skipSpace
     return obj
 
-innerListParser :: Parser (GML Text)
+innerListParser :: Parser (Gml Text)
 innerListParser = Object <$> many' listEntryParser
 
-listEntryParser :: Parser (Text, GML Text)
+listEntryParser :: Parser (Text, Gml Text)
 listEntryParser = do
     skipSpace
     name <- key
@@ -104,16 +125,16 @@ key = do
     rest <- takeWhile (inClass "a-zA-Z0-9")
     return (start `cons` rest)
 
-valueParser :: Parser (GML Text)
+valueParser :: Parser (Gml Text)
 valueParser = stringParser <|> integerParser <|> floatParser <|> listParser
 
-integerParser :: Parser (GML Text)
+integerParser :: Parser (Gml Text)
 integerParser = Integer <$> signed decimal
 
-floatParser :: Parser (GML Text)
+floatParser :: Parser (Gml Text)
 floatParser = Float <$> double
 
-stringParser :: Parser (GML Text)
+stringParser :: Parser (Gml Text)
 stringParser = do 
     let del = inClass "\""
     skip del
