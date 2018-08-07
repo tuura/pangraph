@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Pangraph.GML.Writer (writeGml, pangraphToGml, write)  where
 
+import HTMLEntities.Text (text)
 import Data.ByteString (ByteString, concat)
 import Data.ByteString.Char8 (unpack, pack)
+import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 
 import Prelude hiding (concat)
 
@@ -11,7 +13,9 @@ import Pangraph.GML.Ast
 
 write :: Pangraph -> ByteString
 write graph = let
-    Just bs = writeGml (pangraphToGml graph)
+    gml = pangraphToGml graph
+    encodedGml = mapStrings (encodeUtf8 . text . decodeUtf8) gml
+    Just bs = writeGml encodedGml
     in bs
 
 pangraphToGml :: Pangraph -> GML ByteString

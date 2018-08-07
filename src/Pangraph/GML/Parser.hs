@@ -4,10 +4,14 @@ module Pangraph.GML.Parser (parse, parseGml) where
 import Data.Attoparsec.Text hiding (parse)
 import Data.Text (Text, cons, pack, lines, unlines, isPrefixOf)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import Data.Text.Lazy.Builder (toLazyText)
+import Data.Text.Lazy (toStrict)
 import Control.Applicative ((<|>), (<*))
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import Data.Maybe
+import HTMLEntities.Decoder (htmlEncodedText)
+import Data.Bifunctor (second)
 import Prelude hiding (takeWhile, id, lines, unlines)
 
 import Pangraph
@@ -18,10 +22,13 @@ parse contents = parseGml contents >>= gmlToPangraph
 
 parseGml :: B.ByteString -> Maybe (GML Text)
 parseGml contents = either (const Nothing) Just 
-    (parseText (decodeUtf8 contents))
+    (second decodeHtmlEntities (parseText (decodeUtf8 contents)))
 
 parseText :: Text -> Either String (GML Text)
 parseText = parseOnly (gmlParser <* endOfInput) . removeComments
+
+decodeHtmlEntities :: GML Text -> GML Text
+decodeHtmlEntities = mapStrings (toStrict . toLazyText . htmlEncodedText)
 
 removeComments :: Text -> Text
 removeComments text = unlines (filter (not . isPrefixOf "#") (lines text))
@@ -63,6 +70,8 @@ attrs gml = mapMaybe convertValue <$> objectValues gml
     
 convertValue :: (Text, GML Text) -> Maybe (B.ByteString, B.ByteString)
 convertValue (k, Integer i) = Just (encodeUtf8 k, BC.pack (show i))
+convertValue (k, Float d) = Just (encodeUtf8 k, BC.pack (show d))
+convertValue (k, String s) = Just (encodeUtf8 k, encodeUtf8 s)
 convertValue _ = Nothing
 
 gmlParser :: Parser (GML Text)

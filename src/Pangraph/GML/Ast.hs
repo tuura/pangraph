@@ -23,4 +23,11 @@ stringValue _ = Nothing
 
 objectValues :: GML k -> Maybe [(k, GML k)]
 objectValues (Object values) = Just values
-objectValues _  = Nothing 
+objectValues _  = Nothing
+
+mapStrings :: (a -> b) -> GML a -> GML b
+mapStrings f (Object attrs) = (Object 
+    (map (\(k, v) -> (f k, mapStrings f v)) attrs))
+mapStrings f (String s) = (String (f s))
+mapStrings _  (Integer i) = (Integer i)
+mapStrings _ (Float f) = (Float f)
