@@ -16,6 +16,7 @@ This follows the specification except for two cases:
 module Pangraph.Gml.Parser (parse, parseGml, decode, gmlToPangraph) where
 
 import Data.Attoparsec.Text hiding (parse)
+import Data.Attoparsec.Combinator (lookAhead)
 import Data.Text (Text, cons, pack, lines, unlines, isPrefixOf)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Text.Lazy.Builder (toLazyText)
@@ -121,7 +122,7 @@ listEntryParser = do
     
 key :: Parser Text
 key = do
-    start <- satisfy (inClass "a-z")
+    start <- satisfy (inClass "a-zA-Z")
     rest <- takeWhile (inClass "a-zA-Z0-9")
     return (start `cons` rest)
 
@@ -129,7 +130,10 @@ valueParser :: Parser (Gml Text)
 valueParser = stringParser <|> integerParser <|> floatParser <|> listParser
 
 integerParser :: Parser (Gml Text)
-integerParser = Integer <$> signed decimal
+integerParser = do
+    i <- signed decimal
+    _ <- lookAhead (notChar '.')
+    return (Integer i)
 
 floatParser :: Parser (Gml Text)
 floatParser = Float <$> double
