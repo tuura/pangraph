@@ -11,7 +11,7 @@ This follows the specification except for two cases:
 
     1. All files are assumed to be encoded in UTF8
     
-    2. The line length limit is ignored
+    2. The line length limit is ignored.
 -}
 module Pangraph.Gml.Parser (parse, parseGml, decode, gmlToPangraph) where
 
@@ -31,7 +31,7 @@ import Prelude hiding (takeWhile, id, lines, unlines)
 import Pangraph
 import Pangraph.Gml.Ast
 
--- | Parses the 'ByteString' into a 'Pangraph'
+-- | Parses the 'ByteString' into a 'Pangraph'.
 parse :: B.ByteString -> Maybe Pangraph
 parse contents = fmap decode (parseGml contents) >>= gmlToPangraph
 
@@ -45,16 +45,15 @@ parseGml contents = either (const Nothing) Just
 parseText :: Text -> Either String (Gml Text)
 parseText = parseOnly (gmlParser <* endOfInput) . removeComments
 
--- | Decodes special characters inside gml strings
+-- | Decodes special characters inside gml strings.
 decode :: Gml Text -> Gml Text
 decode = mapStrings (toStrict . toLazyText . htmlEncodedText)
 
 removeComments :: Text -> Text
 removeComments text = unlines (filter (not . isPrefixOf "#") (lines text))
 
--- | Converts a gml ast into a pangraph. If a node/edge contains a gml object
--- these object are not contained in the resulting pangraph. Are other values
--- are.
+-- | Converts a gml ast into a 'Pangraph'. If a node/edge contains a gml object
+-- these object are not contained in the resulting 'Pangraph'.
 gmlToPangraph :: Gml Text -> Maybe Pangraph
 gmlToPangraph gml = do
     graphObj <- lookupValue gml "graph"

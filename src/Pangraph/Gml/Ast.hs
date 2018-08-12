@@ -3,13 +3,13 @@ Module          : Pangraph.Gml.Ast
 Description     : AST for gml files
 
 AST for gml (Graph Modelling Language) files. The specification of the gml
-format can be found: 
+format can be found at: 
 <http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf>.
 -}
 module Pangraph.Gml.Ast where
 
--- | Type of a AST node
--- 'k' is the type that is used to represent strings
+-- | Type of a AST node.
+-- 'k' is the type that is used to represent strings.
 data Gml k  
     -- | Integer value
     = Integer Integer
@@ -21,31 +21,31 @@ data Gml k
     -- values are not necessarily unique!
     | Object [(k, Gml k)] deriving (Show, Eq, Ord)
 
--- | Looks up a value in the given gml object
--- Produces Nothing when the given value is not a gml object or the object 
+-- | Looks up a value in the given gml object.
+-- Produces 'Nothing' when the given value is not a gml object or the object 
 -- doesn't contain the a value with the given name. If a object contains
 -- multiple values with the same name one the values is returned.
 lookupValue :: Eq k => Gml k -> k -> Maybe (Gml k)
 lookupValue (Object values) key = lookup key values
 lookupValue _ _ = Nothing
 
--- | If the given gml value is a integer produces the integer Value
+-- | If the given gml value is a integer produces the integer value.
 integerValue :: Gml k -> Maybe Integer
 integerValue (Integer v) = Just v
 integerValue _ = Nothing
 
--- | If the given gml value is a double value produces the float value
+-- | If the given gml value is a double value produces the float value.
 floatValue :: Gml k -> Maybe Double
 floatValue (Float v) = Just v
 floatValue _ = Nothing
 
--- | If the given gml value is a string produces the string value
+-- | If the given gml value is a string produces the string value.
 stringValue :: Gml k -> Maybe k
 stringValue (String v) = Just v
 stringValue _ = Nothing
 
--- | If the given gml value is a object produces the list of values that the 
--- object contains
+-- | If the given gml value is an object produces the list of values that the
+-- object contains.
 objectValues :: Gml k -> Maybe [(k, Gml k)]
 objectValues (Object values) = Just values
 objectValues _  = Nothing

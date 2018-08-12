@@ -23,7 +23,7 @@ import Prelude hiding (concat)
 import Pangraph
 import Pangraph.Gml.Ast
 
--- | Serializes a Pangraph into a GML file
+-- | Serializes a Pangraph into a GML file.
 write :: Pangraph -> ByteString
 write graph = let
     gml = pangraphToGml graph
@@ -31,7 +31,7 @@ write graph = let
     in bs
 
 -- | Converts a 'Pangraph' into a 'Gml' syntax tree.
--- Automatically encodes special characters in strings
+-- Automatically encodes special characters in strings.
 pangraphToGml :: Pangraph -> Gml ByteString
 pangraphToGml graph = let
     vertices = vertexList graph
@@ -40,7 +40,7 @@ pangraphToGml graph = let
     gmlEdges = map gmlEdge edges
     in encodeStrings (Object [("graph", Object (gmlVertices ++ gmlEdges))])
 
--- | Encodes the string values in a 'Gml' syntax tree
+-- | Encodes the string values in a 'Gml' syntax tree.
 encodeStrings :: Gml ByteString -> Gml ByteString
 encodeStrings = mapStrings (encodeUtf8 . text . decodeUtf8)
 
@@ -63,7 +63,7 @@ gmlEdge edge = let
 
 -- | Serializes a 'Gml' syntax tree into a bytestring.
 -- Produces 'Nothing' for all values except 'Object' since a gml file
--- must contain at least one top level object to hold all values
+-- must contain at least one top level object to hold all values.
 writeGml :: Gml ByteString -> Maybe ByteString
 writeGml (Object values) = Just $ concat (
     (map (\(key, value) -> concat [key, " ", writeGml' value]) values))
