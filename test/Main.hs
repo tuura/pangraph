@@ -5,8 +5,9 @@ import Show
 import Containers
 import TestPangraph
 import FGL
+import Gml
 
 import Test.HUnit
 
 main :: IO Counts
-main = (runTestTT . TestList . concat) [containersTests, fglTests, graphmlTests, showTests,  pangraphTests]
+main = (runTestTT . TestList . concat) [containersTests, fglTests, graphmlTests, showTests, pangraphTests, gmlTests]

@@ -4,3 +4,5 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
+extra-deps:
+- html-entities-1.1.4.2
