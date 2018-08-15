@@ -4,10 +4,8 @@ module Show (
 showTests
 ) where
 
-import Data.Maybe
 import Test.HUnit
-import Pangraph
-
+import Pangraph.Examples.SampleGraph
 
 showTests :: [Test]
 showTests = [case1]
@@ -15,20 +13,11 @@ showTests = [case1]
 case1 :: Test
 case1 =
   let
-    literal = "makePangraph [makeVertex \"0\" \
-    \[(\"id\",\"0\")],makeVertex \"1\" \
-    \[(\"id\",\"1\")]] [makeEdge \
-    \[(\"source\",\"0\"),(\"target\",\"1\")] \
-    \(makeVertex \"0\" \
-    \[(\"id\",\"0\")],makeVertex \"1\" [(\"id\",\"1\")])]"
-    sampleVertices = [makeVertex "0" [("id","0")]
-                     ,makeVertex "1" [ ("id","1")]]
-    graph = show $ fromMaybe
-             (error "Sample graph failed to build") $
-             makePangraph
-               sampleVertices [
-               makeEdge
-                 [("source","0"), ("target","1")]
-                 (head sampleVertices, sampleVertices !! 1)
-             ]
-  in TestCase $ assertEqual "Show instance case 1" literal (graph :: String)
+    literal :: String
+    literal = 
+      "makePangraph [makeVertex \"n0\" [(\"id\",\"n0\")]\
+      \,makeVertex \"n1\" [(\"id\",\"n1\")],\
+      \makeVertex \"n2\" [(\"id\",\"n2\")]] \
+      \[makeEdge (\"n0\",\"n2\") \
+      \[(\"source\",\"n0\"),(\"target\",\"n2\")]]"
+    in TestCase $ assertEqual "Show instance case 1" literal (show smallGraph)

@@ -4,7 +4,7 @@
 module Pangraph (
     -- * Abstract Types
     Pangraph, Edge, Vertex, Attribute,
-    Key, Value, VertexID, EdgeID,
+    Key, Value, VertexID, EdgeID, MalformedEdge,
 
     -- * Constructors
     makePangraph, makeEdge, makeVertex,
@@ -37,8 +37,8 @@ data Vertex = Vertex
 -- | Edges also reqiure ['Attribute'] and a tuple of 'Vertex' passed as connections to be constructed with 'makeEdge'
 data Edge = Edge
   { edgeID' :: Maybe EdgeID
+  , endpoints' :: (VertexID, VertexID)
   , edgeAttributes' :: [Attribute]
-  , endpoints' :: (Vertex, Vertex)
   } deriving (Eq)
 
 -- | A type exposed for lookup in the resulting lists.
@@ -52,7 +52,7 @@ type Key = BS.ByteString
 -- | The 'Value' in the tuple that makes up 'Attribute'.
 type Value = BS.ByteString
 
-type MalformedEdge = (Edge, (Maybe Vertex, Maybe Vertex))
+type MalformedEdge = (Edge, (Maybe VertexID, Maybe VertexID))
 
 instance Show Pangraph where
   show p = "makePangraph " ++ show (Map.elems (vertices' p)) ++ " " ++ show (Map.elems (edges' p))
@@ -61,40 +61,40 @@ instance Show Vertex where
   show (Vertex i as) = unwords ["makeVertex", show i, show as]
 
 instance Show Edge where
-  show (Edge _ as e) = unwords ["makeEdge", show as, show e]
+  show (Edge _ e as) = unwords ["makeEdge", show e, show as]
 
 instance Alga.ToGraph Pangraph where
-    type ToVertex Pangraph = Vertex
-    toGraph p = Alga.vertices (vertexList p) `Alga.overlay` Alga.edges (map edgeEndpoints $ edgeList p)
+  type ToVertex Pangraph = VertexID
+  toGraph p = Alga.vertices (map vertexID . vertexList $ p) `Alga.overlay` Alga.edges (map edgeEndpoints $ edgeList p)
 
 -- * List based constructors
 
 -- | Takes lists of 'Vertex' and 'Edge' to produce 'Just Pangraph' if the graph is correctly formed.
-makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
+makePangraph :: [Vertex] -> [Edge] -> Either [MalformedEdge] Pangraph
 makePangraph vs es = case verifyGraph vertexMap es of
-  [] -> Just $ Pangraph vertexMap edgeMap
-  _ -> Nothing
+  [] -> Right $ Pangraph vertexMap edgeMap
+  ls -> Left ls
   where
     vertexMap :: Map VertexID Vertex
     vertexMap = Map.fromList $ zip (map vertexID vs) vs
     edgeMap :: Map EdgeID Edge
     edgeMap = Map.fromList indexEdges
     indexEdges :: [(EdgeID, Edge)]
-    indexEdges = map (\ (i, Edge _ as a) -> (i, Edge (Just i) as a )) $ zip [0..] es
+    indexEdges = map (\(i, Edge _ a as) -> (i, Edge (Just i) a as )) $ zip [0..] es
 
 verifyGraph :: Map VertexID Vertex -> [Edge] -> [MalformedEdge]
 verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
   where
-    lookupEndpoints :: (Edge, (Vertex, Vertex)) ->  Maybe MalformedEdge
+    lookupEndpoints :: (Edge, (VertexID, VertexID)) ->  Maybe MalformedEdge
     lookupEndpoints (e, (v1,v2)) =
-      case (Map.lookup (vertexID v1) vs, Map.lookup (vertexID v2) vs) of
+      case (Map.lookup v1 vs, Map.lookup v2 vs) of
         (Just _ , Just _)  -> Nothing
         (Nothing, Just _)  -> Just (e, (Just v1, Nothing))
         (Just _ , Nothing) -> Just (e, (Nothing, Just v2))
         (Nothing, Nothing) -> Just (e, (Just v1, Just v2))
 
 -- | Edge constructor
-makeEdge :: [Attribute] -> (Vertex, Vertex) -> Edge
+makeEdge :: (VertexID, VertexID) -> [Attribute] -> Edge
 makeEdge = Edge Nothing
 
 -- | Vertex constructor
@@ -130,7 +130,7 @@ vertexAttributes :: Vertex -> [Attribute]
 vertexAttributes = vertexAttributes'
 
 -- | Returns the endpoint of tupled 'Vertex' of an 'Edge'
-edgeEndpoints :: Edge -> (Vertex, Vertex)
+edgeEndpoints :: Edge -> (VertexID, VertexID)
 edgeEndpoints = endpoints'
 
 -- | Returns the EdgeID if it has one. 'Edge's are given a new 'EdgeID' when they are passed and retrived from a 'Pangraph'

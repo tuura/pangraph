@@ -26,10 +26,12 @@ library
                    ,  Pangraph.GraphML.Parser
                    ,  Pangraph.GraphML.Writer
                    ,  Pangraph.Internal.XMLTemplate
+                   ,  Pangraph.Internal.HexmlExtra
                    ,  Pangraph.Examples.Reading
                    ,  Pangraph.Examples.Writing
                    ,  Pangraph.Examples.ToContainersGraph
                    ,  Pangraph.Examples.SampleGraph
+                   ,  Pangraph.ProtoGraph
   build-depends:      base >= 4.8 && < 5
                    ,  bytestring
                    ,  hexml
