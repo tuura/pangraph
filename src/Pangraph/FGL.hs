@@ -1,10 +1,12 @@
--- {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Pangraph.FGL where
 
 -- External Imports
 -- ByteString
 import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
+import Data.ByteString.Char8 (pack)
 
 -- FGL
 import qualified Data.Graph.Inductive.Graph as FGL
@@ -18,10 +20,8 @@ import Data.Maybe (fromJust)
 
 -- Local
 import Pangraph
+import Pangraph.ProtoGraph
 
--- import qualified Data.ByteString as BS
--- import Data.ByteString.Char8 (pack)
--- import Pangraph.ProtoGraph
 -- | Convert a Pangraph to Fgl types.
 convert :: Pangraph -> ([FGL.LNode ByteString], [FGL.LEdge Int])
 convert p = let
@@ -44,20 +44,20 @@ convert p = let
         (\e -> ((fromJust . edgeID) e, edgeEndpoints e))) (edgeList p)
     in (fglVertices, fglEdges)
 
--- -- (Int, ByteString) -> (Int, Int, Int)
--- -- | Revert FGL types into Pangraph. 
--- revert :: ([FGL.LNode ByteString], [FGL.LEdge Int]) -> Either [MalformedEdge] Pangraph
--- revert (ns, es) =
---     let
---         -- Create the vertices mappings.
---         pVertices :: [ProtoVertex]
---         pVertices = map (\n -> makeProtoVertex [("id", snd n)]) ns
+-- (Int, ByteString) -> (Int, Int, Int)
+-- | Revert FGL types into Pangraph. 
+revert :: ([FGL.LNode ByteString], [FGL.LEdge Int]) -> Either [MalformedEdge] Pangraph
+revert (ns, es) =
+    let
+        -- Create the vertices mappings.
+        pVertices :: [ProtoVertex]
+        pVertices = map (\n -> makeProtoVertex [("id", snd n)]) ns
 
---         pEdges :: [ProtoEdge] 
---         pEdges = let
---             ps :: Show a => a -> ByteString
---             ps = pack . show
---             -- Take the source and destination and construct the protoEdge
---             in map (\(src, dst, _) -> makeProtoEdge [("source", BS.append "n" $ ps src), ("target", BS.append "n" $ ps dst)]) es
---         pGraph = makeProtoGraph pVertices pEdges
---         in completeGraph pGraph defaultToVertex defaultToEdge
+        pEdges :: [ProtoEdge] 
+        pEdges = let
+            ps :: Show a => a -> ByteString
+            ps = pack . show
+            -- Take the source and destination and construct the protoEdge
+            in map (\(src, dst, _) -> makeProtoEdge [("source", BS.append "n" $ ps src), ("target", BS.append "n" $ ps dst)]) es
+        pGraph = makeProtoGraph pVertices pEdges
+        in completeGraph pGraph defaultToVertex defaultToEdge
