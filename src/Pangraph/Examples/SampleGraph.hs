@@ -5,10 +5,10 @@ module Pangraph.Examples.SampleGraph
     ) where
 
 import Pangraph
-import Data.Either(fromRight)
+import Data.Maybe(fromJust)
 
 smallGraph :: Pangraph
-smallGraph = fromRight (error "Small graph literal failed to construct.") graph
+smallGraph = fromJust graph
   where
     graph =
       makePangraph

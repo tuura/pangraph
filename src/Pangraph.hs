@@ -70,10 +70,10 @@ instance Alga.ToGraph Pangraph where
 -- * List based constructors
 
 -- | Takes lists of 'Vertex' and 'Edge' to produce 'Just Pangraph' if the graph is correctly formed.
-makePangraph :: [Vertex] -> [Edge] -> Either [MalformedEdge] Pangraph
+makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
 makePangraph vs es = case verifyGraph vertexMap es of
-  [] -> Right $ Pangraph vertexMap edgeMap
-  ls -> Left ls
+  [] -> (Just . Pangraph vertexMap) edgeMap
+  _ -> Nothing
   where
     vertexMap :: Map VertexID Vertex
     vertexMap = Map.fromList $ zip (map vertexID vs) vs

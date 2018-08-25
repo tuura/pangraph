@@ -14,4 +14,4 @@ case1 :: Test
 case1 = TestCase $ assertEqual "FGL Convert Case 1" "([(0,\"n0\"),(1,\"n1\"),(2,\"n2\")],[(0,2,0)])" (show . convert $ smallGraph)
 
 case2 :: Test
-case2 = TestCase $ assertEqual "FGL Revert == Convert" (Right smallGraph) (revert . convert $ smallGraph)
+case2 = TestCase $ assertEqual "FGL Revert == Convert" (Just smallGraph) (revert . convert $ smallGraph)

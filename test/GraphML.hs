@@ -17,7 +17,7 @@ graphmlTests = [case1, case2]
 case1 :: Test
 case1 =
   let
-    file :: Either [MalformedEdge] Pangraph
+    file :: Maybe Pangraph
     file = parse "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
             \<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\
             \    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -30,7 +30,7 @@ case1 =
             \    <edge id=\"e1\" source=\"n0\" target=\"n2\"/>\
             \    </graph>\
             \</graphml>"
-  in TestCase $ assertEqual "GraphML Parse case 1" (Right smallGraph) file
+  in TestCase $ assertEqual "GraphML Parse case 1" (Just smallGraph) file
 
 case2 :: Test
-case2 = TestCase $ assertEqual "GraphML Write case 1" (Right smallGraph) (parse . write $ smallGraph)
+case2 = TestCase $ assertEqual "GraphML Write case 1" (Just smallGraph) (parse . write $ smallGraph)

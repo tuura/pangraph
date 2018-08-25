@@ -46,7 +46,7 @@ convert p = let
 
 -- (Int, ByteString) -> (Int, Int, Int)
 -- | Revert FGL types into Pangraph. 
-revert :: ([FGL.LNode ByteString], [FGL.LEdge Int]) -> Either [MalformedEdge] Pangraph
+revert :: ([FGL.LNode ByteString], [FGL.LEdge Int]) -> Maybe Pangraph
 revert (ns, es) =
     let
         -- Create the vertices mappings.

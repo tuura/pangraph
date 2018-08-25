@@ -39,7 +39,7 @@ instance Show ProtoVertex where
 instance Show ProtoEdge where
     show (ProtoEdge as ) = unwords ["makeProtoEdge", show as]
 
-completeGraph :: ProtoGraph -> (ProtoVertex -> VertexID) -> (ProtoEdge -> (VertexID, VertexID)) -> Either [MalformedEdge] Pangraph
+completeGraph :: ProtoGraph -> (ProtoVertex -> VertexID) -> (ProtoEdge -> (VertexID, VertexID)) -> Maybe Pangraph
 completeGraph g fv fe = let
     vertices :: [Vertex]
     vertices =  (map (toVertex fv). protoVertices') g
@@ -47,7 +47,7 @@ completeGraph g fv fe = let
     edges = (map (toEdge fe) . protoEdges') g
     in makePangraph vertices edges
         
-completeGraphWithDefault :: ProtoGraph -> Either [MalformedEdge] Pangraph
+completeGraphWithDefault :: ProtoGraph -> Maybe Pangraph
 completeGraphWithDefault g = completeGraph g defaultToVertex defaultToEdge
 
 makeProtoGraph :: [ProtoVertex] -> [ProtoEdge] -> ProtoGraph
