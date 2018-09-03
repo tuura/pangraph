@@ -26,20 +26,20 @@ import qualified Algebra.Graph.Class as Alga
 
 -- | The 'Pangraph' type is the core intermediate type between abstract representations of graphs.
 data Pangraph = Pangraph
-  { vertices' :: Map VertexID Vertex
-  , edges' :: Map EdgeID Edge
-  } deriving (Eq)
+    { vertices' :: Map VertexID Vertex
+    , edges' :: Map EdgeID Edge
+    } deriving (Eq)
 -- | A Vertex holds ['Attribute'] and must have a unique 'VertexID' to be constructed with 'makeVertex'.
 data Vertex = Vertex
-  { vertexID' :: VertexID
-  , vertexAttributes' :: [Attribute]
-  } deriving (Eq)
+    { vertexID' :: VertexID
+    , vertexAttributes' :: [Attribute]
+    } deriving (Eq)
 -- | Edges also reqiure ['Attribute'] and a tuple of 'Vertex' passed as connections to be constructed with 'makeEdge'
 data Edge = Edge
-  { edgeID' :: Maybe EdgeID
-  , endpoints' :: (VertexID, VertexID)
-  , edgeAttributes' :: [Attribute]
-  } deriving (Eq)
+    { edgeID' :: Maybe EdgeID
+    , endpoints' :: (VertexID, VertexID)
+    , edgeAttributes' :: [Attribute]
+    } deriving (Eq)
 
 -- | A type exposed for lookup in the resulting lists.
 type EdgeID = Int
@@ -55,43 +55,43 @@ type Value = BS.ByteString
 type MalformedEdge = (Edge, (Maybe VertexID, Maybe VertexID))
 
 instance Show Pangraph where
-  show p = "makePangraph " ++ show (Map.elems (vertices' p)) ++ " " ++ show (Map.elems (edges' p))
+    show p = "makePangraph " ++ show (Map.elems (vertices' p)) ++ " " ++ show (Map.elems (edges' p))
 
 instance Show Vertex where
-  show (Vertex i as) = unwords ["makeVertex", show i, show as]
+    show (Vertex i as) = unwords ["makeVertex", show i, show as]
 
 instance Show Edge where
-  show (Edge _ e as) = unwords ["makeEdge", show e, show as]
+    show (Edge _ e as) = unwords ["makeEdge", show e, show as]
 
 instance Alga.ToGraph Pangraph where
-  type ToVertex Pangraph = VertexID
-  toGraph p = Alga.vertices (map vertexID . vertexList $ p) `Alga.overlay` Alga.edges (map edgeEndpoints $ edgeList p)
+    type ToVertex Pangraph = VertexID
+    toGraph p = Alga.vertices (map vertexID . vertexList $ p) `Alga.overlay` Alga.edges (map edgeEndpoints $ edgeList p)
 
 -- * List based constructors
 
 -- | Takes lists of 'Vertex' and 'Edge' to produce 'Just Pangraph' if the graph is correctly formed.
 makePangraph :: [Vertex] -> [Edge] -> Maybe Pangraph
 makePangraph vs es = case verifyGraph vertexMap es of
-  [] -> (Just . Pangraph vertexMap) edgeMap
-  _ -> Nothing
-  where
-    vertexMap :: Map VertexID Vertex
-    vertexMap = Map.fromList $ zip (map vertexID vs) vs
-    edgeMap :: Map EdgeID Edge
-    edgeMap = Map.fromList indexEdges
-    indexEdges :: [(EdgeID, Edge)]
-    indexEdges = map (\(i, Edge _ a as) -> (i, Edge (Just i) a as )) $ zip [0..] es
+    [] -> (Just . Pangraph vertexMap) edgeMap
+    _ -> Nothing
+    where
+        vertexMap :: Map VertexID Vertex
+        vertexMap = Map.fromList $ zip (map vertexID vs) vs
+        edgeMap :: Map EdgeID Edge
+        edgeMap = Map.fromList indexEdges
+        indexEdges :: [(EdgeID, Edge)]
+        indexEdges = map (\(i, Edge _ a as) -> (i, Edge (Just i) a as )) $ zip [0..] es
 
 verifyGraph :: Map VertexID Vertex -> [Edge] -> [MalformedEdge]
-verifyGraph vs = mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
-  where
+verifyGraph vs = let
     lookupEndpoints :: (Edge, (VertexID, VertexID)) ->  Maybe MalformedEdge
     lookupEndpoints (e, (v1,v2)) =
-      case (Map.lookup v1 vs, Map.lookup v2 vs) of
-        (Just _ , Just _)  -> Nothing
-        (Nothing, Just _)  -> Just (e, (Just v1, Nothing))
-        (Just _ , Nothing) -> Just (e, (Nothing, Just v2))
-        (Nothing, Nothing) -> Just (e, (Just v1, Just v2))
+        case (Map.lookup v1 vs, Map.lookup v2 vs) of
+            (Just _ , Just _)  -> Nothing
+            (Nothing, Just _)  -> Just (e, (Just v1, Nothing))
+            (Just _ , Nothing) -> Just (e, (Nothing, Just v2))
+            (Nothing, Nothing) -> Just (e, (Just v1, Just v2))
+    in mapMaybe (\e -> lookupEndpoints (e, edgeEndpoints e))
 
 -- | Edge constructor
 makeEdge :: (VertexID, VertexID) -> [Attribute] -> Edge
