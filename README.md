@@ -1,6 +1,6 @@
 # pangraph [![Build Status](https://travis-ci.org/tuura/pangraph.svg?branch=master)](https://travis-ci.org/tuura/pangraph)  
 
-Pangraph is a Haskell library which offers for parsing and serializations for graph files. As well as conversions to other Haskell graph formats. An example format is [GraphML](http://graphml.graphdrawing.org/). A graphml file
+Pangraph is a Haskell library which offers parsing and serializations for graph files. As well as conversions to other Haskell graph formats. An example format is [GraphML](http://graphml.graphdrawing.org/). A graphml file
 could for example represent the following graph, with vertices from `A` to `E` and connections, the edges, between them.  
 ![a-sample-graph](examples/graphs/network.svg)  
 Source:
@@ -8,11 +8,12 @@ Source:
 
 ## Contents
 1. [Usage](#usage)  
-2. [Graph File Support](#graph-file-support)
-3. [Library support](#graph-library-support)
+2. [Building](#building)
+3. [Graph File Support](#graph-file-support)
+4. [Library support](#graph-library-support)
 
 ## Usage
-Pangraph offers an API in the module `Pangraph` for construction and   
+Pangraph provides an API in the module `Pangraph` for construction and   
 manipulation of graphs. The parsers in the library use this module to   
 generate pangraphs. Parsers and serializers are imported from modules  
 individually. This example shows imports for GraphML.
@@ -20,29 +21,23 @@ individually. This example shows imports for GraphML.
 import Pangraph.GraphML.Parser (parse)
 import Pangraph.GraphML.Writer (write)
 ```
-Usage of multiple file types in the same module will require qualified imports.
-## Examples  
-See `src/Pangraph/Examples` for further examples.
-### Sample Parsing a Graph
-Repeated here is code from `src/Pangraph/Examples/Reading.hs`
+Usage of multiple file types in the same module will require  
+qualified imports. Please see `src/Pangraph/Examples` for further examples.
+
+## Building
 ```haskell
-module Pangraph.Examples.Reading where
-
-import Prelude hiding (readFile)
-
-import Data.ByteString (readFile)
-
-import Pangraph
-import qualified Pangraph.GraphML.Parser as GraphML_P
-
-main :: IO ()
-main = do
-  fileName <- getLine
-  file <- readFile fileName
-  print (GraphML_P.parse file)
+stack build
+stack test
 ```
 
 ## Graph File Support  
+
+### [GML](https://en.wikipedia.org/wiki/Graph_Modelling_Language)
+GML files are currently:
+- Parsing: Ok
+- Writing: Ok
+Node: See `Pangraph.Gml.*`
+
 ### [GraphML](http://graphml.graphdrawing.org/)
 GraphML files are currently:  
 - Parsing: Ok  
@@ -62,3 +57,8 @@ Workcraft files are currently:
 Currently implements:  
 - Convert:  `Pangraph.Containers`
 - Revert:   **Unimplemented**
+
+### [FGL](https://hackage.haskell.org/package/fgl)
+Currently implements:
+- Convert: `Pangraph.FGL`
+- Revert: **Unimplemented**

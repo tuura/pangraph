@@ -1,5 +1,11 @@
 # Changelog
 
+pangraph-0.2.0 
+* Addition of conversion and revert for FGL.
+* Addition of Parser, Serializer and AST for GML.
+* Change `Edge` types to now only construct with a `VertexID` type.
+* Change `edgeEndpoints` to return VertexID.
+
 pangraph-0.1.2 141360fbc2b6ca232ce91a9b14aa9a626082ba92 08/06/2018
 Note: First Hackage release which follows correct cabal versioning increments.  
 * Addition of Containers (convert).

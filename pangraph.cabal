@@ -1,5 +1,5 @@
 name:                 pangraph
-version:              0.1.2
+version:              0.1.3
 synopsis:             A set of parsers for graph languages and conversions to 
                       graph libaries.
 description:          A package allowing parsing of graph files into graph 
@@ -46,7 +46,7 @@ library
                    ,  text
                    ,  html-entities
   default-language:   Haskell2010
-  GHC-options:        -Wall -fwarn-tabs -O2
+  GHC-options:        -Wall -fwarn-tabs
 
 test-suite pangraph-test
   type:               exitcode-stdio-1.0
