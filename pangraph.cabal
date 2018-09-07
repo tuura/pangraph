@@ -31,7 +31,7 @@ library
                    ,  Pangraph.Examples.Writing
                    ,  Pangraph.Examples.ToContainersGraph
                    ,  Pangraph.Examples.SampleGraph
-                   ,  Pangraph.ProtoGraph
+                   ,  Pangraph.Internal.ProtoGraph
                    ,  Pangraph.Examples.Gml
                    ,  Pangraph.Gml.Ast
                    ,  Pangraph.Gml.Parser

@@ -1,11 +1,17 @@
+{-
+Module          : Pangraph.FGL
+Description     : Provides `convert` and `revert` to a `FGL` form.
+
+The function provides an conversion to FGL in the datatypes `Pangraph` uses.
+Users should convert the types as the see fit for example, convert `ByteString` to `Int`.
+-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Pangraph.FGL where
+module Pangraph.FGL (convert, revert) where
 
 -- External Imports
 -- ByteString
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
 import Data.ByteString.Char8 (pack)
 
 -- FGL
@@ -17,10 +23,11 @@ import qualified Data.Set as Set
 
 -- Prelude
 import Data.Maybe (fromJust)
+import Data.Monoid ((<>))
 
 -- Local
 import Pangraph
-import Pangraph.ProtoGraph
+import Pangraph.Internal.ProtoGraph
 
 -- | Convert a Pangraph to Fgl types.
 convert :: Pangraph -> ([FGL.LNode ByteString], [FGL.LEdge Int])
@@ -47,17 +54,22 @@ convert p = let
 -- (Int, ByteString) -> (Int, Int, Int)
 -- | Revert FGL types into Pangraph. 
 revert :: ([FGL.LNode ByteString], [FGL.LEdge Int]) -> Maybe Pangraph
-revert (ns, es) =
-    let
-        -- Create the vertices mappings.
-        pVertices :: [ProtoVertex]
-        pVertices = map (\n -> makeProtoVertex [("id", snd n)]) ns
+revert t = let
+    vf :: ProtoVertex -> VertexID
+    vf v = (fromJust . lookup "id") (protoVertexAttributes v)
+    ef :: ProtoEdge -> (VertexID, VertexID)
+    ef e = let
+        lookup' :: Value -> VertexID
+        lookup' value = (fromJust . lookup value) (protoEdgeAttributes e)
+        in (lookup' "source", lookup' "target")
+    in buildPangraph (FGL t) vf ef
 
-        pEdges :: [ProtoEdge] 
-        pEdges = let
-            ps :: Show a => a -> ByteString
-            ps = pack . show
-            -- Take the source and destination and construct the protoEdge
-            in map (\(src, dst, _) -> makeProtoEdge [("source", BS.append "n" $ ps src), ("target", BS.append "n" $ ps dst)]) es
-        pGraph = makeProtoGraph pVertices pEdges
-        in completeGraph pGraph defaultToVertex defaultToEdge
+newtype FGL = FGL ([FGL.LNode ByteString], [FGL.LEdge Int])
+
+instance BuildPangraph FGL where
+    getProtoVertex (FGL (ns, _)) = map (\n -> makeProtoVertex [("id", snd n)]) ns
+    getProtoEdge (FGL (_, es)) = let
+        ps :: Show a => a -> ByteString
+        ps = pack . show
+        -- Take the source and destination and construct the protoEdge
+        in map (\(src, dst, _) -> makeProtoEdge [("source", "n" <> ps src), ("target", "n" <> ps dst)]) es
