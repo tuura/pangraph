@@ -1,3 +1,8 @@
+{-|
+Module          : Pangraph.Containers
+Description     : Convert `Pangraph` into a CGraph.Graph
+
+-}
 module Pangraph.Containers
     ( convert
     ) where
@@ -11,7 +16,7 @@ import qualified Data.Graph         as CGraph
 import           Data.Map.Strict    (Map)
 import qualified Data.Map.Strict    as Map
 
--- | Transforms a 'Pangraph' in a 'CGraph.Graph'.
+-- | Transforms a 'Pangraph' into a 'CGraph.Graph'.
 convert :: Pangraph -> (CGraph.Graph, CGraph.Vertex -> (Vertex, VertexID, [VertexID]), VertexID -> Maybe CGraph.Vertex)
 convert p = let
     -- Create an Edge Map using VertexID grouping edge sources together.
@@ -28,7 +33,7 @@ convert p = let
     in CGraph.graphFromEdges getVertices
 
 groupIDs :: [(VertexID, VertexID)] -> [(VertexID, [VertexID])]
-groupIDs vs = map (\ts -> (fst $ head ts, map snd ts)) groupedEdges
-  where
+groupIDs endPoints =let
     groupedEdges :: [[(VertexID, VertexID)]]
-    groupedEdges = groupBy (\a b -> fst a == fst b) $ sort vs
+    groupedEdges = groupBy (\a b -> fst a == fst b) (sort endPoints)
+    in map (\ts -> (fst $ head ts, map snd ts)) groupedEdges

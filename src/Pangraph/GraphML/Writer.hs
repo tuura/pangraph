@@ -1,3 +1,9 @@
+{-|
+Module          : Pangraph.GraphML.Writer
+Description     : Serlize a `Pangraph` into a `ByteString`
+
+-}
+
 {-# LANGUAGE OverloadedStrings #-}
 
 module Pangraph.GraphML.Writer

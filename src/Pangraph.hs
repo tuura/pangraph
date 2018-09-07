@@ -1,3 +1,10 @@
+{-|
+Module          : Pangraph
+Description     : Exports the core intermediate type for graph representation.
+
+See `Pangraph` for the type which provides a guaranteed well-formed graph once constructed. The rest of the modules provides constructors and getters on 
+this type.
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 
