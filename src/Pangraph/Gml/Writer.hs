@@ -48,17 +48,17 @@ gmlVertex :: Vertex -> (ByteString, Gml ByteString)
 gmlVertex vertex = let
     vId = read (unpack (vertexID vertex))
     filteredAttrs = filter (\(key, _) -> key /= "id") (vertexAttributes vertex)
-    attrs = map (\(x, y) -> (x, String y)) (filteredAttrs)
+    attrs = map (\(x, y) -> (x, String y)) filteredAttrs
     in ("node", Object (("id", Integer vId):attrs))  
 
 gmlEdge :: Edge -> (ByteString, Gml ByteString)
 gmlEdge edge = let
     (source, target) = edgeEndpoints edge
-    sId = read (unpack (vertexID source))
-    tId = read (unpack (vertexID target))
-    filteredAttrs = filter (\(key, _) -> not (key `elem` ["source", "target"]))
+    sId = read (unpack source)
+    tId = read (unpack target)
+    filteredAttrs = filter (\(key, _) -> (key `notElem` ["source", "target"]))
         (edgeAttributes edge)
-    attrs = map (\(x, y) -> (x, String y)) (filteredAttrs)
+    attrs = map (\(x, y) -> (x, String y)) filteredAttrs
     in ("edge", Object (("source", Integer sId):("target", Integer tId):attrs))
 
 -- | Serializes a 'Gml' syntax tree into a bytestring.

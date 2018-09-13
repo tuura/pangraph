@@ -5,17 +5,15 @@ module Pangraph.Examples.SampleGraph
     ) where
 
 import Pangraph
+import Data.Maybe(fromJust)
 
 smallGraph :: Pangraph
-smallGraph = case graph of
-  Just p  -> p
-  Nothing -> error "Small graph literal failed to construct."
+smallGraph = fromJust graph
   where
     graph =
       makePangraph
         [makeVertex "n0" [("id","n0")]
         ,makeVertex "n1" [("id","n1")]
         ,makeVertex "n2" [("id","n2")]]
-        [makeEdge [("source","n0"),("target","n2")]
-          (makeVertex "n0" [("id","n0")]
-          ,makeVertex "n2" [("id","n2")])]
+        [makeEdge ("n0", "n2") 
+          [("source","n0"),("target","n2")]]

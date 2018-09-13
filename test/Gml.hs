@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Gml where
 
 import Test.HUnit
+
+import Data.Maybe(fromJust)
 
 import Pangraph
 import Pangraph.Gml.Ast
@@ -26,7 +29,8 @@ pangraphConversion :: Test
 pangraphConversion = let
     file = "graph [node [id 1] node [id 2] edge [source 1 target 2]]"
     vertices = [makeVertex "1" [("id", "1")], makeVertex "2" [("id", "2")]]
-    edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
+    [v1,v2] = map vertexID vertices
+    edges = [makeEdge (v1, v2) [("source", "1"), ("target", "2")] ]
     pangraph = makePangraph vertices edges
     in TestCase $ assertEqual "GML pangraphConversion" pangraph (parse file)
     
@@ -48,23 +52,29 @@ testGmlWrite = let
 testPangraphWrite :: Test
 testPangraphWrite = let
     file = "graph [ node [ id 1] node [ id 2] edge [ source 1 target 2]]"
-    vertices = [makeVertex "1" [("id", "1")], makeVertex "2" [("id", "2")]]
-    edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
-    Just pangraph = makePangraph vertices edges
-    in TestCase $ assertEqual "GML parseTest2" file (write pangraph)
+    in TestCase $ assertEqual "GML parseTest2" file (write gmlPangraphWrite)
 
 testHtmlEntitiesDecoding :: Test
 testHtmlEntitiesDecoding = let
     file = "graph [node [id 1 label \"&quot;Hello&quot;\" ] node [id 2] edge [source 1 target 2]]"
-    vertices = [makeVertex "1" [("id", "1"), ("label", "\"Hello\"")], makeVertex "2" [("id", "2")]]
-    edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
-    pangraph = makePangraph vertices edges
-    in TestCase $ assertEqual "GML testHtmlEntitiesDecoding" pangraph (parse file)
+    in TestCase $ assertEqual "GML testHtmlEntitiesDecoding" (Just gmlPangraph) (parse file)
 
 testHtmlEntitiesEncoding :: Test
 testHtmlEntitiesEncoding = let
     file = "graph [ node [ id 1 label \"&quot;Hello&quot;\"] node [ id 2] edge [ source 1 target 2]]"
+    in TestCase $ assertEqual "GML testHtmlEntitiesEncoding" file (write gmlPangraph) 
+
+gmlPangraph :: Pangraph
+gmlPangraph = let
     vertices = [makeVertex "1" [("id", "1"), ("label", "\"Hello\"")], makeVertex "2" [("id", "2")]]
-    edges = [makeEdge [("source", "1"), ("target", "2")] (vertices !! 0, vertices !! 1)]
-    Just pangraph = makePangraph vertices edges
-    in TestCase $ assertEqual "GML testHtmlEntitiesEncoding" file (write pangraph) 
+    [v1,v2] = map vertexID vertices
+    edges = [makeEdge (v1, v2) [("source", "1"), ("target", "2")]]
+    in fromJust $ makePangraph vertices edges
+
+gmlPangraphWrite :: Pangraph
+gmlPangraphWrite = let
+    vertices = [makeVertex "1" [("id", "1")], makeVertex "2" [("id", "2")]]
+    [v1,v2] = map vertexID vertices
+    edges = [makeEdge (v1, v2) [("source", "1"), ("target", "2")]]
+    
+    in fromJust $ makePangraph vertices edges

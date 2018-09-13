@@ -61,12 +61,11 @@ gmlToPangraph gml = do
     let vertices = map snd (filter (\(k, _) -> k == "node") values)
     let edges = map snd (filter (\(k, _) -> k == "edge") values)
     let pVertices = mapMaybe gmlToVertex vertices
-    verticeGraph <- makePangraph pVertices []
-    let pEdges = mapMaybe (gmlToEdge verticeGraph) edges
+    let pEdges = mapMaybe gmlToEdge edges
     makePangraph pVertices pEdges
 
-gmlToEdge :: Pangraph -> Gml Text -> Maybe Edge
-gmlToEdge graph gml = do
+gmlToEdge :: Gml Text -> Maybe Edge
+gmlToEdge gml = do
     sourceV <- lookupValue gml "source"
     targetV <- lookupValue gml "target"
     source <- integerValue sourceV
@@ -74,9 +73,7 @@ gmlToEdge graph gml = do
     atts <- attrs gml
     let sourceB = encodeUtf8 (pack (show source))
     let targetB = encodeUtf8 (pack (show target))
-    sourceVertex <- lookupVertex sourceB graph
-    targetVertex <- lookupVertex targetB graph
-    return (makeEdge atts (sourceVertex, targetVertex))
+    return (makeEdge (sourceB, targetB) atts)
 
 gmlToVertex :: Gml Text -> Maybe Vertex
 gmlToVertex gml = do
@@ -147,4 +144,3 @@ stringParser = do
      
 whitespace :: Parser ()
 whitespace = skip isHorizontalSpace <|> endOfLine
-

@@ -59,13 +59,13 @@ extractEdges:: [(P.VertexID, P.Vertex)] -> HexmlVertex -> EdgeRule -> [P.Edge]
 extractEdges verticesAssoc hexml (EdgeRule pe) = concatMap (makeEdge verticesAssoc hexml) pe
 
 makeEdge :: [(P.VertexID, P.Vertex)] ->  HexmlVertex -> (Path, Element) -> [P.Edge]
-makeEdge verticesAssoc hexml (path, element) = map (\as -> P.makeEdge as (getPrimitives as)) attList
+makeEdge verticesAssoc hexml (path, element) = map (\as -> P.makeEdge (getPrimitives as) as) attList
   where
-    getPrimitives :: [P.Attribute] -> (P.Vertex, P.Vertex)
+    getPrimitives :: [P.Attribute] -> (P.VertexID, P.VertexID)
     getPrimitives list = case (lookup src list, lookup dst list) of
       (Just srcID, Just dstID) ->
         case (lookup srcID verticesAssoc, lookup dstID verticesAssoc) of
-          (Just vertexSrc, Just vertexDst) -> (vertexSrc, vertexDst)
+          (Just _, Just _) -> (srcID, dstID)
           _ -> error $ "Fatal: Edge endpoints are not vertices: " ++ show list
       _ -> error $ "Fatal: Edge endpoints not found in attribute list: " ++ show list
     attList :: [[P.Attribute]]
