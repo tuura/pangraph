@@ -1,8 +1,0 @@
-resolver: lts-12.9
-flags: {}
-extra-package-dbs: []
-packages:
-- '.'
-extra-deps:
-- html-entities-1.1.4.2 # For GML
-- algebraic-graphs-0.1.1.1

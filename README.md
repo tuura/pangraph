@@ -25,9 +25,11 @@ Usage of multiple file types in the same module will require
 qualified imports. Please see `src/Pangraph/Examples` for further examples.
 
 ## Building
+Using cabal, dependencies track stack lts where possible.
 ```haskell
-stack build
-stack test
+cabal update
+cabal new-build
+cabal new-test
 ```
 
 ## Graph File Support  
