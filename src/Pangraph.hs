@@ -29,7 +29,8 @@ import Data.Maybe            (mapMaybe)
 import Data.Map.Strict       (Map)
 import qualified Data.Map.Strict  as Map
 import qualified Data.ByteString  as BS
-import qualified Algebra.Graph.Class as Alga
+import qualified Algebra.Graph.ToGraph as Alga
+import qualified Algebra.Graph as Alga
 
 -- | The 'Pangraph' type is the core intermediate type between abstract representations of graphs.
 data Pangraph = Pangraph
