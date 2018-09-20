@@ -32,6 +32,12 @@ cabal new-build
 cabal new-test
 ```
 
+Or Stack
+```haskell
+stack init
+stack test
+```
+
 ## Graph File Support  
 
 ### [GML](https://en.wikipedia.org/wiki/Graph_Modelling_Language)
