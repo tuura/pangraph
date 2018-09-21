@@ -19,7 +19,7 @@ testGmlParse :: Test
 testGmlParse = let
     file = "graph [node [id 1 label \"Hello\"] node [id 2] edge [source 1 target 2]]"
     graph = Just (Object [("graph", Object [
-                ("node", Object [("id", Integer 1), ("label", String "Hello")]), 
+                ("node", Object [("id", Integer 1), ("label", String "Hello")]),
                 ("node", Object [("id", Integer 2)]),
                 ("edge", Object [("source", Integer 1),
                     ("target", Integer 2)])])])
