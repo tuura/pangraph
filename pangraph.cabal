@@ -32,12 +32,9 @@ library
                    ,  Pangraph.GraphML.Writer
                    ,  Pangraph.Internal.XMLTemplate
                    ,  Pangraph.Internal.HexmlExtra
-                   ,  Pangraph.Examples.Reading
-                   ,  Pangraph.Examples.Writing
-                   ,  Pangraph.Examples.ToContainersGraph
+                   ,  Pangraph.Example
                    ,  Pangraph.Examples.SampleGraph
                    ,  Pangraph.Internal.ProtoGraph
-                   ,  Pangraph.Examples.Gml
                    ,  Pangraph.Gml.Ast
                    ,  Pangraph.Gml.Parser
                    ,  Pangraph.Gml.Writer
