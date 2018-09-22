@@ -1,13 +1,12 @@
 # Changelog
 
-## pangraph-0.2.1
-* Bump Algebraic Graphs from 0.1.* to 0.2.*
-
 ## pangraph-0.2.0 
+* Bump Algebraic Graphs from 0.1.* to 0.2.*
 * Addition of conversion and revert for FGL.
 * Addition of Parser, Serializer and AST for GML.
 * Change `Edge` types to now only construct with a `VertexID` type.
 * Change `edgeEndpoints` to return VertexID.
+* Add testing with GHC-8.6.1
 
 ## pangraph-0.1.2 141360fbc2b6ca232ce91a9b14aa9a626082ba92 08/06/2018
 Note: First Hackage release which follows correct cabal versioning increments.  
