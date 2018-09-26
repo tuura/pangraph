@@ -38,6 +38,8 @@ library
                    ,  Pangraph.Gml.Ast
                    ,  Pangraph.Gml.Parser
                    ,  Pangraph.Gml.Writer
+                   ,  Pangraph.Workcraft.Parser
+                   ,  Pangraph.Workcraft.Internal
   build-depends:      base >= 4.8 && < 5
                    ,  algebraic-graphs    == 0.2.*
                    ,  attoparsec          == 0.13.*
