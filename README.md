@@ -53,7 +53,7 @@ GraphML files are currently:
 
 ### [Workcraft](https://www.workcraft.org/)
 Workcraft files are currently:  
-- Parsing:  **Unimplemented**  
+- Parsing:  Directed Graphs Only. 
 - Writing:  **Unimplemented**
 
 ## Graph Library support  
