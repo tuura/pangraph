@@ -6,7 +6,7 @@ import Text.XML.Hexml
 import Pangraph
 
 
--- * A module containing containing extra Hexml functions as well as functons to ease conversions between the libraries.
+-- * A module containing containing extra Hexml functions as well as functions to ease conversions between the libraries.
 
 type HexmlAttribute = Text.XML.Hexml.Attribute
 type PangraphAttribute = Pangraph.Attribute
