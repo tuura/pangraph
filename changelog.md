@@ -2,6 +2,7 @@
 
 ## pangraph-0.2.1
 * Bump Algebraic Graphs from 0.1.* to 0.2.*
+* Add Worcraft parsing via Pangraph.Workcraft.Parser
 
 ## pangraph-0.2.0 
 * Addition of conversion and revert for FGL.
