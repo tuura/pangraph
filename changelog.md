@@ -1,7 +1,9 @@
 # Changelog
 
-## pangraph-0.2.1
+## pangraph-0.2.0.1
 * Bump Algebraic Graphs from 0.1.* to 0.2.*
+* Use Cabal for Travis builds (instead of Stack)
+* Move examples into Pangraph.Examples
 
 ## pangraph-0.2.0 
 * Addition of conversion and revert for FGL.
