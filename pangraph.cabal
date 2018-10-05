@@ -1,5 +1,5 @@
 name:                 pangraph
-version:              0.2.1
+version:              0.2.0.1
 synopsis:             A set of parsers for graph languages and conversions to 
                       graph libaries.
 description:          A package allowing parsing of graph files into graph 
