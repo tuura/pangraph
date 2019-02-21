@@ -42,7 +42,7 @@ library
                    ,  Pangraph.Pajek.Ast
                    ,  Pangraph.Pajek.Parser
                    ,  Pangraph.Pajek.Writer
-  build-depends:      base                >= 4.8 && < 5
+  build-depends:      base                >= 4.8 && < 5,
                       algebraic-graphs    ==0.3.*,
                       attoparsec          >=0.13.2.2 && <0.14,
                       bytestring          >=0.10.8.2 && <0.11,
