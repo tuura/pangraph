@@ -37,17 +37,28 @@ writeGraphML _ = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" \
 writeGraphTag :: Int -> ByteString
 writeGraphTag i = getIndentBS i `append` "<graph id=\"G\" edgedefault=\"undirected\">\n"
 
+mergedVertexAttributes :: Vertex -> [Attribute]
+mergedVertexAttributes v = ("id", vertexID v) : (filter notID $ vertexAttributes v)
+  where
+    notID (key, _) = key /= "id"
+
 writeNode :: Int -> Vertex -> ByteString
 writeNode i v = concat [getIndentBS i, "<node", nodesAtts, "/>\n"]
   where
     nodesAtts :: ByteString
-    nodesAtts = concat $ map writeAttribute (vertexAttributes v)
+    nodesAtts = concat $ map writeAttribute (mergedVertexAttributes v)
+
+mergedEdgeAttributes :: Edge -> [Attribute]
+mergedEdgeAttributes e = ("source", source) : ("target", target) : (filter notEndpoint $ edgeAttributes e)
+  where
+    (source, target) = edgeEndpoints e
+    notEndpoint (key, _) = key /= "source" && key /= "target"
 
 writeEdge :: Int -> Edge -> ByteString
 writeEdge i e = concat [getIndentBS i, "<edge", edgeAtts, "/>\n"]
   where
     edgeAtts :: ByteString
-    edgeAtts = concat $ map writeAttribute (edgeAttributes e)
+    edgeAtts = concat $ map writeAttribute (mergedEdgeAttributes e)
 
 writeAttribute :: Attribute -> ByteString
 writeAttribute (a,b) = concat [" ",  a, "=\"",  b, "\""]
