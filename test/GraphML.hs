@@ -51,12 +51,12 @@ case3 = TestCase $ assertEqual "GraphML Write case: without explicit id attribut
                [ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                  "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n",
                  "  <graph id=\"G\" edgedefault=\"undirected\">\n",
-                 "    <node id=\"foo\"/>\n",
                  "    <node id=\"bar\"/>\n",
                  "    <node id=\"buzz\"/>\n",
+                 "    <node id=\"foo\"/>\n",
                  "    <edge source=\"foo\" target=\"bar\"/>\n",
                  "    <edge source=\"bar\" target=\"buzz\"/>\n",
                  "    <edge source=\"buzz\" target=\"foo\"/>\n",
                  "  </graph>\n",
-                 "</graphml>\n"
+                 "</graphml>"
                ]
