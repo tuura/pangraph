@@ -1,32 +1,5 @@
 # Changelog
 
-## pangraph-0.3.0
-1. Implement a parser for and serializer for the Pajek graph language. See [#39](https://github.com/tuura/pangraph/pull/39) Thanks [zouroboros](https://github.com/zouroboros)!
-2. Use Stack to generate new pvp bounds.
-Formerly:
-```haskell
-algebraic-graphs    == 0.3.*
-attoparsec          == 0.13.*
-bytestring          == 0.10.*
-containers          == 0.5.*
-fgl                 == 5.6.*
-hexml               == 0.3.*
-html-entities       == 1.1.*
-text                == 1.2.*
-```
-To the following generated with stack LTS-13.8:
-```haskell
-base                >=4.8 && <5,
-algebraic-graphs    ==0.3.*,
-attoparsec          >=0.13.2.2 && <0.14,
-bytestring          >=0.10.8.2 && <0.11,
-containers          >=0.6.0.1 && <0.7,
-fgl                 >=5.7.0.1 && <5.8,
-hexml               >=0.3.4 && <0.4,
-html-entities       >=1.1.4.2 && <1.2,
-text                >=1.2.3.1 && <1.3
-```
-
 ## pangraph-0.2.1
 * Bump Algebraic Graphs from 0.1.* to 0.2.*
 
