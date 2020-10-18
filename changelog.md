@@ -1,5 +1,9 @@
 # Changelog
 
+## pangraph-0.3
+
+1. Expand dependencies in #45 7894f47 
+
 ## pangraph-0.2.1
 * Bump Algebraic Graphs from 0.1.* to 0.2.*
 
