@@ -3,6 +3,8 @@
 ## pangraph-0.3
 
 1. Expand dependencies in #45 7894f47 
+2. Drop testing for GHCs 8.0, 8.2, 8.4
+3. Add testing to GHCs 8.6, 8.8, 8.10
 
 ## pangraph-0.2.1
 * Bump Algebraic Graphs from 0.1.* to 0.2.*
