@@ -1,5 +1,5 @@
 name:                 pangraph
-version:              0.3.0
+version:              0.2.1
 synopsis:             A set of parsers for graph languages and conversions to
                       graph libaries.
 description:          A package allowing parsing of graph files into graph
@@ -19,10 +19,10 @@ build-type:           Simple
 cabal-version:        >=1.10
 stability:            experimental
 -- Last three major versions
-tested-with:          GHC==8.0.2,
-                      GHC==8.2.2,
-                      GHC==8.4.4,
-                      GHC==8.6.3
+tested-with:          
+  GHC == 8.6.5
+  GHC == 8.8.4
+  GHC == 8.10.2
 
 library
   hs-source-dirs:     src
@@ -43,14 +43,14 @@ library
                    ,  Pangraph.Pajek.Parser
                    ,  Pangraph.Pajek.Writer
   build-depends:      base >= 4.8 && < 5
-                   ,  algebraic-graphs    >=0.5      && <0.6  
-                   ,  attoparsec          >=0.13.0.0 && <=0.13.2.2
-                   ,  containers          >=0.5      && <=0.6.0.1
+                   ,  algebraic-graphs    >= 0.5      && <0.6  
+                   ,  attoparsec          >= 0.13.0.0 && <0.13.3
                    ,  bytestring          == 0.10.*
-                   ,  fgl                 == 5.7.*
+                   ,  containers          >= 0.5      && <=0.6.0.1
+                   ,  fgl                 >= 5.6.0    && < 5.8
                    ,  hexml               == 0.3.*
-                   ,  html-entities       == 1.1.*
-                   ,  text                == 1.2.*            
+                   ,  html-entities       == 1.1.* 
+                   ,  text                == 1.2.*
   default-language:   Haskell2010
   GHC-options:        -Wall -fwarn-tabs
 
